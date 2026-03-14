@@ -1,0 +1,144 @@
+:root {
+  font-family: 'Iansui', '芫荽', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+.main-container {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('./assets/treasure-map.jpg'); /* 全站底圖 */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: rgba(253, 250, 240, 0.92); /* 0.92 透明度 */
+  padding: 3rem;
+  border-radius: 24px; /* 卡片圓角矩形 */
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  max-width: 650px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* 分支 B 錯誤強光 */
+.card.wrong-glow {
+  border: 2px solid #ff4d4d;
+  box-shadow: 0 0 40px rgba(255, 77, 77, 0.8);
+}
+
+.timer-display {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.letter-title,
+.puzzle-title {
+  font-size: 24px !important; /* 標題固定 24px */
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
+.typewriter-text,
+.error-text,
+.hint-text {
+  font-size: 18px !important; /* 打字機內文與提示文字固定 18px */
+  line-height: 1.8;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  margin-top: 30px;
+}
+
+/* UI 元件：輸入框與按鈕皆為圓角矩形 */
+input {
+  width: 100%;
+  max-width: 350px;
+  padding: 15px;
+  font-size: 18px;
+  border: 2px solid #d4c3a1;
+  border-radius: 12px;
+  outline: none;
+}
+
+.glow-btn,
+.help-btn {
+  padding: 15px 45px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+
+.glow-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.help-btn {
+  background-color: #ef4444;
+  color: white;
+  margin-top: 15px;
+}
+
+/* 錯誤提示區 */
+.error-area {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+/* 過關轉場卡片 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+.transition-card {
+  background-color: rgba(253, 250, 240, 0.92);
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  max-width: 650px;
+  width: 100%;
+  text-align: center;
+}
+
+.transition-text {
+  text-align: center;
+  margin-bottom: 24px;
+}

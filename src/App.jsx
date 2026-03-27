@@ -31,6 +31,7 @@ const CHAPTERS = {
 
 function App() {
   const [hasStartedGame, setHasStartedGame] = useState(false);
+  const [showLevelSelect, setShowLevelSelect] = useState(false);
   const [currentChapter, setCurrentChapter] = useState(1);
   const [displayedText, setDisplayedText] = useState("");
   const [showUI, setShowUI] = useState(false);
@@ -52,6 +53,9 @@ function App() {
   const [isTextVisible, setIsTextVisible] = useState(true);
 
   const [onlineCount, setOnlineCount] = useState(0);
+  const [visibleLevelCount, setVisibleLevelCount] = useState(0);
+
+  const [showDiaryDrawer, setShowDiaryDrawer] = useState(false);
 
   const onlineUserId = useMemo(() => {
     const stored = sessionStorage.getItem("trafficPuzzleUserId");
@@ -64,7 +68,13 @@ function App() {
     return newId;
   }, []);
 
-  // 初始信件 / 章節文字效果
+  useEffect(() => {
+    if (showLevelSelect && !hasStartedGame) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [showLevelSelect, hasStartedGame]);
+
+  // 首頁信件 / 關卡文字
   useEffect(() => {
     setDisplayedText("");
     setShowUI(false);
@@ -76,7 +86,30 @@ function App() {
     let timeout;
     let interval2;
 
-    // 第一關特殊：打字機 → 清空 → 再打字機
+    if (!hasStartedGame && !showLevelSelect) {
+      setTextMode("typewriter");
+      setIsTextVisible(true);
+
+      let i = 0;
+      interval = setInterval(() => {
+        if (i < LETTER_CONTENT.length) {
+          setDisplayedText(LETTER_CONTENT.slice(0, i + 1));
+          i++;
+        } else {
+          clearInterval(interval);
+          setShowUI(true);
+        }
+      }, 50);
+
+      return () => clearInterval(interval);
+    }
+
+    if (!hasStartedGame && showLevelSelect) {
+      setDisplayedText("");
+      setShowUI(false);
+      return;
+    }
+
     if (hasStartedGame && currentChapter === 1) {
       const chapterData = CHAPTERS[1];
       setTextMode("typewriter");
@@ -114,13 +147,10 @@ function App() {
       };
     }
 
-    // 其他內容維持打字機
     setTextMode("typewriter");
     setIsTextVisible(true);
 
-    const targetText = hasStartedGame
-      ? CHAPTERS[currentChapter].content
-      : LETTER_CONTENT;
+    const targetText = CHAPTERS[currentChapter].content;
 
     let i = 0;
     interval = setInterval(() => {
@@ -134,7 +164,21 @@ function App() {
     }, 50);
 
     return () => clearInterval(interval);
-  }, [hasStartedGame, currentChapter]);
+  }, [hasStartedGame, showLevelSelect, currentChapter]);
+
+  // 關卡點依序浮出
+  useEffect(() => {
+    if (!showLevelSelect || hasStartedGame) return;
+
+    setVisibleLevelCount(0);
+    const timers = [0, 1, 2, 3, 4].map((i) =>
+      setTimeout(() => {
+        setVisibleLevelCount(i + 1);
+      }, 180 + i * 180)
+    );
+
+    return () => timers.forEach(clearTimeout);
+  }, [showLevelSelect, hasStartedGame]);
 
   // 每題秒數 + 總秒數
   useEffect(() => {
@@ -199,9 +243,18 @@ function App() {
     return `${mm}:${ss}`;
   };
 
-  const handleStartGame = () => {
+  const handleOpenLevelSelect = () => {
+    setShowLevelSelect(true);
+    setShowUI(false);
+    setShowDiaryDrawer(false);
+  };
+
+  const handleStartGame = (level = 1) => {
     const now = Date.now();
     setHasStartedGame(true);
+    setShowLevelSelect(false);
+    setShowDiaryDrawer(false);
+    setCurrentChapter(level);
     setGameStartTime(now);
     setQuestionStartTime(now);
     setQuestionElapsedTime(0);
@@ -243,80 +296,172 @@ function App() {
     }
   };
 
+  const levelClasses = (level, unlocked) => {
+    const visible = visibleLevelCount >= level ? "visible" : "";
+    const stateClass = unlocked ? "unlocked" : "locked";
+    return `level-node-full ${stateClass} ${visible}`;
+  };
+
   return (
-    <div className="main-container">
-      <div className={`card ${isWrong ? "wrong-glow" : ""}`}>
-        {!hasStartedGame ? (
-          <>
+    <div className={`main-container ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""}`}>
+      {!hasStartedGame && !showLevelSelect ? (
+        <>
+          <div className={`card ${isWrong ? "wrong-glow" : ""}`}>
+            <button
+              className="diary-icon-btn"
+              onClick={() => setShowDiaryDrawer(true)}
+              aria-label="開啟日記側邊欄"
+              title="日記"
+            >
+              📔
+            </button>
+
             <h1 className="letter-title">💌 給新進郵差的一封信</h1>
             <div className="typewriter-text">{displayedText}</div>
             {showUI && (
-              <button className="glow-btn" onClick={handleStartGame}>
+              <button className="glow-btn" onClick={handleOpenLevelSelect}>
                 開始探險吧
               </button>
             )}
-          </>
-        ) : (
-          <>
-            <div className="status-bar">
-              <div className="timer-display">
-                <span>⏰</span>
-                <span>{formatTime(questionElapsedTime)}</span>
-              </div>
+          </div>
 
-              <div className="online-display">
-                <span>👥</span>
-                <span>{onlineCount}</span>
-              </div>
+          {showDiaryDrawer && (
+            <>
+              <div
+                className="drawer-overlay"
+                onClick={() => setShowDiaryDrawer(false)}
+              ></div>
+
+              <aside className="diary-drawer">
+                <div className="diary-drawer-header">
+                  <h2 className="diary-drawer-title">破關記錄</h2>
+                  <button
+                    className="diary-close-btn"
+                    onClick={() => setShowDiaryDrawer(false)}
+                    aria-label="關閉側邊欄"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="diary-drawer-content">
+                  <div className="record-card">
+                    <div className="record-title">目前內容預留區</div>
+                    <div className="record-text">
+                      之後你提供破關記錄格式後，我會幫你放進這裡。
+                    </div>
+                  </div>
+
+                  <div className="record-card">
+                    <div className="record-title">可顯示內容範例</div>
+                    <div className="record-text">
+                      - 破到第幾關
+                      {"\n"}- 每關秒數
+                      {"\n"}- 總秒數
+                      {"\n"}- 破關日期
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </>
+          )}
+        </>
+      ) : !hasStartedGame && showLevelSelect ? (
+        <div className="level-select-screen">
+          <div className="level-select-header">
+            <h1 className="level-select-title">選擇關卡</h1>
+            <p className="level-select-subtitle">請選擇你要探索的路線</p>
+          </div>
+
+          <div className="level-map-full">
+            <button
+              className={`${levelClasses(1, true)} pos-1`}
+              onClick={() => handleStartGame(1)}
+            >
+              1
+            </button>
+
+            <button className={`${levelClasses(2, false)} pos-2`} disabled>
+              2
+              <span className="lock-mark">🔒</span>
+            </button>
+
+            <button className={`${levelClasses(3, false)} pos-3`} disabled>
+              3
+              <span className="lock-mark">🔒</span>
+            </button>
+
+            <button className={`${levelClasses(4, false)} pos-4`} disabled>
+              4
+              <span className="lock-mark">🔒</span>
+            </button>
+
+            <button className={`${levelClasses(5, false)} pos-5`} disabled>
+              5
+              <span className="lock-mark">🔒</span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className={`card ${isWrong ? "wrong-glow" : ""}`}>
+          <div className="status-bar">
+            <div className="timer-display">
+              <span>⏰</span>
+              <span>{formatTime(questionElapsedTime)}</span>
             </div>
 
-            <h1 className="puzzle-title">{CHAPTERS[currentChapter].title}</h1>
+            <div className="online-display">
+              <span>👥</span>
+              <span>{onlineCount}</span>
+            </div>
+          </div>
 
-            {isWrong ? (
-              <div className="error-area">
-                <p className="error-text">需要小明給的提示嗎？</p>
-                {!showHint ? (
-                  <button className="help-btn" onClick={() => setShowHint(true)}>
-                    請幫幫我
+          <h1 className="puzzle-title">{CHAPTERS[currentChapter].title}</h1>
+
+          {isWrong ? (
+            <div className="error-area">
+              <p className="error-text">需要小明給的提示嗎？</p>
+              {!showHint ? (
+                <button className="help-btn" onClick={() => setShowHint(true)}>
+                  請幫幫我
+                </button>
+              ) : (
+                <>
+                  <p className="hint-text">不告訴你</p>
+                  <button
+                    className="glow-btn"
+                    onClick={() => {
+                      setIsWrong(false);
+                      setShowHint(false);
+                      setUserInput("");
+                    }}
+                  >
+                    重新輸入
                   </button>
-                ) : (
-                  <>
-                    <p className="hint-text">不告訴你</p>
-                    <button
-                      className="glow-btn"
-                      onClick={() => {
-                        setIsWrong(false);
-                        setShowHint(false);
-                        setUserInput("");
-                      }}
-                    >
-                      重新輸入
-                    </button>
-                  </>
-                )}
-              </div>
-            ) : (
-              <>
-                <div className="typewriter-text">{displayedText}</div>
+                </>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="typewriter-text">{displayedText}</div>
 
-                {showUI && (
-                  <div className="input-area">
-                    <input
-                      type="text"
-                      value={userInput}
-                      onChange={(e) => setUserInput(e.target.value)}
-                      placeholder="在此輸入解答..."
-                    />
-                    <button className="glow-btn" onClick={handleLevelComplete}>
-                      確認提交
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </div>
+              {showUI && (
+                <div className="input-area">
+                  <input
+                    type="text"
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                    placeholder="在此輸入解答..."
+                  />
+                  <button className="glow-btn" onClick={handleLevelComplete}>
+                    確認提交
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {showChapterTransition && (
         <div className="overlay">

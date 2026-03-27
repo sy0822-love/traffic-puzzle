@@ -18,69 +18,100 @@ html, body, #root {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('./assets/treasure-map.jpg'); /* 全站底圖 */
+  background-image: url('./assets/treasure-map.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   padding: 20px;
-  box-sizing: border-box;
 }
 
 .card {
-  background-color: rgba(253, 250, 240, 0.92); /* 0.92 透明度 */
-  padding: 3rem;
-  border-radius: 24px; /* 卡片圓角矩形 */
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-  max-width: 650px;
+  background-color: rgba(253, 250, 240, 0.92);
+  padding: 2.2rem 2.2rem 2rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  max-width: 640px;
   width: 100%;
   text-align: center;
   position: relative;
   transition: all 0.3s ease;
 }
 
-/* 分支 B 錯誤強光 */
 .card.wrong-glow {
   border: 2px solid #ff4d4d;
   box-shadow: 0 0 40px rgba(255, 77, 77, 0.8);
 }
 
-.timer-display {
+.status-bar {
   position: absolute;
-  top: 25px;
-  right: 25px;
-  font-size: 18px;
+  top: 18px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
   font-weight: bold;
+}
+
+.timer-display,
+.online-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .letter-title,
 .puzzle-title {
-  font-size: 24px !important; /* 標題固定 24px */
-  margin-bottom: 25px;
+  font-size: 24px !important;
+  margin-bottom: 18px;
   font-weight: bold;
 }
 
 .typewriter-text,
 .error-text,
 .hint-text {
-  font-size: 18px !important; /* 打字機內文與提示文字固定 18px */
+  font-size: 18px !important;
   line-height: 1.8;
   text-align: left;
   white-space: pre-wrap;
+  min-height: 110px;
+  margin-bottom: 8px;
+}
+
+.story-fade-text {
+  font-size: 18px !important;
+  line-height: 1.9;
+  text-align: left;
+  white-space: pre-wrap;
+  min-height: 110px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1s ease, transform 1s ease;
+  margin-bottom: 8px;
+}
+
+.story-fade-text.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.story-fade-text.hidden {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 .input-area {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   align-items: center;
-  margin-top: 30px;
+  margin-top: 14px;
 }
 
-/* UI 元件：輸入框與按鈕皆為圓角矩形 */
 input {
   width: 100%;
-  max-width: 350px;
-  padding: 15px;
+  max-width: 520px;
+  padding: 14px 16px;
   font-size: 18px;
   border: 2px solid #d4c3a1;
   border-radius: 12px;
@@ -89,7 +120,7 @@ input {
 
 .glow-btn,
 .help-btn {
-  padding: 15px 45px;
+  padding: 14px 36px;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
@@ -109,14 +140,12 @@ input {
   margin-top: 15px;
 }
 
-/* 錯誤提示區 */
 .error-area {
-  margin-top: 20px;
-  padding: 20px;
+  margin-top: 16px;
+  padding: 16px;
   border-radius: 16px;
 }
 
-/* 過關轉場卡片 */
 .overlay {
   position: fixed;
   inset: 0;
@@ -130,9 +159,9 @@ input {
 
 .transition-card {
   background-color: rgba(253, 250, 240, 0.92);
-  padding: 3rem;
+  padding: 2.4rem;
   border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
   max-width: 650px;
   width: 100%;
   text-align: center;
@@ -140,5 +169,27 @@ input {
 
 .transition-text {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 1.6rem 1.2rem;
+  }
+
+  .status-bar {
+    position: static;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+
+  .story-fade-text {
+    min-height: 140px;
+  }
+
+  .typewriter-text,
+  .error-text,
+  .hint-text {
+    min-height: 140px;
+  }
 }

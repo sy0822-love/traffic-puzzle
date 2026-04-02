@@ -6,7 +6,9 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   min-height: 100%;
@@ -162,6 +164,7 @@ input {
   border-radius: 16px;
 }
 
+/* 過關 / 完成遮罩 */
 .overlay {
   position: fixed;
   inset: 0;
@@ -173,19 +176,50 @@ input {
   padding: 20px;
 }
 
+.transition-overlay {
+  animation: fadeOverlayIn 0.45s ease forwards;
+}
+
 .transition-card {
-  background-color: rgba(253, 250, 240, 0.92);
+  background-color: rgba(253, 250, 240, 0.96);
   padding: 2.4rem;
   border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
   max-width: 650px;
   width: 100%;
   text-align: center;
 }
 
+.float-in-card {
+  opacity: 0;
+  transform: translateY(22px) scale(0.96);
+  animation: floatInCard 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.12s;
+}
+
 .transition-text {
   text-align: center;
   margin-bottom: 20px;
+}
+
+@keyframes fadeOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes floatInCard {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* 首頁右上日記圖示 */
@@ -197,7 +231,7 @@ input {
   height: 48px;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(244,235,220,0.95) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 235, 220, 0.95) 100%);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   font-size: 22px;
@@ -291,7 +325,7 @@ input {
   color: #5a4c3c;
 }
 
-/*可下滑長地圖 */
+/* 可下滑長地圖 */
 .level-select-screen {
   position: relative;
   width: min(100%, 1280px);
@@ -370,7 +404,7 @@ input {
 }
 
 .level-node-full.locked {
-  background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,236,227,0.98) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 236, 227, 0.98) 100%);
   color: #6f6658;
   cursor: not-allowed;
   box-shadow: 0 10px 24px rgba(95, 79, 60, 0.08);
@@ -384,11 +418,26 @@ input {
 }
 
 /* 長地圖動線：往下探索 */
-.pos-1 { left: 60%; top: 8%; }
-.pos-2 { left: 40%; top: 25%; }
-.pos-3 { left: 14%; top: 48%; }
-.pos-4 { left: 36%; top: 70%; }
-.pos-5 { right: 12%; top: 88%; }
+.pos-1 {
+  left: 60%;
+  top: 8%;
+}
+.pos-2 {
+  left: 40%;
+  top: 25%;
+}
+.pos-3 {
+  left: 14%;
+  top: 48%;
+}
+.pos-4 {
+  left: 36%;
+  top: 70%;
+}
+.pos-5 {
+  right: 12%;
+  top: 88%;
+}
 
 /* 平板 */
 @media (max-width: 1024px) {
@@ -400,11 +449,26 @@ input {
     min-height: 180vh;
   }
 
-  .pos-1 { left: 56%; top: 10%; }
-  .pos-2 { left: 38%; top: 27%; }
-  .pos-3 { left: 12%; top: 49%; }
-  .pos-4 { left: 34%; top: 71%; }
-  .pos-5 { right: 10%; top: 89%; }
+  .pos-1 {
+    left: 56%;
+    top: 10%;
+  }
+  .pos-2 {
+    left: 38%;
+    top: 27%;
+  }
+  .pos-3 {
+    left: 12%;
+    top: 49%;
+  }
+  .pos-4 {
+    left: 34%;
+    top: 71%;
+  }
+  .pos-5 {
+    right: 10%;
+    top: 89%;
+  }
 }
 
 /* 手機直式 */
@@ -462,9 +526,24 @@ input {
     font-size: clamp(24px, 7vw, 32px);
   }
 
-  .pos-1 { left: 58%; top: 10%; }
-  .pos-2 { left: 38%; top: 29%; }
-  .pos-3 { left: 10%; top: 50%; }
-  .pos-4 { left: 34%; top: 72%; }
-  .pos-5 { right: 10%; top: 90%; }
+  .pos-1 {
+    left: 58%;
+    top: 10%;
+  }
+  .pos-2 {
+    left: 38%;
+    top: 29%;
+  }
+  .pos-3 {
+    left: 10%;
+    top: 50%;
+  }
+  .pos-4 {
+    left: 34%;
+    top: 72%;
+  }
+  .pos-5 {
+    right: 10%;
+    top: 90%;
+  }
 }

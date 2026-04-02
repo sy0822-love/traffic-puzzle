@@ -291,7 +291,7 @@ input {
   color: #5a4c3c;
 }
 
-/* 可下滑長地圖 */
+/*可下滑長地圖 */
 .level-select-screen {
   position: relative;
   width: min(100%, 1280px);

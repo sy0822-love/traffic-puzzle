@@ -1,24 +1,30 @@
 import { useEffect, useMemo, useState } from 'react';
-import { db } from './firebase';
+import { db, rtdb } from './firebase';
 import {
   collection,
   addDoc,
-  serverTimestamp,
-  doc,
-  setDoc,
-  deleteDoc,
-  onSnapshot
+  serverTimestamp
 } from 'firebase/firestore';
+import {
+  ref,
+  set,
+  onValue,
+  onDisconnect
+} from 'firebase/database';
 import './App.css';
 
 const LETTER_CONTENT = `致 親愛的 新進郵差們：\n\n歡迎加入本局。身為一名稱職的郵務人員，除了送達信件，更要擁有一雙洞察環境的眼睛。\n\n神祕郵差留下的信件中，隱藏著這座城市的交通安全關鍵。你需要破解信中隱含的交通謎題...\n\n準備好迎接挑戰了嗎？\n\n—— 郵務長敬上`;
 
 const CHAPTERS = {
   1: {
-    title: "【老差事的隨筆：七月十四．正午】",
-    diaryText:
-      "又是個悶得讓人發慌的中午後。老掛鐘滴答響，櫃檯邊沒幾個客人，我們幾個正躲在後頭有一搭沒一搭地聊著。就在這時候，這謎一般的「阿明伯」出現了。聽說他是個讀書人，學音樂的，偏偏一雙眼瞧不見。那天氣溫高得連路邊的狗都懶得叫，他卻穿著一身筆挺、燙得沒半點褶子的訂製西裝，坐在輪椅上被家人推到大門口。這間郵局，大門前只有那幾級高得嚇人的老石階，連個無障礙坡道都沒見著。對他那台輪椅來說，這幾階石梯就像南天門一樣難跨。奇怪的是，明明掛號信讓家裡人遞進來就行，他那雙枯瘦的手卻死死按著信封，非要自己到櫃檯前。我看著他那身西裝被汗浸了一圈，心裡納悶：是什麽樣的信，非得要一個看不見的人，親自跨過這幾級『不存在的路』才能寄出去？」最後，我們幾個老骨頭使了把勁，連人帶輪椅把他抬過那幾層層層疊疊的階梯。金屬輪子磕碰石階的聲音，在空蕩蕩的大廳裡迴盪，聽著像是在跟這間沒坡道的老房子賭氣。他終於親手把信遞過來了。但我到現在還在想，這石階上的謎底，到底是那封信，還是他那個不肯回頭的背影？」",
-    finalPrompt: "請幫我找出消失的斜率和真相吧",
+    title: "【老差事隨筆：石階上的倔強】",
+    content: `正午熱浪捲過郵局老石階，盲眼的阿明伯在那兒。他曾是玩音樂的，即便坐在輪椅上，那身訂製西裝依舊燙得挺拔，連汗浸透了背脊，頸標也沒歪半分。
+
+這棟老房子沒坡道，幾級石階橫在那像斷崖。家屬想代勞，他枯瘦的手卻死死按住信封，指節泛白——那信，他非得親手遞進櫃檯。
+
+我們幾個老骨頭使勁，連人帶車硬生生抬過石階。金屬輪子磕碰石板，在大廳迴盪出刺耳的破音，像極了他那把走音卻不肯低頭的琴。
+
+信遞過來了，手在顫。那一刻我才明白，他跨過的不是石階，而是那份不教人看輕的、最後的體面。`,
     answer: "1234",
     nextMsg: "你好像越來越靠近真相了呢！接下來請你幫我看看...."
   },
@@ -51,13 +57,11 @@ function App() {
   const [transitionMessage, setTransitionMessage] = useState("");
   const [isGameFinished, setIsGameFinished] = useState(false);
 
-  const [textMode, setTextMode] = useState("typewriter");
-  const [isTextVisible, setIsTextVisible] = useState(true);
-
   const [onlineCount, setOnlineCount] = useState(0);
   const [visibleLevelCount, setVisibleLevelCount] = useState(0);
 
   const [showDiaryDrawer, setShowDiaryDrawer] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const onlineUserId = useMemo(() => {
     const stored = sessionStorage.getItem("trafficPuzzleUserId");
@@ -85,13 +89,8 @@ function App() {
     setUserInput("");
 
     let interval;
-    let timeout;
-    let interval2;
 
     if (!hasStartedGame && !showLevelSelect) {
-      setTextMode("typewriter");
-      setIsTextVisible(true);
-
       let i = 0;
       interval = setInterval(() => {
         if (i < LETTER_CONTENT.length) {
@@ -113,44 +112,10 @@ function App() {
     }
 
     if (hasStartedGame && currentChapter === 1) {
-      const chapterData = CHAPTERS[1];
-      setTextMode("typewriter");
-      setIsTextVisible(true);
-
-      let i = 0;
-      interval = setInterval(() => {
-        if (i < chapterData.diaryText.length) {
-          setDisplayedText(chapterData.diaryText.slice(0, i + 1));
-          i++;
-        } else {
-          clearInterval(interval);
-
-          timeout = setTimeout(() => {
-            setDisplayedText("");
-
-            let j = 0;
-            interval2 = setInterval(() => {
-              if (j < chapterData.finalPrompt.length) {
-                setDisplayedText(chapterData.finalPrompt.slice(0, j + 1));
-                j++;
-              } else {
-                clearInterval(interval2);
-                setShowUI(true);
-              }
-            }, 50);
-          }, 1200);
-        }
-      }, 40);
-
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-        clearInterval(interval2);
-      };
+      setDisplayedText(CHAPTERS[1].content);
+      setShowUI(true);
+      return;
     }
-
-    setTextMode("typewriter");
-    setIsTextVisible(true);
 
     const targetText = CHAPTERS[currentChapter].content;
 
@@ -197,45 +162,43 @@ function App() {
     return () => clearInterval(interval);
   }, [hasStartedGame, gameStartTime, questionStartTime, isGameFinished]);
 
-  // 即時在線人數
+  // 即時在線人數（Realtime Database）
   useEffect(() => {
     if (!hasStartedGame) return;
 
-    const userRef = doc(db, "online_users", onlineUserId);
-    const usersRef = collection(db, "online_users");
+    const connectedRef = ref(rtdb, ".info/connected");
+    const userStatusRef = ref(rtdb, `online_users/${onlineUserId}`);
+    const onlineUsersRef = ref(rtdb, "online_users");
 
-    const joinUser = async () => {
+    const unsubscribeConnected = onValue(connectedRef, async (snapshot) => {
+      if (snapshot.val() !== true) return;
+
       try {
-        await setDoc(userRef, {
-          joinedAt: serverTimestamp()
+        await onDisconnect(userStatusRef).remove();
+
+        await set(userStatusRef, {
+          online: true,
+          joinedAt: Date.now()
         });
-      } catch (e) {
-        console.error("加入在線列表失敗：", e);
+      } catch (error) {
+        console.error("設定即時在線狀態失敗：", error);
       }
-    };
+    });
 
-    joinUser();
-
-    const unsubscribe = onSnapshot(
-      usersRef,
+    const unsubscribeOnlineUsers = onValue(
+      onlineUsersRef,
       (snapshot) => {
-        setOnlineCount(snapshot.size);
+        const data = snapshot.val();
+        setOnlineCount(data ? Object.keys(data).length : 0);
       },
       (error) => {
         console.error("監聽在線人數失敗：", error);
       }
     );
 
-    const handleBeforeUnload = () => {
-      deleteDoc(userRef).catch(() => {});
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      unsubscribe();
-      deleteDoc(userRef).catch(() => {});
+      unsubscribeConnected();
+      unsubscribeOnlineUsers();
     };
   }, [hasStartedGame, onlineUserId]);
 
@@ -256,6 +219,7 @@ function App() {
     setHasStartedGame(true);
     setShowLevelSelect(false);
     setShowDiaryDrawer(false);
+    setShowExitConfirm(false);
     setCurrentChapter(level);
     setGameStartTime(now);
     setQuestionStartTime(now);
@@ -296,6 +260,18 @@ function App() {
       setShowChapterTransition(false);
       setIsGameFinished(true);
     }
+  };
+
+  const handleExitToLevelSelect = () => {
+    setHasStartedGame(false);
+    setShowLevelSelect(true);
+    setShowExitConfirm(false);
+    setIsWrong(false);
+    setShowHint(false);
+    setUserInput("");
+    setDisplayedText("");
+    setShowUI(false);
+    setQuestionElapsedTime(0);
   };
 
   const levelClasses = (level, unlocked) => {
@@ -458,10 +434,43 @@ function App() {
                   <button className="glow-btn" onClick={handleLevelComplete}>
                     確認提交
                   </button>
+                  <button
+                    className="back-page-btn"
+                    onClick={() => setShowExitConfirm(true)}
+                  >
+                    回上頁
+                  </button>
                 </div>
               )}
             </>
           )}
+        </div>
+      )}
+
+      {showExitConfirm && (
+        <div className="overlay transition-overlay">
+          <div className="transition-card float-in-card">
+            <h2 className="puzzle-title">⚠️ 確認返回</h2>
+            <div className="typewriter-text transition-text">
+              跳出即須重新挑戰，確定嗎？
+            </div>
+
+            <div className="modal-action-row">
+              <button
+                className="back-cancel-btn"
+                onClick={() => setShowExitConfirm(false)}
+              >
+                繼續
+              </button>
+
+              <button
+                className="glow-btn"
+                onClick={handleExitToLevelSelect}
+              >
+                確定
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

@@ -158,6 +158,23 @@ input {
   margin-top: 15px;
 }
 
+.back-page-btn {
+  padding: 12px 30px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1.5px solid rgba(126, 103, 77, 0.35);
+  border-radius: 12px;
+  background: rgba(255, 250, 242, 0.9);
+  color: #5c4633;
+  transition: 0.3s;
+}
+
+.back-page-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
 .error-area {
   margin-top: 16px;
   padding: 16px;
@@ -200,6 +217,32 @@ input {
 .transition-text {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.modal-action-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.back-cancel-btn {
+  padding: 14px 36px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1.5px solid rgba(126, 103, 77, 0.35);
+  border-radius: 12px;
+  background: rgba(255, 250, 242, 0.95);
+  color: #5c4633;
+  transition: 0.3s;
+}
+
+.back-cancel-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
 @keyframes fadeOverlayIn {
@@ -524,6 +567,19 @@ input {
     width: clamp(84px, 24vw, 112px);
     height: clamp(84px, 24vw, 112px);
     font-size: clamp(24px, 7vw, 32px);
+  }
+
+  .modal-action-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .back-cancel-btn,
+  .back-page-btn,
+  .glow-btn,
+  .help-btn {
+    width: 100%;
+    max-width: 260px;
   }
 
   .pos-1 {

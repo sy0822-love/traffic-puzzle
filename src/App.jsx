@@ -1,18 +1,33 @@
 import { useEffect, useMemo, useState } from 'react';
+// ===== Firebase 設定 =====
 import { db, rtdb } from './firebase';
+// ===== Firestore（紀錄作答）=====
 import {
   collection,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  getDocs,
+  query,
+  where
 } from 'firebase/firestore';
-import {
-  ref,
-  set,
-  onValue,
-  onDisconnect
-} from 'firebase/database';
+// ===== Realtime DB（在線人數）=====
+import { ref, set, onValue, onDisconnect } from 'firebase/database';
 import './App.css';
 
+// ===== 活動碼白名單（主辦方控制）=====
+// 未來要加 20 組
+const ALLOWED_ACCESS_CODES = {
+  KWA1116: {
+    userName: "KWA1116 玩家",
+    userCode: "KWA1116"
+  },
+  WSN1208: {
+    userName: "WSN1208 玩家",
+    userCode: "WSN1208"
+  }
+};
+
+// ===== 首頁信件內容 =====
 const LETTER_CONTENT = `致 親愛的 新進郵差們：\n\n歡迎加入本局。身為一名稱職的郵務人員，除了送達信件，更要擁有一雙洞察環境的眼睛。\n\n神祕郵差留下的信件中，隱藏著這座城市的交通安全關鍵。你需要破解信中隱含的交通謎題...\n\n準備好迎接挑戰了嗎？\n\n—— 郵務長敬上`;
 
 const CHAPTERS = {
@@ -38,18 +53,22 @@ const CHAPTERS = {
 };
 
 function App() {
+  
+// ===== 遊戲流程控制 =====
   const [hasStartedGame, setHasStartedGame] = useState(false);
   const [showLevelSelect, setShowLevelSelect] = useState(false);
   const [currentChapter, setCurrentChapter] = useState(1);
+// ===== 畫面顯示 ===== 
   const [displayedText, setDisplayedText] = useState("");
   const [showUI, setShowUI] = useState(false);
+// ===== 玩家輸入 =====
   const [userInput, setUserInput] = useState("");
-
+// ===== 計時系統 =====
   const [gameStartTime, setGameStartTime] = useState(null);
   const [questionStartTime, setQuestionStartTime] = useState(null);
   const [questionElapsedTime, setQuestionElapsedTime] = useState(0);
   const [totalElapsedTime, setTotalElapsedTime] = useState(0);
-
+// ===== 錯誤提示 =====
   const [isWrong, setIsWrong] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
@@ -59,9 +78,64 @@ function App() {
 
   const [onlineCount, setOnlineCount] = useState(0);
   const [visibleLevelCount, setVisibleLevelCount] = useState(0);
-
+// ===== UI 狀態 =====
   const [showDiaryDrawer, setShowDiaryDrawer] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+// ===== 使用者登入資訊 =====
+  const [userName, setUserName] = useState(() => localStorage.getItem("trafficPuzzleUserName") || "");
+  const [userCode, setUserCode] = useState(() => localStorage.getItem("trafficPuzzleUserCode") || "");
+  const [loginCodeInput, setLoginCodeInput] = useState("");
+  const [authError, setAuthError] = useState("");
+// ===== 作答紀錄 ===== 
+  const [records, setRecords] = useState([]);
+// ===== 關卡解鎖（localStorage）=====
+  const STORAGE_KEY = "trafficPuzzleUnlockedLevel";
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? Number(saved) : 1;
+  });
+// ===== 登入邏輯（活動碼驗證）=====
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, unlockedLevel);
+  }, [unlockedLevel]);
+
+  const saveUserSession = (name, code) => {
+    localStorage.setItem("trafficPuzzleUserName", name);
+    localStorage.setItem("trafficPuzzleUserCode", code);
+    setUserName(name);
+    setUserCode(code);
+  };
+
+  const handleLoginUser = async () => {
+    const trimmedCode = loginCodeInput.trim().toUpperCase();
+
+    if (!trimmedCode) {
+      setAuthError("請輸入活動碼");
+      return;
+    }
+
+    const matchedUser = ALLOWED_ACCESS_CODES[trimmedCode];
+
+    if (!matchedUser) {
+      setAuthError("活動碼錯誤，請重新確認");
+      return;
+    }
+
+    saveUserSession(matchedUser.userName, matchedUser.userCode);
+    setAuthError("");
+  };
+
+  const handleLogoutUser = () => {
+    localStorage.removeItem("trafficPuzzleUserName");
+    localStorage.removeItem("trafficPuzzleUserCode");
+    setUserName("");
+    setUserCode("");
+    setLoginCodeInput("");
+    setAuthError("");
+    setShowDiaryDrawer(false);
+    setShowLevelSelect(false);
+    setHasStartedGame(false);
+  };
 
   const onlineUserId = useMemo(() => {
     const stored = sessionStorage.getItem("trafficPuzzleUserId");
@@ -80,6 +154,41 @@ function App() {
     }
   }, [showLevelSelect, hasStartedGame]);
 
+  useEffect(() => {
+    const fetchRecords = async () => {
+      if (!userCode) {
+        setRecords([]);
+        return;
+      }
+
+      try {
+        const q = query(
+          collection(db, "learning_results"),
+          where("userCode", "==", userCode)
+        );
+
+        const snapshot = await getDocs(q);
+
+        const data = snapshot.docs
+          .map((item) => ({
+            id: item.id,
+            ...item.data()
+          }))
+          .sort((a, b) => {
+            const aTime = a.timestamp?.seconds || 0;
+            const bTime = b.timestamp?.seconds || 0;
+            return bTime - aTime;
+          });
+
+        setRecords(data);
+      } catch (error) {
+        console.error("讀取個人紀錄失敗：", error);
+      }
+    };
+
+    fetchRecords();
+  }, [userCode]);
+
   // 首頁信件 / 關卡文字
   useEffect(() => {
     setDisplayedText("");
@@ -89,6 +198,8 @@ function App() {
     setUserInput("");
 
     let interval;
+
+    if (!userCode) return;
 
     if (!hasStartedGame && !showLevelSelect) {
       let i = 0;
@@ -131,7 +242,7 @@ function App() {
     }, 50);
 
     return () => clearInterval(interval);
-  }, [hasStartedGame, showLevelSelect, currentChapter]);
+  }, [userCode, hasStartedGame, showLevelSelect, currentChapter]);
 
   // 關卡點依序浮出
   useEffect(() => {
@@ -233,12 +344,27 @@ function App() {
     if (userInput.trim() === chapterData.answer) {
       try {
         await addDoc(collection(db, "learning_results"), {
+          userCode: userCode,
+          userName: userName,
           puzzle_id: `puzzle_0${currentChapter}`,
           time_seconds: questionElapsedTime,
           total_seconds: totalElapsedTime,
           timestamp: serverTimestamp()
         });
         console.log("Firebase 上傳成功");
+
+        setRecords((prev) => [
+          {
+            id: `local-${Date.now()}`,
+            userCode,
+            userName,
+            puzzle_id: `puzzle_0${currentChapter}`,
+            time_seconds: questionElapsedTime,
+            total_seconds: totalElapsedTime,
+            timestamp: { seconds: Math.floor(Date.now() / 1000) }
+          },
+          ...prev
+        ]);
       } catch (e) {
         console.error("Firebase 上傳失敗：", e);
       }
@@ -252,8 +378,12 @@ function App() {
 
   const handleNextChapter = () => {
     if (CHAPTERS[currentChapter + 1]) {
+      const nextChapter = currentChapter + 1;
+
+      setUnlockedLevel((prev) => Math.max(prev, nextChapter));
+
       setShowChapterTransition(false);
-      setCurrentChapter((prev) => prev + 1);
+      setCurrentChapter(nextChapter);
       setQuestionStartTime(Date.now());
       setQuestionElapsedTime(0);
     } else {
@@ -282,9 +412,65 @@ function App() {
 
   return (
     <div className={`main-container ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""}`}>
-      {!hasStartedGame && !showLevelSelect ? (
+      {!userCode ? (
+        <div className="card" style={{ maxWidth: "680px" }}>
+          <h1 className="letter-title">🪪 玩家登入</h1>
+
+          <p
+            style={{
+              fontSize: "17px",
+              lineHeight: "1.7",
+              color: "#5a4c3c",
+              marginBottom: "18px",
+              textAlign: "left",
+              whiteSpace: "pre-wrap"
+            }}
+          >
+            請輸入主辦方提供的活動碼。只有有效活動碼才能進入作答頁面，系統也會依照活動碼紀錄各自的作答結果。
+          </p>
+
+          <div className="input-area">
+            <input
+              type="text"
+              value={loginCodeInput}
+              onChange={(e) => setLoginCodeInput(e.target.value)}
+              placeholder="輸入主辦方提供的活動碼"
+            />
+            <button className="glow-btn" onClick={handleLoginUser}>
+              登入
+            </button>
+          </div>
+
+          {authError && (
+            <div
+              style={{
+                marginTop: "14px",
+                color: "#c0392b",
+                fontSize: "16px",
+                fontWeight: "bold"
+              }}
+            >
+              {authError}
+            </div>
+          )}
+        </div>
+      ) : !hasStartedGame && !showLevelSelect ? (
         <>
           <div className={`card ${isWrong ? "wrong-glow" : ""}`}>
+            <button
+              style={{
+                position: "absolute",
+                top: "18px",
+                left: "20px"
+              }}
+              className="back-cancel-btn"
+              onClick={handleLogoutUser}
+              aria-label="切換帳號"
+              title="切換帳號"
+            >
+              切換帳號
+            </button>
+
             <button
               className="diary-icon-btn"
               onClick={() => setShowDiaryDrawer(true)}
@@ -324,21 +510,39 @@ function App() {
 
                 <div className="diary-drawer-content">
                   <div className="record-card">
-                    <div className="record-title">目前內容預留區</div>
+                    <div className="record-title">目前玩家</div>
                     <div className="record-text">
-                      提供破關記錄格式後，便放進這裡。
+                      名稱：{userName}{"\n"}
+                      登入碼：{userCode}
                     </div>
                   </div>
 
-                  <div className="record-card">
-                    <div className="record-title">可顯示內容範例</div>
-                    <div className="record-text">
-                      - 破到第幾關
-                      {"\n"}- 每關秒數
-                      {"\n"}- 總秒數
-                      {"\n"}- 破關日期
+                  {records.length === 0 ? (
+                    <div className="record-card">
+                      <div className="record-title">尚無破關紀錄</div>
+                      <div className="record-text">
+                        完成關卡後，這裡會顯示你的秒數、總時間與日期。
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    records.map((rec) => (
+                      <div className="record-card" key={rec.id}>
+                        <div className="record-title">
+                          第 {rec.puzzle_id?.replace("puzzle_0", "")} 關
+                        </div>
+                        <div className="record-text">
+                          秒數：{rec.time_seconds}s{"\n"}
+                          總時間：{rec.total_seconds}s{"\n"}
+                          日期：
+                          {rec.timestamp?.toDate
+                            ? rec.timestamp.toDate().toLocaleString()
+                            : rec.timestamp?.seconds
+                            ? new Date(rec.timestamp.seconds * 1000).toLocaleString()
+                            : "載入中"}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </aside>
             </>
@@ -352,32 +556,17 @@ function App() {
           </div>
 
           <div className="level-map-full">
-            <button
-              className={`${levelClasses(1, true)} pos-1`}
-              onClick={() => handleStartGame(1)}
-            >
-              1
-            </button>
-
-            <button className={`${levelClasses(2, false)} pos-2`} disabled>
-              2
-              <span className="lock-mark">🔒</span>
-            </button>
-
-            <button className={`${levelClasses(3, false)} pos-3`} disabled>
-              3
-              <span className="lock-mark">🔒</span>
-            </button>
-
-            <button className={`${levelClasses(4, false)} pos-4`} disabled>
-              4
-              <span className="lock-mark">🔒</span>
-            </button>
-
-            <button className={`${levelClasses(5, false)} pos-5`} disabled>
-              5
-              <span className="lock-mark">🔒</span>
-            </button>
+            {[1, 2, 3, 4, 5].map((level) => (
+              <button
+                key={level}
+                className={`${levelClasses(level, unlockedLevel >= level)} pos-${level}`}
+                onClick={() => handleStartGame(level)}
+                disabled={unlockedLevel < level}
+              >
+                {level}
+                {unlockedLevel < level && <span className="lock-mark">🔒</span>}
+              </button>
+            ))}
           </div>
         </div>
       ) : (

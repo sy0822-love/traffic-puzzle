@@ -24,8 +24,6 @@ import card08 from './assets/card-08.png';
 import card09 from './assets/card-09.png';
 import card10 from './assets/card-10.png';
 
-// ===== 活動碼白名單（主辦方控制）=====
-// 未來要加 20 組
 const ALLOWED_ACCESS_CODES = {
   KWA1116: {
     userName: "KWA1116 玩家",
@@ -37,10 +35,8 @@ const ALLOWED_ACCESS_CODES = {
   }
 };
 
-// ===== 首頁信件內容 =====
 const LETTER_CONTENT = `致 親愛的 新進郵差們：\n\n歡迎加入本局。身為一名稱職的郵務人員，除了送達信件，更要擁有一雙洞察環境的眼睛。\n\n神祕郵差留下的信件中，隱藏著這座城市的交通安全關鍵。你需要破解信中隱含的交通謎題...\n\n準備好迎接挑戰了嗎？\n\n—— 郵務長敬上`;
 
-// ===== 第二關卡牌資料 =====
 const CHAPTER2_CARDS = [
   card01,
   card02,
@@ -56,46 +52,60 @@ const CHAPTER2_CARDS = [
 
 const CHAPTERS = {
   1: {
-    title: "【老差事隨筆：石階上的倔強】",
-    content: `正午熱浪捲過郵局老石階，盲眼的阿明伯在那兒。他曾是玩音樂的，即便坐在輪椅上，那身訂製西裝依舊燙得挺拔，連汗浸透了背脊，頸標也沒歪半分。
+    title: "【1-1 劇情：斷裂的終點】",
+    content: `七月十四．正午。
+又是個悶得發慌的中午後。我坐在櫃檯邊，看見阿明伯出現在郵局門口。他是個讀書人，學音樂的，偏偏一雙眼瞧不見。那天熱得連狗都懶得叫，他卻穿著筆挺的西裝，坐在輪椅上。
 
-這棟老房子沒坡道，幾級石階橫在那像斷崖。家屬想代勞，他枯瘦的手卻死死按住信封，指節泛白——那信，他非得親手遞進櫃檯。
-
-我們幾個老骨頭使勁，連人帶車硬生生抬過石階。金屬輪子磕碰石板，在大廳迴盪出刺耳的破音，像極了他那把走音卻不肯低頭的琴。
-
-信遞過來了，手在顫。那一刻我才明白，他跨過的不是石階，而是那份不教人看輕的、最後的體面。`,
-    answer: "1234",
-    nextMsg: "你好像越來越靠近真相了呢！接下來請你幫我看看...."
+郵局門前那幾級高得嚇人的老石階，對他來說就像南天門一樣難跨。他那雙枯瘦的手死死按著信封，指節泛白，非要自己到櫃檯前。我看著他西裝被汗浸了一圈，心裡納悶：是什麼樣的信，非得要一個看不見的人，跨過這幾級『不存在的路』才能寄出去？`,
+    taskTitle: "【實體操作提示】",
+    taskContent: `請取出配件包中的「量測用直尺」與「坡道設計圖（折紙）」。
+使用直尺測量實體道具（郵局模型）中石階的總高度。
+請根據坡道設計紙，嘗試摺疊出合乎比例的設計，揭開這個被我們視而不見的殘酷真相。`,
+    answer: "1",
+    nextMsg: "你開始意識到這個問題的本質了..."
   },
   2: {
-    title: "第二章：記憶大挑戰",
-    content: "現在來記憶大挑戰吧\n請對應手牌排出答案",
+    title: "【1-2 劇情：剝離冷漠的偽裝】",
+    content: `最後，我們幾個老骨頭使了把勁，連人帶輪椅把他抬過那幾層疊疊的階梯。金屬輪子磕碰石階的聲音，在空蕩蕩的大廳裡迴盪，聽著像是在跟這間沒坡道的老房子賭氣。
+
+他終於親手把信遞過來了。但我看著那張地圖，才明白阿明伯眼中的世界更令人窒息。變電箱像巨大的墓碑，機車如同鏽蝕的鎖鏈，將路勒得密不透風。這些我們習以為常的『便利』，全成了他的路障。如果不親手剝開這些冷漠，我們永遠看不見通往公平的生路。`,
+    taskTitle: "【實體操作指引】",
+    taskContent: `請取出「Level 1：混亂街景圖」與「障礙物貼紙組」。
+請親手撕下那些擋路的機車、變電箱與違規招牌貼紙。
+當偽裝被剝離，請注視底層露出的斑駁痕跡，並在系統輸入你發現的答案。`,
+    answer: "2",
+    nextMsg: "你看見了被遮蔽的真相..."
+  },
+  3: {
+    title: "【2-1 劇情：霓虹下的盲點】",
+    content: `九月二十．雨後傍晚。
+日記這頁我畫了一個被圈起來的紅十字。我想起那個叫小娟的女孩，每天這時間她都趕著最後一班公車。這路口是城市的『心臟』，但我看著卻像絞肉機。
+
+燈號像瘋了似地閃爍，路標在廣告夾縫中求生。小娟站在斑馬線邊緣，臉色慘白。路口太快了，號誌跳動的速度快得像在嘲笑行人。在這個路口，『慢』就是一種原罪。我看見她手忙腳亂地對著地圖，卻發現大腦根本跟不上那種超載的頻率。`,
+    taskTitle: "【實體操作提示】",
+    taskContent: `請取出配件包中的「10 張文字路標卡牌」。
+接下來系統將進入高速閃現模式，請在混亂中捕捉小娟賴以生存的號誌。`,
     answer: "1234567890",
-    nextMsg: "太棒了！你的觀察力果然過人，真相就在不遠處了。"
+    nextMsg: "你成功抓住了混亂中的秩序..."
   }
 };
 
 function App() {
-
-// ===== 遊戲流程控制 =====
   const [hasStartedGame, setHasStartedGame] = useState(false);
   const [showLevelSelect, setShowLevelSelect] = useState(false);
   const [currentChapter, setCurrentChapter] = useState(1);
 
-// ===== 畫面顯示 =====
   const [displayedText, setDisplayedText] = useState("");
   const [showUI, setShowUI] = useState(false);
+  const [storyPhase, setStoryPhase] = useState("story");
 
-// ===== 玩家輸入 =====
   const [userInput, setUserInput] = useState("");
 
-// ===== 計時系統 =====
   const [gameStartTime, setGameStartTime] = useState(null);
   const [questionStartTime, setQuestionStartTime] = useState(null);
   const [questionElapsedTime, setQuestionElapsedTime] = useState(0);
   const [totalElapsedTime, setTotalElapsedTime] = useState(0);
 
-// ===== 錯誤提示 =====
   const [isWrong, setIsWrong] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
@@ -106,41 +116,36 @@ function App() {
   const [onlineCount, setOnlineCount] = useState(0);
   const [visibleLevelCount, setVisibleLevelCount] = useState(0);
 
-// ===== UI 狀態 =====
   const [showDiaryDrawer, setShowDiaryDrawer] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-// ===== 使用者登入資訊 =====
   const [userName, setUserName] = useState(() => localStorage.getItem("trafficPuzzleUserName") || "");
   const [userCode, setUserCode] = useState(() => localStorage.getItem("trafficPuzzleUserCode") || "");
   const [loginCodeInput, setLoginCodeInput] = useState("");
   const [authError, setAuthError] = useState("");
 
-// ===== 作答紀錄 =====
   const [records, setRecords] = useState([]);
 
-// ===== 關卡解鎖（localStorage）=====
   const STORAGE_KEY = "trafficPuzzleUnlockedLevel";
   const [unlockedLevel, setUnlockedLevel] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? Number(saved) : 1;
   });
 
-// ===== 第二關卡牌播放 =====
   const [cardIndex, setCardIndex] = useState(0);
   const [isPlayingCards, setIsPlayingCards] = useState(false);
   const [hasPlayedChapter2Cards, setHasPlayedChapter2Cards] = useState(false);
   const [chapter2PromptReady, setChapter2PromptReady] = useState(false);
 
-// ===== 登入邏輯（活動碼驗證）=====
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, unlockedLevel);
   }, [unlockedLevel]);
 
   // ===== 第二關卡牌播放動畫 =====
   useEffect(() => {
-    if (!hasStartedGame || currentChapter !== 2) return;
+    if (!hasStartedGame || currentChapter !== 3) return;
+    if (storyPhase !== "task") return;
     if (!chapter2PromptReady || hasPlayedChapter2Cards) return;
 
     setCardIndex(0);
@@ -168,7 +173,7 @@ function App() {
     }, 500);
 
     return () => clearInterval(interval);
-  }, [hasStartedGame, currentChapter, chapter2PromptReady, hasPlayedChapter2Cards]);
+  }, [hasStartedGame, currentChapter, storyPhase, chapter2PromptReady, hasPlayedChapter2Cards]);
 
   const saveUserSession = (name, code) => {
     localStorage.setItem("trafficPuzzleUserName", name);
@@ -271,6 +276,7 @@ function App() {
     setUserInput("");
 
     let interval;
+
     if (!hasStartedGame && !showLevelSelect) {
       let i = 0;
       interval = setInterval(() => {
@@ -292,55 +298,56 @@ function App() {
       return;
     }
 
-    if (hasStartedGame && currentChapter === 1) {
-      setDisplayedText(CHAPTERS[1].content);
+    if (hasStartedGame) {
+      const chapterData = CHAPTERS[currentChapter];
+      const targetText =
+        storyPhase === "story"
+          ? chapterData.content
+          : `${chapterData.taskTitle}\n${chapterData.taskContent}`;
+
+      if (currentChapter === 3 && storyPhase === "task") {
+        if (isPlayingCards) {
+          setDisplayedText("");
+          setShowUI(false);
+          return;
+        }
+
+        setDisplayedText(targetText);
+
+        if (!chapter2PromptReady && !hasPlayedChapter2Cards) {
+          const timer = setTimeout(() => {
+            setChapter2PromptReady(true);
+          }, 900);
+
+          return () => clearTimeout(timer);
+        }
+
+        if (hasPlayedChapter2Cards) {
+          setShowUI(true);
+        } else {
+          setShowUI(false);
+        }
+
+        return;
+      }
+
+      setDisplayedText(targetText);
       setShowUI(true);
       return;
     }
 
-    if (hasStartedGame && currentChapter === 2) {
-      if (isPlayingCards) {
-        setDisplayedText("");
-        setShowUI(false);
-        return;
-      }
-
-      setDisplayedText(CHAPTERS[2].content);
-
-      if (!chapter2PromptReady && !hasPlayedChapter2Cards) {
-        const timer = setTimeout(() => {
-          setChapter2PromptReady(true);
-        }, 900);
-
-        return () => clearTimeout(timer);
-      }
-
-      if (hasPlayedChapter2Cards) {
-        setShowUI(true);
-      } else {
-        setShowUI(false);
-      }
-
-      return;
-    }
-
-    const targetText = CHAPTERS[currentChapter].content;
-
-    let i = 0;
-    interval = setInterval(() => {
-      if (i < targetText.length) {
-        setDisplayedText(targetText.slice(0, i + 1));
-        i++;
-      } else {
-        clearInterval(interval);
-        setShowUI(true);
-      }
-    }, 50);
-
     return () => clearInterval(interval);
-  }, [userCode, hasStartedGame, showLevelSelect, currentChapter, isPlayingCards, hasPlayedChapter2Cards, chapter2PromptReady]);
+  }, [
+    userCode,
+    hasStartedGame,
+    showLevelSelect,
+    currentChapter,
+    storyPhase,
+    isPlayingCards,
+    hasPlayedChapter2Cards,
+    chapter2PromptReady
+  ]);
 
-  // 關卡點依序浮出
   useEffect(() => {
     if (!showLevelSelect || hasStartedGame) return;
 
@@ -354,7 +361,6 @@ function App() {
     return () => timers.forEach(clearTimeout);
   }, [showLevelSelect, hasStartedGame]);
 
-  // 每題秒數 + 總秒數
   useEffect(() => {
     let interval;
 
@@ -369,7 +375,6 @@ function App() {
     return () => clearInterval(interval);
   }, [hasStartedGame, gameStartTime, questionStartTime, isGameFinished]);
 
-  // 即時在線人數（Realtime Database）
   useEffect(() => {
     if (!hasStartedGame) return;
 
@@ -421,6 +426,7 @@ function App() {
     setLoginCodeInput("");
     setShowDiaryDrawer(false);
   };
+
   const handleStartGame = (level = 1) => {
     const now = Date.now();
     setHasStartedGame(true);
@@ -436,6 +442,15 @@ function App() {
     setIsPlayingCards(false);
     setHasPlayedChapter2Cards(false);
     setChapter2PromptReady(false);
+    setStoryPhase("story");
+  };
+
+  const handleStoryContinue = () => {
+    setStoryPhase("task");
+    setShowUI(false);
+    setUserInput("");
+    setIsWrong(false);
+    setShowHint(false);
   };
 
   const handleLevelComplete = async () => {
@@ -486,6 +501,11 @@ function App() {
       setCurrentChapter(nextChapter);
       setQuestionStartTime(Date.now());
       setQuestionElapsedTime(0);
+      setStoryPhase("story");
+      setCardIndex(0);
+      setIsPlayingCards(false);
+      setHasPlayedChapter2Cards(false);
+      setChapter2PromptReady(false);
     } else {
       setShowChapterTransition(false);
       setIsGameFinished(true);
@@ -502,6 +522,7 @@ function App() {
     setDisplayedText("");
     setShowUI(false);
     setQuestionElapsedTime(0);
+    setStoryPhase("story");
   };
 
   const levelClasses = (level, unlocked) => {
@@ -515,7 +536,6 @@ function App() {
       {!hasStartedGame && !showLevelSelect ? (
         <>
           <div className={`card ${isWrong ? "wrong-glow" : ""}`}>
-
             <button
               className="diary-icon-btn"
               onClick={() => setShowDiaryDrawer(true)}
@@ -628,9 +648,13 @@ function App() {
             </div>
           </div>
 
-          <h1 className="puzzle-title">{CHAPTERS[currentChapter].title}</h1>
+          <h1 className="puzzle-title">
+            {storyPhase === "story"
+              ? CHAPTERS[currentChapter].title
+              : CHAPTERS[currentChapter].taskTitle}
+          </h1>
 
-          {isPlayingCards && currentChapter === 2 && (
+          {isPlayingCards && currentChapter === 3 && (
             <div className="card-display">
               <img
                 src={CHAPTER2_CARDS[cardIndex]}
@@ -669,7 +693,15 @@ function App() {
                 <>
                   <div className="typewriter-text">{displayedText}</div>
 
-                  {showUI && (
+                  {showUI && storyPhase === "story" && (
+                    <div className="input-area">
+                      <button className="glow-btn" onClick={handleStoryContinue}>
+                        繼續
+                      </button>
+                    </div>
+                  )}
+
+                  {showUI && storyPhase === "task" && (
                     <div className="input-area">
                       <input
                         type="text"
@@ -694,57 +726,59 @@ function App() {
           )}
         </div>
       )}
-{showLoginModal && (
-      <div className="overlay transition-overlay">
-        <div className="transition-card float-in-card">
-          <h2 className="puzzle-title">🪪 玩家登入</h2>
 
-          <div style={{
-            fontSize: "17px",
-            lineHeight: "1.7",
-            color: "#5a4c3c",
-            marginBottom: "18px",
-            textAlign: "left",
-            whiteSpace: "pre-wrap"
-          }}>
-            請輸入主辦方提供的活動碼。只有有效活動碼才能進入作答頁面。
-          </div>
+      {showLoginModal && (
+        <div className="overlay transition-overlay">
+          <div className="transition-card float-in-card">
+            <h2 className="puzzle-title">🪪 玩家登入</h2>
 
-          <div className="input-area">
-            <input
-              type="text"
-              value={loginCodeInput}
-              onChange={(e) => setLoginCodeInput(e.target.value)}
-              placeholder="輸入主辦方提供的活動碼"
-            />
-            <button className="glow-btn" onClick={handleLoginUser}>
-              登入
-            </button>
-            <button
-              className="back-cancel-btn"
-              onClick={() => {
-                setShowLoginModal(false);
-                setAuthError("");
-                setLoginCodeInput("");
-              }}
-            >
-              取消
-            </button>
-          </div>
-
-          {authError && (
             <div style={{
-              marginTop: "14px",
-              color: "#c0392b",
-              fontSize: "16px",
-              fontWeight: "bold"
+              fontSize: "17px",
+              lineHeight: "1.7",
+              color: "#5a4c3c",
+              marginBottom: "18px",
+              textAlign: "left",
+              whiteSpace: "pre-wrap"
             }}>
-              {authError}
+              請輸入主辦方提供的活動碼。只有有效活動碼才能進入作答頁面。
             </div>
-          )}
+
+            <div className="input-area">
+              <input
+                type="text"
+                value={loginCodeInput}
+                onChange={(e) => setLoginCodeInput(e.target.value)}
+                placeholder="輸入主辦方提供的活動碼"
+              />
+              <button className="glow-btn" onClick={handleLoginUser}>
+                登入
+              </button>
+              <button
+                className="back-cancel-btn"
+                onClick={() => {
+                  setShowLoginModal(false);
+                  setAuthError("");
+                  setLoginCodeInput("");
+                }}
+              >
+                取消
+              </button>
+            </div>
+
+            {authError && (
+              <div style={{
+                marginTop: "14px",
+                color: "#c0392b",
+                fontSize: "16px",
+                fontWeight: "bold"
+              }}>
+                {authError}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    )}
+      )}
+
       {showExitConfirm && (
         <div className="overlay transition-overlay">
           <div className="transition-card float-in-card">

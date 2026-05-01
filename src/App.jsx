@@ -62,6 +62,7 @@ const CHAPTERS = {
 使用直尺測量實體道具（郵局模型）中石階的總高度。
 請根據坡道設計紙，嘗試摺疊出合乎比例的設計，揭開這個被我們視而不見的殘酷真相。`,
     answer: "1",
+    concept: "無障礙坡道需要符合安全比例，否則看似短短幾階的高度，也會變成輪椅使用者難以跨越的斷點。",
     nextMsg: "你開始意識到這個問題的本質了..."
   },
   2: {
@@ -74,6 +75,7 @@ const CHAPTERS = {
 請親手撕下那些擋路的機車、變電箱與違規招牌貼紙。
 當偽裝被剝離，請注視底層露出的斑駁痕跡，並在系統輸入你發現的答案。`,
     answer: "2",
+    concept: "街道上的機車、變電箱與違規招牌，會壓縮行人空間，讓原本應該安全通行的路變成障礙。",
     nextMsg: "你看見了被遮蔽的真相..."
   },
   3: {
@@ -85,10 +87,43 @@ const CHAPTERS = {
     taskTitle: "【實體操作提示】",
     taskContent: `請取出配件包中的「10 張文字路標卡牌」。
 接下來系統將進入高速閃現模式，請在混亂中捕捉小娟賴以生存的號誌。`,
-    answer: "1234567890",
+    answer: "3",
+    concept: "交通資訊過多、出現太快或擺放混亂時，會造成資訊過載，使行人難以及時做出正確判斷。",
     nextMsg: "你成功抓住了混亂中的秩序..."
+  },
+  4: {
+    title: "【3-1 劇情：被迫繞遠的路】",
+    content: `有些路看起來通往同一個方向，真正走上去才知道差別。對行動不便的人來說，一次不合理的繞路，不只是多花幾分鐘，而是體力、時間與尊嚴的消耗。
+
+當城市只替速度最快的人設計路線，其他人的需求就會被推到邊角。那些被迫繞遠的軌跡，其實都是城市沒有被看見的缺口。`,
+    taskTitle: "【實體操作提示】",
+    taskContent: `請觀察實體路線圖，找出最不友善的繞行路徑。
+請比較直接路線與替代路線的差異，並輸入你得到的答案。`,
+    answer: "4",
+    concept: "交通設計不能只追求最快路徑，也需要照顧不同族群的移動成本與可達性。",
+    nextMsg: "你看見了繞路背後被忽略的成本..."
+  },
+  5: {
+    title: "【4-1 劇情：城市的回信】",
+    content: `當最後一封信被打開時，郵袋裡不再只是線索，而是這座城市給出的回信。每一個坡道、每一條人行道、每一次號誌等待，都在回答同一個問題：這座城市願不願意讓所有人安全抵達？
+
+真正的交通安全，不只是避免事故，而是讓每一個人都能被考慮、被尊重、被接住。`,
+    taskTitle: "【實體操作提示】",
+    taskContent: `請回顧前面所有任務中發現的問題。
+整理你認為最重要的交通安全觀念，並輸入最後答案完成挑戰。`,
+    answer: "5",
+    concept: "交通安全需要整體規劃，包含無障礙、路權、資訊設計與行人安全，而不是只解決單一問題。",
+    nextMsg: "你完成了所有調查，城市的盲點正在被重新看見。"
   }
-};
+}
+
+const LEVEL_FILES = [
+  { id: 1, code: "FILE 01", label: "1-1", icon: "🧭", title: "斷裂的終點", theme: "無障礙坡道調查", desc: "量測郵局石階高度，摺出合乎比例的坡道設計。" },
+  { id: 2, code: "FILE 02", label: "1-2", icon: "🚧", title: "剝離冷漠的偽裝", theme: "街道障礙辨識", desc: "撕下混亂街景中的障礙物，找出被遮蔽的答案。" },
+  { id: 3, code: "FILE 03", label: "2-1", icon: "🧠", title: "霓虹下的盲點", theme: "記憶與號誌挑戰", desc: "觀察高速閃現的路標卡牌，在混亂中捕捉順序。" },
+  { id: 4, code: "FILE 04", label: "3-1", icon: "🛣️", title: "被迫繞遠的路", theme: "可達性與路線成本", desc: "比較不同移動路徑，理解繞路背後的交通不平等。" },
+  { id: 5, code: "FILE 05", label: "4-1", icon: "🏙️", title: "城市的回信", theme: "整體交通安全回顧", desc: "整合所有任務線索，完成最後的城市安全觀念挑戰。" }
+];
 
 function App() {
   const [hasStartedGame, setHasStartedGame] = useState(false);
@@ -108,6 +143,7 @@ function App() {
 
   const [isWrong, setIsWrong] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const [wrongChapters, setWrongChapters] = useState({});
 
   const [showChapterTransition, setShowChapterTransition] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState("");
@@ -119,6 +155,7 @@ function App() {
   const [showDiaryDrawer, setShowDiaryDrawer] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isEnvelopeOpening, setIsEnvelopeOpening] = useState(false);
 
   const [userName, setUserName] = useState(() => localStorage.getItem("trafficPuzzleUserName") || "");
   const [userCode, setUserCode] = useState(() => localStorage.getItem("trafficPuzzleUserCode") || "");
@@ -126,6 +163,8 @@ function App() {
   const [authError, setAuthError] = useState("");
 
   const [records, setRecords] = useState([]);
+  const [showNotebook, setShowNotebook] = useState(false);
+  const [notebookPage, setNotebookPage] = useState(1);
 
   const STORAGE_KEY = "trafficPuzzleUnlockedLevel";
   const [unlockedLevel, setUnlockedLevel] = useState(() => {
@@ -421,10 +460,14 @@ function App() {
   };
 
   const handleOpenLevelSelect = () => {
-    setShowLoginModal(true);
+    setIsEnvelopeOpening(true);
     setAuthError("");
     setLoginCodeInput("");
     setShowDiaryDrawer(false);
+
+    setTimeout(() => {
+      setShowLoginModal(true);
+    }, 1250);
   };
 
   const handleStartGame = (level = 1) => {
@@ -453,42 +496,92 @@ function App() {
     setShowHint(false);
   };
 
+  const getUniqueRecords = (sourceRecords = records) => {
+    const map = new Map();
+
+    sourceRecords.forEach((record) => {
+      if (!record?.puzzle_id || map.has(record.puzzle_id)) return;
+      map.set(record.puzzle_id, record);
+    });
+
+    return Array.from(map.values()).sort((a, b) => {
+      const aLevel = Number(String(a.puzzle_id).replace("puzzle_0", ""));
+      const bLevel = Number(String(b.puzzle_id).replace("puzzle_0", ""));
+      return aLevel - bLevel;
+    });
+  };
+
+  const getCompletedRecords = () => getUniqueRecords(records).filter((record) => {
+    const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
+    return CHAPTERS[level];
+  });
+
   const handleLevelComplete = async () => {
     const chapterData = CHAPTERS[currentChapter];
+    const trimmedAnswer = userInput.trim();
 
-    if (userInput.trim() === chapterData.answer) {
-      try {
-        await addDoc(collection(db, "learning_results"), {
-          userCode: userCode,
-          userName: userName,
-          puzzle_id: `puzzle_0${currentChapter}`,
-          time_seconds: questionElapsedTime,
-          total_seconds: totalElapsedTime,
-          timestamp: serverTimestamp()
-        });
-        console.log("Firebase 上傳成功");
+    if (trimmedAnswer === chapterData.answer) {
+      const now = Date.now();
+      const finalQuestionSeconds = questionStartTime
+        ? Math.max(0, Math.floor((now - questionStartTime) / 1000))
+        : questionElapsedTime;
 
-        setRecords((prev) => [
-          {
-            id: `local-${Date.now()}`,
+      setQuestionElapsedTime(finalQuestionSeconds);
+      setQuestionStartTime(null);
+
+      const puzzleId = `puzzle_0${currentChapter}`;
+      const alreadyPassed = records.some((record) => record.puzzle_id === puzzleId);
+      const wasWrongBeforeCorrect = Boolean(wrongChapters[currentChapter]);
+      let nextRecords = records;
+
+      if (!alreadyPassed) {
+        const existingCompleted = getUniqueRecords(records);
+        const nextTotalSeconds = existingCompleted.reduce(
+          (sum, record) => sum + Number(record.time_seconds || 0),
+          0
+        ) + finalQuestionSeconds;
+
+        const localRecord = {
+          id: `local-${Date.now()}`,
+          userCode,
+          userName,
+          puzzle_id: puzzleId,
+          time_seconds: finalQuestionSeconds,
+          total_seconds: nextTotalSeconds,
+          wrong: wasWrongBeforeCorrect,
+          timestamp: { seconds: Math.floor(now / 1000) }
+        };
+
+        nextRecords = [localRecord, ...records];
+        setRecords(nextRecords);
+        setTotalElapsedTime(nextTotalSeconds);
+
+        try {
+          await addDoc(collection(db, "learning_results"), {
             userCode,
             userName,
-            puzzle_id: `puzzle_0${currentChapter}`,
-            time_seconds: questionElapsedTime,
-            total_seconds: totalElapsedTime,
-            timestamp: { seconds: Math.floor(Date.now() / 1000) }
-          },
-          ...prev
-        ]);
-      } catch (e) {
-        console.error("Firebase 上傳失敗：", e);
+            puzzle_id: puzzleId,
+            time_seconds: finalQuestionSeconds,
+            total_seconds: nextTotalSeconds,
+            wrong: wasWrongBeforeCorrect,
+            timestamp: serverTimestamp()
+          });
+          console.log("Firebase 上傳成功");
+        } catch (e) {
+          console.error("Firebase 上傳失敗：", e);
+        }
       }
 
       setTransitionMessage(chapterData.nextMsg);
       setShowChapterTransition(true);
-    } else {
-      setIsWrong(true);
+      return;
     }
+
+    setWrongChapters((prev) => ({
+      ...prev,
+      [currentChapter]: true
+    }));
+    setIsWrong(true);
   };
 
   const handleNextChapter = () => {
@@ -522,7 +615,142 @@ function App() {
     setDisplayedText("");
     setShowUI(false);
     setQuestionElapsedTime(0);
+    setQuestionStartTime(null);
     setStoryPhase("story");
+  };
+
+  const getResultStats = () => {
+    const completedRecords = getCompletedRecords();
+    const completedCount = completedRecords.length;
+    const completionRate = Math.round((completedCount / 5) * 100);
+    const longestRecord = completedRecords.length
+      ? completedRecords.reduce((max, record) =>
+          Number(record.time_seconds || 0) > Number(max.time_seconds || 0) ? record : max
+        )
+      : null;
+    const wrongRecords = completedRecords.filter((record) => record.wrong);
+
+    return {
+      completedRecords,
+      completedCount,
+      completionRate,
+      longestRecord,
+      wrongRecords
+    };
+  };
+
+  const handleDownloadResult = () => {
+    const { completedRecords, completionRate, longestRecord, wrongRecords } = getResultStats();
+    const canvas = document.createElement("canvas");
+    const scale = 2;
+    canvas.width = 900 * scale;
+    canvas.height = 1200 * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+
+    ctx.fillStyle = "#06231f";
+    ctx.fillRect(0, 0, 900, 1200);
+
+    const gradient = ctx.createLinearGradient(0, 0, 900, 1200);
+    gradient.addColorStop(0, "rgba(67, 209, 175, 0.28)");
+    gradient.addColorStop(1, "rgba(216, 160, 71, 0.18)");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 900, 1200);
+
+    ctx.fillStyle = "#f6fffb";
+    ctx.font = "bold 48px sans-serif";
+    ctx.fillText("Traffic Puzzle 挑戰成果", 70, 95);
+
+    ctx.fillStyle = "#f0d58a";
+    ctx.font = "bold 30px sans-serif";
+    ctx.fillText(`完成率：${completionRate}%`, 70, 155);
+
+    ctx.fillStyle = "rgba(237,255,248,0.88)";
+    ctx.font = "24px sans-serif";
+    ctx.fillText(`最卡關：${longestRecord ? `第${String(longestRecord.puzzle_id).replace("puzzle_0", "")}關（${longestRecord.time_seconds}s）` : "尚無"}`, 70, 205);
+
+    let y = 280;
+    ctx.fillStyle = "#9fe7d5";
+    ctx.font = "bold 28px sans-serif";
+    ctx.fillText("每關時間", 70, y);
+    y += 42;
+
+    completedRecords.forEach((record) => {
+      const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
+      const barWidth = Math.min(560, Math.max(24, Number(record.time_seconds || 0) * 18));
+
+      ctx.fillStyle = "rgba(255,255,255,0.12)";
+      ctx.fillRect(70, y - 22, 620, 28);
+      ctx.fillStyle = "#d8a047";
+      ctx.fillRect(70, y - 22, barWidth, 28);
+      ctx.fillStyle = "#f6fffb";
+      ctx.font = "22px sans-serif";
+      ctx.fillText(`第${level}關  ${record.time_seconds}s${record.wrong ? "  曾答錯" : ""}`, 710, y);
+      y += 54;
+    });
+
+    y += 30;
+    ctx.fillStyle = "#f0d58a";
+    ctx.font = "bold 28px sans-serif";
+    ctx.fillText("錯題觀念回顧", 70, y);
+    y += 42;
+
+    if (wrongRecords.length === 0) {
+      ctx.fillStyle = "rgba(237,255,248,0.82)";
+      ctx.font = "22px sans-serif";
+      ctx.fillText("本次挑戰沒有留下錯題紀錄。", 70, y);
+    } else {
+      wrongRecords.forEach((record) => {
+        const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
+        const concept = CHAPTERS[level]?.concept || "請回顧該關交通安全觀念。";
+        ctx.fillStyle = "#f6fffb";
+        ctx.font = "bold 22px sans-serif";
+        ctx.fillText(`第${level}關`, 70, y);
+        y += 30;
+        ctx.fillStyle = "rgba(237,255,248,0.78)";
+        ctx.font = "20px sans-serif";
+        const words = concept.split("");
+        let line = "";
+        const maxWidth = 740;
+        words.forEach((char) => {
+          const testLine = line + char;
+          if (ctx.measureText(testLine).width > maxWidth) {
+            ctx.fillText(line, 70, y);
+            y += 28;
+            line = char;
+          } else {
+            line = testLine;
+          }
+        });
+        if (line) ctx.fillText(line, 70, y);
+        y += 48;
+      });
+    }
+
+    const link = document.createElement("a");
+    link.download = "traffic-puzzle-result.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  const handleFinishChallenge = () => {
+    setIsGameFinished(false);
+    setHasStartedGame(false);
+    setShowLevelSelect(false);
+    setShowChapterTransition(false);
+    setShowDiaryDrawer(false);
+    setShowExitConfirm(false);
+    setIsWrong(false);
+    setShowHint(false);
+    setUserInput("");
+    setDisplayedText("");
+    setShowUI(false);
+    setQuestionElapsedTime(0);
+    setQuestionStartTime(null);
+    setStoryPhase("story");
+    setIsEnvelopeOpening(false);
+    setShowNotebook(false);
+    setNotebookPage(1);
   };
 
   const levelClasses = (level, unlocked) => {
@@ -531,13 +759,34 @@ function App() {
     return `level-node-full ${stateClass} ${visible}`;
   };
 
+
+  const notebookCompletedRecords = getCompletedRecords();
+  const notebookCompletedCount = notebookCompletedRecords.length;
+  const notebookCurrentFile = LEVEL_FILES.find((file) => file.id === notebookPage) || LEVEL_FILES[0];
+  const notebookCurrentRecord = notebookCompletedRecords.find(
+    (record) => record.puzzle_id === `puzzle_0${notebookPage}`
+  );
+
+  const openNotebook = () => {
+    setNotebookPage(Math.min(Math.max(notebookCompletedCount || 1, 1), 5));
+    setShowNotebook(true);
+  };
+
+  const goNotebookPrev = () => {
+    setNotebookPage((prev) => Math.max(1, prev - 1));
+  };
+
+  const goNotebookNext = () => {
+    setNotebookPage((prev) => Math.min(5, prev + 1));
+  };
+
   return (
-    <div className={`main-container ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""}`}>
+    <div className={`main-container ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""} ${!hasStartedGame && !showLevelSelect ? "home-mode" : ""}`}>
       {!hasStartedGame && !showLevelSelect ? (
         <>
-          <div className={`card ${isWrong ? "wrong-glow" : ""}`}>
+          <div className={`home-hero ${isEnvelopeOpening ? "home-hero-opening" : ""}`}>
             <button
-              className="diary-icon-btn"
+              className="diary-icon-btn hero-diary-btn"
               onClick={() => setShowDiaryDrawer(true)}
               aria-label="開啟日記側邊欄"
               title="日記"
@@ -545,13 +794,43 @@ function App() {
               📔
             </button>
 
-            <h1 className="letter-title">💌 給新進郵差的一封信</h1>
-            <div className="typewriter-text">{displayedText}</div>
-            {showUI && (
-              <button className="glow-btn" onClick={handleOpenLevelSelect}>
-                開始探險吧
-              </button>
-            )}
+            <section className="hero-copy">
+              <div className="hero-kicker">Traffic Puzzle Web App</div>
+              <h1 className="hero-title">致新進郵差的一封信</h1>
+              <div className="typewriter-text hero-letter-text">{displayedText}</div>
+              {showUI && (
+                <button className="glow-btn hero-start-btn" onClick={handleOpenLevelSelect}>
+                  開始探險吧
+                </button>
+              )}
+            </section>
+
+            <section className="hero-visual" aria-hidden="true">
+              <div className={`envelope-stage ${isEnvelopeOpening ? "is-open" : ""}`}>
+                <div className="envelope-glow"></div>
+                <div className="floating-letter">
+                  <div className="floating-letter-pattern"></div>
+                  <div className="floating-letter-postmark">POST</div>
+                  <div className="floating-letter-symbol">✉</div>
+                  <div className="floating-letter-caption">Traffic Puzzle</div>
+                  <div className="floating-letter-route">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <div className="floating-letter-line long"></div>
+                  <div className="floating-letter-line"></div>
+                  <div className="floating-letter-line short"></div>
+                </div>
+                <div className="envelope-body">
+                  <div className="envelope-back"></div>
+                  <div className="envelope-flap"></div>
+                  <div className="envelope-front-left"></div>
+                  <div className="envelope-front-right"></div>
+                  <div className="envelope-seal"></div>
+                </div>
+              </div>
+            </section>
           </div>
 
           {showDiaryDrawer && (
@@ -614,24 +893,58 @@ function App() {
           )}
         </>
       ) : !hasStartedGame && showLevelSelect ? (
-        <div className="level-select-screen">
-          <div className="level-select-header">
-            <h1 className="level-select-title">選擇關卡</h1>
-            <p className="level-select-subtitle">請選擇你要探索的路線</p>
+        <div className="level-select-screen mission-files-screen">
+          <button className="field-notebook-trigger" onClick={openNotebook} aria-label="開啟闖關紀錄">
+            <span className="field-notebook-art" aria-hidden="true">
+              <span className="field-notebook-art-cover"></span>
+              <span className="field-notebook-art-pages"></span>
+              <span className="field-notebook-art-band"></span>
+            </span>
+            <span className="field-notebook-label">闖關紀錄</span>
+          </button>
+          <div className="level-select-header mission-files-header">
+            <div className="mission-kicker">CONFIDENTIAL CITY CASES</div>
+            <h1 className="level-select-title">任務檔案</h1>
+            <p className="level-select-subtitle">請選擇你要開啟的調查信件</p>
           </div>
 
-          <div className="level-map-full">
-            {[1, 2, 3, 4, 5].map((level) => (
-              <button
-                key={level}
-                className={`${levelClasses(level, unlockedLevel >= level)} pos-${level}`}
-                onClick={() => handleStartGame(level)}
-                disabled={unlockedLevel < level}
-              >
-                {level}
-                {unlockedLevel < level && <span className="lock-mark">🔒</span>}
-              </button>
-            ))}
+          <div className="mission-files-grid">
+            {LEVEL_FILES.map((file, index) => {
+              const isUnlocked = unlockedLevel >= file.id && Boolean(CHAPTERS[file.id]);
+              const isCompleted = unlockedLevel > file.id;
+              const statusText = isCompleted ? "已完成" : isUnlocked ? "可開始" : "未解封";
+
+              return (
+                <button
+                  key={file.id}
+                  className={`mission-file-card ${isUnlocked ? "unlocked" : "locked"} ${isCompleted ? "completed" : ""}`}
+                  onClick={() => handleStartGame(file.id)}
+                  disabled={!isUnlocked}
+                  style={{ animationDelay: `${0.12 + index * 0.1}s` }}
+                >
+                  <div className="mission-file-topline">
+                    <span>{file.code}</span>
+                    <span className="mission-status">
+                      <span className="mission-status-dot"></span>
+                      {statusText}
+                    </span>
+                  </div>
+
+                  <div className="mission-file-seal" aria-hidden="true">
+                    {isUnlocked ? file.icon : "🔒"}
+                  </div>
+
+                  <div className="mission-file-label">{file.label}</div>
+                  <h2 className="mission-file-title">{file.title}</h2>
+                  <p className="mission-file-theme">{file.theme}</p>
+                  <p className="mission-file-desc">{file.desc}</p>
+
+                  <div className="mission-file-footer" aria-hidden="true">
+                    <span>→</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       ) : (
@@ -757,6 +1070,7 @@ function App() {
                 className="back-cancel-btn"
                 onClick={() => {
                   setShowLoginModal(false);
+                  setIsEnvelopeOpening(false);
                   setAuthError("");
                   setLoginCodeInput("");
                 }}
@@ -818,16 +1132,165 @@ function App() {
         </div>
       )}
 
-      {isGameFinished && (
-        <div className="overlay transition-overlay">
-          <div className="transition-card float-in-card">
-            <h2 className="puzzle-title">🏆 恭喜完成</h2>
-            <div className="typewriter-text transition-text">
-              恭喜你完成了所有挑戰！
-            </div>
+
+
+      {showNotebook && (
+        <div className="field-notebook-overlay" onClick={() => setShowNotebook(false)}>
+          <div className="field-notebook-book" onClick={(event) => event.stopPropagation()}>
+            <button
+              className="field-notebook-close"
+              onClick={() => setShowNotebook(false)}
+              aria-label="關閉闖關紀錄"
+            >
+              ×
+            </button>
+
+            <section className="field-notebook-left-page">
+              <div className="field-notebook-badge">FIELD RECORD</div>
+              <div className="field-notebook-drawn-book" aria-hidden="true">
+                <span className="drawn-book-cover"></span>
+                <span className="drawn-book-page"></span>
+                <span className="drawn-book-ribbon"></span>
+              </div>
+              <h2>闖關紀錄</h2>
+              <p>即時記錄你的任務進度、劇情線索與每關通關時間。</p>
+              <div className="field-notebook-progress-small">
+                <span>目前進度</span>
+                <strong>{notebookCompletedCount}/5</strong>
+              </div>
+              <div className="field-notebook-progress-track">
+                <span style={{ width: `${Math.round((notebookCompletedCount / 5) * 100)}%` }}></span>
+              </div>
+            </section>
+
+            <section className="field-notebook-right-page">
+              <div className="field-notebook-page-head">
+                <button onClick={goNotebookPrev} disabled={notebookPage === 1}>‹</button>
+                <div>
+                  <span>PAGE {notebookPage}/5</span>
+                  <h3>{notebookCurrentFile.label}｜{notebookCurrentFile.title}</h3>
+                </div>
+                <button onClick={goNotebookNext} disabled={notebookPage === 5}>›</button>
+              </div>
+
+              <div className={`field-notebook-status ${notebookCurrentRecord ? "done" : "pending"}`}>
+                {notebookCurrentRecord ? `已完成・${notebookCurrentRecord.time_seconds}s` : "尚未完成"}
+              </div>
+
+              <div className="field-notebook-entry">
+                <h4>劇情紀錄</h4>
+                <p>{CHAPTERS[notebookPage]?.title || notebookCurrentFile.title}</p>
+              </div>
+
+              <div className="field-notebook-entry">
+                <h4>觀念筆記</h4>
+                <p>{CHAPTERS[notebookPage]?.concept || "完成此關後，這裡會留下你的觀念紀錄。"}</p>
+              </div>
+
+              <div className="field-notebook-entry compact">
+                <h4>五頁索引</h4>
+                <div className="field-notebook-page-dots">
+                  {[1, 2, 3, 4, 5].map((level) => {
+                    const hasRecord = notebookCompletedRecords.some((record) => record.puzzle_id === `puzzle_0${level}`);
+                    return (
+                      <button
+                        key={level}
+                        className={`${notebookPage === level ? "active" : ""} ${hasRecord ? "done" : ""}`}
+                        onClick={() => setNotebookPage(level)}
+                      >
+                        {level}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       )}
+
+      {isGameFinished && (() => {
+        const { completedRecords, completedCount, completionRate, longestRecord, wrongRecords } = getResultStats();
+
+        return (
+          <div className="result-screen" id="result-screen">
+            <div className="result-panel">
+              <div className="result-kicker">MISSION COMPLETE</div>
+              <h1 className="result-title">挑戰成果回顧</h1>
+              <p className="result-subtitle">
+                這份回顧整理了你的通關時間、完成進度，以及曾經答錯的觀念。
+              </p>
+
+              <div className="result-summary-grid">
+                <div className="result-summary-card">
+                  <span>完成進度</span>
+                  <strong>{completedCount}/5</strong>
+                </div>
+                <div className="result-summary-card">
+                  <span>完成率</span>
+                  <strong>{completionRate}%</strong>
+                </div>
+                <div className="result-summary-card">
+                  <span>最卡關</span>
+                  <strong>
+                    {longestRecord
+                      ? `第${String(longestRecord.puzzle_id).replace("puzzle_0", "")}關`
+                      : "尚無"}
+                  </strong>
+                </div>
+              </div>
+
+              <section className="result-section">
+                <h2>每關作答時間</h2>
+                <div className="result-bars">
+                  {[1, 2, 3, 4, 5].map((level) => {
+                    const record = completedRecords.find((item) => item.puzzle_id === `puzzle_0${level}`);
+                    const seconds = Number(record?.time_seconds || 0);
+                    const maxSeconds = Math.max(...completedRecords.map((item) => Number(item.time_seconds || 0)), 1);
+                    const width = record ? Math.max(10, Math.round((seconds / maxSeconds) * 100)) : 0;
+
+                    return (
+                      <div className="result-bar-row" key={level}>
+                        <div className="result-bar-label">第{level}關</div>
+                        <div className="result-bar-track">
+                          <div className="result-bar-fill" style={{ width: `${width}%` }}></div>
+                        </div>
+                        <div className="result-bar-value">{record ? `${seconds}s` : "未完成"}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section className="result-section">
+                <h2>錯題觀念回顧</h2>
+                {wrongRecords.length === 0 ? (
+                  <div className="result-concept-card success">
+                    本次挑戰沒有留下錯題紀錄，代表你在首次通關前沒有答錯。
+                  </div>
+                ) : (
+                  <div className="result-concepts">
+                    {wrongRecords.map((record) => {
+                      const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
+                      return (
+                        <div className="result-concept-card" key={record.puzzle_id}>
+                          <strong>第{level}關曾答錯</strong>
+                          <p>{CHAPTERS[level]?.concept || "請回顧該關交通安全觀念。"}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+
+              <div className="result-actions">
+                <button className="glow-btn" onClick={handleDownloadResult}>📸 保存圖片</button>
+                <button className="back-cancel-btn" onClick={handleFinishChallenge}>🏁 已結束挑戰</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -23,6 +23,7 @@ import card07 from './assets/card-07.png';
 import card08 from './assets/card-08.png';
 import card09 from './assets/card-09.png';
 import card10 from './assets/card-10.png';
+import mysteryCityBg from "./assets/mystery-city-bg.png";
 
 const ALLOWED_ACCESS_CODES = {
   KWA1116: {
@@ -472,15 +473,25 @@ function App() {
 
   const handleStartGame = (level = 1) => {
     const now = Date.now();
+    const shouldStartTotalTimer = level === 1 || !gameStartTime;
+
     setHasStartedGame(true);
     setShowLevelSelect(false);
     setShowDiaryDrawer(false);
     setShowExitConfirm(false);
     setCurrentChapter(level);
-    setGameStartTime(now);
+
+    // 總計時：從點進第一關開始算，直到最後一關完成。
+    // 若從其他關卡直接進入，視為測試情境，從當下開始。
+    setGameStartTime(shouldStartTotalTimer ? now : gameStartTime);
+
     setQuestionStartTime(now);
     setQuestionElapsedTime(0);
-    setTotalElapsedTime(0);
+
+    if (shouldStartTotalTimer) {
+      setTotalElapsedTime(0);
+    }
+
     setCardIndex(0);
     setIsPlayingCards(false);
     setHasPlayedChapter2Cards(false);
@@ -535,11 +546,9 @@ function App() {
       let nextRecords = records;
 
       if (!alreadyPassed) {
-        const existingCompleted = getUniqueRecords(records);
-        const nextTotalSeconds = existingCompleted.reduce(
-          (sum, record) => sum + Number(record.time_seconds || 0),
-          0
-        ) + finalQuestionSeconds;
+        const nextTotalSeconds = gameStartTime
+          ? Math.max(0, Math.floor((now - gameStartTime) / 1000))
+          : finalQuestionSeconds;
 
         const localRecord = {
           id: `local-${Date.now()}`,
@@ -781,7 +790,7 @@ function App() {
   };
 
   return (
-    <div className={`main-container ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""} ${!hasStartedGame && !showLevelSelect ? "home-mode" : ""}`}>
+    <div className={`main-container $1 ${"unified-city-mode"}`}>
       {!hasStartedGame && !showLevelSelect ? (
         <>
           <div className={`home-hero ${isEnvelopeOpening ? "home-hero-opening" : ""}`}>
@@ -948,7 +957,7 @@ function App() {
           </div>
         </div>
       ) : (
-        <div className={`card ${isWrong ? "wrong-glow" : ""}`}>
+        <div className={`card ${currentChapter >= 1 ? "mission-style-card" : ""} ${isWrong ? "wrong-glow" : ""}`}>
           <div className="status-bar">
             <div className="timer-display">
               <span>⏰</span>

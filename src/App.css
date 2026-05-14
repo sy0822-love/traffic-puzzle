@@ -1967,3 +1967,294 @@ input {
     border-radius: 22px;
   }
 }
+
+
+/* ================================================================
+   0514 Level 1 — Mission Files 深綠沉浸式風格
+   只套用第一關遊玩畫面，不影響其他關卡、首頁、Mission Files、Notebook
+   ================================================================ */
+
+.card.mission-style-card {
+  max-width: min(920px, calc(100vw - 36px));
+  padding: clamp(24px, 4vw, 42px);
+  border-radius: 30px;
+  border: 1px solid rgba(191, 255, 234, 0.18);
+  background:
+    radial-gradient(circle at 16% 14%, rgba(67, 209, 175, 0.18) 0%, transparent 30%),
+    radial-gradient(circle at 88% 20%, rgba(216, 160, 71, 0.16) 0%, transparent 26%),
+    linear-gradient(145deg, rgba(8, 45, 40, 0.94), rgba(3, 25, 26, 0.94));
+  color: #eefdf8;
+  text-align: left;
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+
+.card.mission-style-card::before {
+  content: "FILE 01";
+  position: absolute;
+  top: 22px;
+  left: 28px;
+  z-index: 0;
+  padding: 7px 13px;
+  border: 1px solid rgba(191, 255, 234, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #9fe7d5;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.card.mission-style-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+    radial-gradient(circle at 72% 68%, rgba(240, 213, 138, 0.08), transparent 34%);
+  background-size: 52px 52px, 52px 52px, 100% 100%;
+  opacity: 0.9;
+}
+
+.card.mission-style-card .status-bar,
+.card.mission-style-card .puzzle-title,
+.card.mission-style-card .typewriter-text,
+.card.mission-style-card .input-area,
+.card.mission-style-card .error-area,
+.card.mission-style-card .card-display {
+  position: relative;
+  z-index: 1;
+}
+
+.card.mission-style-card .status-bar {
+  top: 22px;
+  right: 26px;
+  padding: 8px 12px;
+  border: 1px solid rgba(191, 255, 234, 0.16);
+  border-radius: 999px;
+  background: rgba(2, 20, 22, 0.42);
+  color: rgba(237, 255, 248, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.card.mission-style-card .puzzle-title {
+  margin-top: 42px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(191, 255, 234, 0.18);
+  color: #f0d58a;
+  font-size: clamp(25px, 3vw, 34px) !important;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+}
+
+.card.mission-style-card .typewriter-text {
+  min-height: 220px;
+  padding: 22px 24px;
+  border: 1px solid rgba(214, 255, 244, 0.14);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.035));
+  color: rgba(237, 255, 248, 0.90);
+  font-size: 18px !important;
+  line-height: 2;
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.card.mission-style-card .input-area {
+  margin-top: 22px;
+  padding-top: 4px;
+}
+
+.card.mission-style-card input {
+  max-width: 560px;
+  background: rgba(255, 250, 242, 0.95);
+  border: 1.5px solid rgba(240, 213, 138, 0.58);
+  color: #2c2118;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+
+.card.mission-style-card input::placeholder {
+  color: rgba(44, 33, 24, 0.55);
+}
+
+.card.mission-style-card .glow-btn {
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d8a047, #f0d58a);
+  color: #14211c;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 186, 0.42),
+    0 14px 38px rgba(216, 160, 71, 0.28);
+}
+
+.card.mission-style-card .glow-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f0b75b, #ffe2a0);
+}
+
+.card.mission-style-card .back-page-btn {
+  border-radius: 999px;
+  background: rgba(255, 250, 242, 0.10);
+  color: #eefdf8;
+  border: 1.5px solid rgba(240, 213, 138, 0.34);
+}
+
+.card.mission-style-card .back-page-btn:hover {
+  background: rgba(255, 250, 242, 0.16);
+}
+
+.card.mission-style-card .error-area {
+  border: 1px solid rgba(255, 77, 77, 0.22);
+  background: rgba(255, 77, 77, 0.08);
+}
+
+.card.mission-style-card .error-text,
+.card.mission-style-card .hint-text {
+  color: rgba(255, 245, 235, 0.92);
+}
+
+@media (max-width: 768px) {
+  .card.mission-style-card {
+    max-width: 100%;
+    padding: 22px 16px;
+    border-radius: 24px;
+  }
+
+  .card.mission-style-card::before {
+    top: 16px;
+    left: 16px;
+    font-size: 10px;
+  }
+
+  .card.mission-style-card .status-bar {
+    position: relative;
+    top: auto;
+    right: auto;
+    justify-content: flex-end;
+    margin-bottom: 18px;
+    margin-left: auto;
+    width: fit-content;
+  }
+
+  .card.mission-style-card .puzzle-title {
+    margin-top: 16px;
+    font-size: 22px !important;
+  }
+
+  .card.mission-style-card .typewriter-text {
+    min-height: 220px;
+    padding: 18px 16px;
+    font-size: 16px !important;
+    line-height: 1.85;
+  }
+}
+
+
+
+
+/* =====================================================
+   Unified Cinematic City Background
+   首頁 + Mission Files + 關卡統一背景
+===================================================== */
+
+.main-container.unified-city-mode {
+  position: relative;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.68)),
+    url("./assets/mystery-city-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+.main-container.unified-city-mode::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top, rgba(70, 210, 176, 0.08), transparent 38%),
+    radial-gradient(circle at bottom right, rgba(240, 213, 138, 0.05), transparent 34%);
+  z-index: 0;
+}
+
+.main-container.unified-city-mode > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero UI cinematic polish */
+
+.home-hero {
+  background:
+    linear-gradient(145deg, rgba(6, 32, 30, 0.78), rgba(8, 44, 41, 0.72));
+  border: 1px solid rgba(180, 255, 235, 0.12);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.hero-title,
+.letter-title,
+.level-select-title {
+  color: #f1ddb0 !important;
+  text-shadow: 0 10px 26px rgba(0,0,0,0.42);
+}
+
+.hero-letter-text,
+.level-select-subtitle,
+.typewriter-text {
+  color: rgba(240,255,250,0.88);
+}
+
+.hero-kicker,
+.mission-kicker {
+  border-color: rgba(180,255,235,0.18);
+  background: rgba(255,255,255,0.06);
+  color: #a9e9d9;
+}
+
+.hero-start-btn,
+.glow-btn {
+  background: linear-gradient(135deg, #d6a450, #f0d58a);
+  color: #12211d;
+  box-shadow:
+    0 10px 28px rgba(216,160,71,0.28);
+}
+
+.hero-start-btn:hover,
+.glow-btn:hover {
+  transform: translateY(-2px);
+}
+
+.mission-file-card {
+  background:
+    linear-gradient(145deg, rgba(7, 38, 35, 0.78), rgba(4, 24, 22, 0.82));
+  border: 1px solid rgba(180,255,235,0.10);
+  backdrop-filter: blur(12px);
+}
+
+.mission-file-title {
+  color: #f7e3b8;
+}
+
+@media (max-width: 768px) {
+  .main-container.unified-city-mode {
+    background-attachment: scroll;
+  }
+
+  .home-hero {
+    backdrop-filter: blur(10px);
+  }
+}

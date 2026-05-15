@@ -460,15 +460,14 @@ function App() {
     return `${mm}:${ss}`;
   };
 
-  const handleOpenLevelSelect = () => {
-    setIsEnvelopeOpening(true);
-    setAuthError("");
-    setLoginCodeInput("");
-    setShowDiaryDrawer(false);
+  const handleOpenLevelSelect = () => 
+  {
+  setIsEnvelopeOpening(true);
 
-    setTimeout(() => {
-      setShowLoginModal(true);
-    }, 1250);
+  setAuthError("");
+  setLoginCodeInput("");
+
+  setShowDiaryDrawer(false);
   };
 
   const handleStartGame = (level = 1) => {
@@ -790,7 +789,7 @@ function App() {
   };
 
   return (
-    <div className={`main-container $1 ${"unified-city-mode"}`}>
+    <div className={`main-container unified-city-mode ${!hasStartedGame && !showLevelSelect ? "home-mode" : ""} ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""}`}>
       {!hasStartedGame && !showLevelSelect ? (
         <>
           <div className={`home-hero ${isEnvelopeOpening ? "home-hero-opening" : ""}`}>
@@ -807,39 +806,61 @@ function App() {
               <div className="hero-kicker">Traffic Puzzle Web App</div>
               <h1 className="hero-title">致新進郵差的一封信</h1>
               <div className="typewriter-text hero-letter-text">{displayedText}</div>
-              {showUI && (
-                <button className="glow-btn hero-start-btn" onClick={handleOpenLevelSelect}>
-                  開始探險吧
-                </button>
+              {showUI && !isEnvelopeOpening && (
+              <button className="glow-btn hero-start-btn" onClick={handleOpenLevelSelect}>
+              開始探險吧
+              </button>
               )}
             </section>
 
-            <section className="hero-visual" aria-hidden="true">
-              <div className={`envelope-stage ${isEnvelopeOpening ? "is-open" : ""}`}>
-                <div className="envelope-glow"></div>
-                <div className="floating-letter">
-                  <div className="floating-letter-pattern"></div>
-                  <div className="floating-letter-postmark">POST</div>
-                  <div className="floating-letter-symbol">✉</div>
-                  <div className="floating-letter-caption">Traffic Puzzle</div>
-                  <div className="floating-letter-route">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+            {isEnvelopeOpening && (
+              <section className="hero-visual" aria-hidden="false">
+                <div className={`envelope-stage ${isEnvelopeOpening ? "is-open" : ""}`}>
+                  <div className="envelope-glow"></div>
+
+                  <div className="floating-letter">
+                    <div className="invite-card-content">
+                      <div className="invite-card-badge">ACCESS CODE</div>
+
+                      <h2 className="invite-card-title">玩家登入</h2>
+
+                      <p className="invite-card-desc">
+                        請輸入活動碼，開啟這次城市調查任務。
+                      </p>
+
+                      <input
+                        type="text"
+                        value={loginCodeInput}
+                        onChange={(e) => setLoginCodeInput(e.target.value)}
+                        placeholder="輸入活動碼"
+                        className="invite-card-input"
+                      />
+
+                      <button
+                        className="invite-card-btn"
+                        onClick={handleLoginUser}
+                      >
+                        開啟任務
+                      </button>
+
+                      {authError && (
+                        <div className="invite-card-error">
+                          {authError}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="floating-letter-line long"></div>
-                  <div className="floating-letter-line"></div>
-                  <div className="floating-letter-line short"></div>
+
+                  <div className="envelope-body">
+                    <div className="envelope-back"></div>
+                    <div className="envelope-flap"></div>
+                    <div className="envelope-front-left"></div>
+                    <div className="envelope-front-right"></div>
+                    <div className="envelope-seal"></div>
+                  </div>
                 </div>
-                <div className="envelope-body">
-                  <div className="envelope-back"></div>
-                  <div className="envelope-flap"></div>
-                  <div className="envelope-front-left"></div>
-                  <div className="envelope-front-right"></div>
-                  <div className="envelope-seal"></div>
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
 
           {showDiaryDrawer && (

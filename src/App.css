@@ -936,6 +936,7 @@ input {
 }
 
 @media (max-width: 900px) {
+
   .main-container.home-mode {
     padding: 18px;
     overflow-y: auto;
@@ -1084,7 +1085,109 @@ input {
 .floating-letter-line.long {
   margin-top: 116px;
 }
+/* =====================================================
+   0515 Mobile Homepage Fix
+===================================================== */
 
+@media (max-width: 768px) {
+
+  .main-container.home-mode {
+    padding: 12px !important;
+    align-items: flex-start !important;
+  }
+
+  .home-hero {
+    width: 100%;
+    min-height: auto !important;
+
+    padding: 20px 16px 26px !important;
+
+    gap: 18px !important;
+
+    border-radius: 24px !important;
+
+    overflow: hidden;
+  }
+
+  .hero-copy {
+    width: 100%;
+  }
+
+  .hero-kicker {
+    font-size: 10px !important;
+
+    padding: 7px 12px !important;
+
+    margin-bottom: 14px !important;
+  }
+
+  .hero-title {
+    font-size: 28px !important;
+
+    line-height: 1.2 !important;
+
+    text-align: center !important;
+
+    margin-bottom: 18px !important;
+  }
+
+  .hero-letter-text {
+    min-height: auto !important;
+
+    font-size: 15px !important;
+
+    line-height: 1.9 !important;
+
+    margin-bottom: 18px !important;
+  }
+
+  .hero-start-btn {
+    width: 100% !important;
+
+    max-width: 100% !important;
+
+    height: 56px !important;
+
+    font-size: 22px !important;
+  }
+
+  .hero-visual {
+    min-height: 180px !important;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+  }
+
+  .envelope-stage {
+    width: 220px !important;
+
+    height: 160px !important;
+  }
+
+  .envelope-body {
+    height: 150px !important;
+  }
+
+  .floating-letter {
+    width: 140px !important;
+
+    height: 180px !important;
+  }
+
+  .hero-diary-btn {
+    top: 12px !important;
+
+    right: 12px !important;
+
+    width: 42px !important;
+
+    height: 42px !important;
+  }
+
+}
 @media (max-width: 900px) {
   .hero-title {
     white-space: normal;
@@ -2256,5 +2359,125 @@ input {
 
   .home-hero {
     backdrop-filter: blur(10px);
+  }
+}
+/* =====================================================
+   0515 Envelope Login Position Fix
+===================================================== */
+
+.home-hero-opening {
+  justify-content: center;
+}
+
+.home-hero-opening .hero-visual {
+  min-height: 360px;
+  margin-top: 8px;
+}
+
+.home-hero-opening .envelope-stage {
+  transform: translateY(-10px);
+}
+
+.home-hero-opening .floating-letter {
+  z-index: 10;
+}
+
+.invite-card-content {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  height: 100%;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  color: #14332c;
+  text-align: center;
+}
+
+.invite-card-badge {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 900;
+  color: #0d4d42;
+}
+
+.invite-card-title {
+  margin: 0;
+  font-size: 26px;
+  color: #14332c;
+}
+
+.invite-card-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.invite-card-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(13, 77, 66, 0.28);
+  font-size: 15px;
+}
+
+.invite-card-btn {
+  padding: 11px 16px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d8a047, #f0d58a);
+  color: #14211c;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.invite-card-error {
+  color: #b43b2f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* 手機置中修正 */
+@media (max-width: 768px) {
+  .main-container.home-mode {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 18px 12px !important;
+  }
+
+  .home-hero {
+    margin: 0 auto !important;
+    max-height: none;
+  }
+
+  .home-hero-opening .hero-visual {
+    min-height: 310px !important;
+    margin-top: 4px;
+  }
+
+  .home-hero-opening .envelope-stage {
+    width: 250px !important;
+    height: 220px !important;
+    transform: translateY(-4px);
+  }
+
+  .home-hero-opening .floating-letter {
+    width: 190px !important;
+    height: 250px !important;
+  }
+
+  .invite-card-content {
+    padding: 20px 16px;
+    gap: 10px;
+  }
+
+  .invite-card-title {
+    font-size: 24px;
+  }
+
+  .invite-card-desc {
+    font-size: 13.5px;
   }
 }

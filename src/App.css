@@ -2481,3 +2481,254 @@ input {
     font-size: 13.5px;
   }
 }
+/* =====================================================
+   0525 Homepage Letter Overlay Fix v2
+===================================================== */
+
+.home-hero-opening .hero-copy {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease;
+}
+
+.home-hero-opening .hero-visual {
+  position: relative;
+  z-index: 20;
+}
+
+.home-hero-opening .floating-letter {
+  z-index: 100;
+}
+
+/* 手機版修正 */
+@media (max-width: 768px) {
+
+  .home-hero-opening .hero-visual {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding-top: 0;
+}
+
+  .home-hero-opening .envelope-stage {
+  margin: 0 auto;
+  transform: translateY(-60px) scale(0.92);
+}
+}
+
+/* =====================================================
+   0525 Field Notebook Mobile Fullscreen Fix
+   只修手機闖關紀錄：全螢幕、可閱讀、關閉鈕不跑掉
+===================================================== */
+
+@media (max-width: 768px) {
+  .field-notebook-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    overflow: hidden !important;
+    background: rgba(0, 0, 0, 0.78) !important;
+    z-index: 99999 !important;
+    perspective: 1200px !important;
+  }
+
+  .field-notebook-book {
+    position: relative !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+    transform-origin: center center !important;
+    animation: fieldNotebookMobileOpen 0.55s cubic-bezier(0.2, 0.82, 0.22, 1) both !important;
+    filter: none !important;
+  }
+
+  @keyframes fieldNotebookMobileOpen {
+    0% {
+      opacity: 0;
+      transform: rotateY(-36deg) scale(0.92);
+    }
+    70% {
+      opacity: 1;
+      transform: rotateY(4deg) scale(1.01);
+    }
+    100% {
+      opacity: 1;
+      transform: rotateY(0deg) scale(1);
+    }
+  }
+
+  .field-notebook-left-page {
+    display: none !important;
+  }
+
+  .field-notebook-right-page {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: calc(76px + env(safe-area-inset-top)) 20px calc(48px + env(safe-area-inset-bottom)) !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    background:
+      linear-gradient(rgba(142, 104, 38, 0.08) 1px, transparent 1px),
+      linear-gradient(180deg, #fff4d7, #efdcb0) !important;
+    background-size: 100% 42px, 100% 100% !important;
+  }
+
+  .field-notebook-close {
+    position: fixed !important;
+    top: calc(14px + env(safe-area-inset-top)) !important;
+    right: calc(14px + env(safe-area-inset-right)) !important;
+    width: 54px !important;
+    height: 54px !important;
+    z-index: 100001 !important;
+    border-radius: 999px !important;
+    font-size: 32px !important;
+    line-height: 1 !important;
+  }
+
+  .field-notebook-page-head {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 46px minmax(0, 1fr) 46px !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .field-notebook-page-head button {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .field-notebook-page-head div {
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+
+  .field-notebook-page-head span {
+    font-size: 12px !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  .field-notebook-page-head h3 {
+    font-size: 22px !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .field-notebook-status {
+    margin-bottom: 18px !important;
+  }
+
+  .field-notebook-entry {
+    width: 100% !important;
+    padding: 16px 16px !important;
+    margin-bottom: 14px !important;
+    border-radius: 18px !important;
+  }
+
+  .field-notebook-entry h4 {
+    font-size: 17px !important;
+    line-height: 1.4 !important;
+  }
+
+  .field-notebook-entry p {
+    font-size: 16px !important;
+    line-height: 1.85 !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    writing-mode: horizontal-tb !important;
+  }
+
+  .field-notebook-page-dots {
+    justify-content: center !important;
+  }
+
+  .field-notebook-page-dots button {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    padding: 0 !important;
+  }
+
+  .field-notebook-trigger {
+    right: 16px !important;
+    bottom: 16px !important;
+    z-index: 60 !important;
+    transform: scale(0.84) !important;
+    transform-origin: right bottom !important;
+  }
+}
+
+
+/* =====================================================
+   0525 Notebook Close Button Center Fix
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .field-notebook-close {
+    top: 14px !important;
+    right: 14px !important;
+
+    width: 52px !important;
+    height: 52px !important;
+
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    padding: 0 !important;
+    line-height: 1 !important;
+
+    font-size: 30px !important;
+
+    border-radius: 999px !important;
+
+    z-index: 10001 !important;
+  }
+
+  .field-notebook-close span,
+  .field-notebook-close svg {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}

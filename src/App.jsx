@@ -50,7 +50,37 @@ const CHAPTER2_CARDS = [
   card09,
   card10
 ];
+const CASE_FILES = [
+  {
+    id: "CASE-01",
 
+    title: "人行道必要性",
+
+    subtitle: "Pedestrian Infrastructure",
+
+    levels: [1, 2, 3]
+  },
+
+  {
+    id: "CASE-02",
+
+    title: "路口與斑馬線",
+
+    subtitle: "Crosswalk Safety",
+
+    levels: [4]
+  },
+
+  {
+    id: "CASE-03",
+
+    title: "人車衝突與交通設計",
+
+    subtitle: "Urban Conflict",
+
+    levels: [5]
+  }
+];
 const CHAPTERS = {
   1: {
     title: "【1-1 劇情：斷裂的終點】",
@@ -939,16 +969,16 @@ function App() {
           </div>
 
           <div className="mission-files-grid">
-            {LEVEL_FILES.map((file, index) => {
-              const isUnlocked = unlockedLevel >= file.id && Boolean(CHAPTERS[file.id]);
-              const isCompleted = unlockedLevel > file.id;
+            {CASE_FILES.map((file, index) => {
+              const isUnlocked = true;
+              const isCompleted = false;
               const statusText = isCompleted ? "已完成" : isUnlocked ? "可開始" : "未解封";
 
               return (
                 <button
                   key={file.id}
                   className={`mission-file-card ${isUnlocked ? "unlocked" : "locked"} ${isCompleted ? "completed" : ""}`}
-                  onClick={() => handleStartGame(file.id)}
+                  onClick={() => handleStartGame(file.levels[0])}
                   disabled={!isUnlocked}
                   style={{ animationDelay: `${0.12 + index * 0.1}s` }}
                 >
@@ -964,10 +994,13 @@ function App() {
                     {isUnlocked ? file.icon : "🔒"}
                   </div>
 
-                  <div className="mission-file-label">{file.label}</div>
-                  <h2 className="mission-file-title">{file.title}</h2>
-                  <p className="mission-file-theme">{file.theme}</p>
-                  <p className="mission-file-desc">{file.desc}</p>
+                  <div className="mission-file-label"></div>
+                  <h2 className="mission-file-title"></h2>
+                  <p className="mission-file-theme">
+                  {file.subtitle}
+                  </p>
+                  <p className="mission-file-theme"></p>
+                  <p className="mission-file-desc"></p>
 
                   <div className="mission-file-footer" aria-hidden="true">
                     <span>→</span>

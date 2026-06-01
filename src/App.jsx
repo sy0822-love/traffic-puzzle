@@ -24,7 +24,6 @@ import card08 from './assets/card-08.png';
 import card09 from './assets/card-09.png';
 import card10 from './assets/card-10.png';
 import mysteryCityBg from "./assets/mystery-city-bg.png";
-
 const ALLOWED_ACCESS_CODES = {
   KWA1116: {
     userName: "KWA1116 玩家",
@@ -53,31 +52,31 @@ const CHAPTER2_CARDS = [
 const CASE_FILES = [
   {
     id: "CASE-01",
-
-    title: "人行道必要性",
-
-    subtitle: "Pedestrian Infrastructure",
-
+    code: "FILE 01",
+    title: "搶回走路專用道！",
+    subtitle: "路上車子那麼多，行人到底要走哪？我們要一起找出為什麼路上沒有「走路專屬特區」，幫行人搶回可以安心散步的地面空間。",
+    icon: "walk",
+    theme: "green",
     levels: [1, 2, 3]
   },
 
   {
     id: "CASE-02",
-
-    title: "路口與斑馬線",
-
-    subtitle: "Crosswalk Safety",
-
+    code: "FILE 02",
+    title: "斑馬線真的是保命符？",
+    subtitle: "別以為踩在斑馬線上就絕對安全！我們要睜大眼睛，找出隱藏在這些黑白條紋裡的危險陷阱，看看車子是不是真的會看到並讓路。",
+    icon: "crosswalk",
+    theme: "red",
     levels: [4]
   },
 
   {
     id: "CASE-03",
-
-    title: "人車衝突與交通設計",
-
-    subtitle: "Urban Conflict",
-
+    code: "FILE 03",
+    title: "路口的人車大塞車",
+    subtitle: "綠燈一亮，轉彎的車子和直行的人全部擠在路口，差點撞成一團！我們要找出為什麼人跟車會在這裡「狹路相逢」、互不相讓。",
+    icon: "car",
+    theme: "yellow",
     levels: [5]
   }
 ];
@@ -149,12 +148,55 @@ const CHAPTERS = {
 }
 
 const LEVEL_FILES = [
-  { id: 1, code: "FILE 01", label: "1-1", icon: "🧭", title: "斷裂的終點", theme: "無障礙坡道調查", desc: "量測郵局石階高度，摺出合乎比例的坡道設計。" },
-  { id: 2, code: "FILE 02", label: "1-2", icon: "🚧", title: "剝離冷漠的偽裝", theme: "街道障礙辨識", desc: "撕下混亂街景中的障礙物，找出被遮蔽的答案。" },
-  { id: 3, code: "FILE 03", label: "2-1", icon: "🧠", title: "霓虹下的盲點", theme: "記憶與號誌挑戰", desc: "觀察高速閃現的路標卡牌，在混亂中捕捉順序。" },
-  { id: 4, code: "FILE 04", label: "3-1", icon: "🛣️", title: "被迫繞遠的路", theme: "可達性與路線成本", desc: "比較不同移動路徑，理解繞路背後的交通不平等。" },
-  { id: 5, code: "FILE 05", label: "4-1", icon: "🏙️", title: "城市的回信", theme: "整體交通安全回顧", desc: "整合所有任務線索，完成最後的城市安全觀念挑戰。" }
+  { id: 1,requiredLevel: null, code: "FILE 01", label: "1-1", icon: "🧭", title: "斷裂的終點", theme: "無障礙坡道調查", desc: "量測郵局石階高度，摺出合乎比例的坡道設計。" },
+  { id: 2,requiredLevel: 1, code: "FILE 02", label: "1-2", icon: "🚧", title: "剝離冷漠的偽裝", theme: "街道障礙辨識", desc: "撕下混亂街景中的障礙物，找出被遮蔽的答案。" },
+  { id: 3,requiredLevel: 2, code: "FILE 03", label: "2-1", icon: "🧠", title: "霓虹下的盲點", theme: "記憶與號誌挑戰", desc: "觀察高速閃現的路標卡牌，在混亂中捕捉順序。" },
+  { id: 4,requiredLevel: 3, code: "FILE 04", label: "3-1", icon: "🛣️", title: "被迫繞遠的路", theme: "可達性與路線成本", desc: "比較不同移動路徑，理解繞路背後的交通不平等。" },
+  { id: 5,requiredLevel: 4, code: "FILE 05", label: "4-1", icon: "🏙️", title: "城市的回信", theme: "整體交通安全回顧", desc: "整合所有任務線索，完成最後的城市安全觀念挑戰。" }
 ];
+
+
+function CaseFileIcon({ type }) {
+  if (type === "walk") {
+    return (
+      <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="21" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
+        <path d="M21 13V24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M13 18L21 15L29 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M20 24L14 36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M22 24L30 36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M7 36H35" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.55" />
+      </svg>
+    );
+  }
+
+  if (type === "crosswalk") {
+    return (
+      <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 34H34" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M13 30L17 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M21 30V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M29 30L25 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="21" cy="9" r="3.5" stroke="currentColor" strokeWidth="2" />
+        <path d="M15 16H27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M10 24H32" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.55" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 25L13 17C13.6 15.2 15.2 14 17.1 14H24.9C26.8 14 28.4 15.2 29 17L32 25" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M9 25H33V32H9V25Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="15" cy="32" r="3" stroke="currentColor" strokeWidth="2" />
+      <circle cx="27" cy="32" r="3" stroke="currentColor" strokeWidth="2" />
+      <path d="M15 20H27" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.6" />
+      <path d="M7 13L12 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
+      <path d="M35 13L30 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
+    </svg>
+  );
+}
+
 
 function App() {
   const [hasStartedGame, setHasStartedGame] = useState(false);
@@ -196,6 +238,8 @@ function App() {
   const [records, setRecords] = useState([]);
   const [showNotebook, setShowNotebook] = useState(false);
   const [notebookPage, setNotebookPage] = useState(1);
+  const [notebookView, setNotebookView] = useState("index");
+  const [selectedNotebookCase, setSelectedNotebookCase] = useState(null);
 
   const STORAGE_KEY = "trafficPuzzleUnlockedLevel";
   const [unlockedLevel, setUnlockedLevel] = useState(() => {
@@ -806,8 +850,10 @@ function App() {
   );
 
   const openNotebook = () => {
-    setNotebookPage(Math.min(Math.max(notebookCompletedCount || 1, 1), 5));
-    setShowNotebook(true);
+  setNotebookView("index");
+  setSelectedNotebookCase(null);
+  setNotebookPage(Math.min(Math.max(notebookCompletedCount || 1, 1), 5));
+  setShowNotebook(true);
   };
 
   const goNotebookPrev = () => {
@@ -970,15 +1016,33 @@ function App() {
 
           <div className="mission-files-grid">
             {CASE_FILES.map((file, index) => {
-              const isUnlocked = true;
-              const isCompleted = false;
-              const statusText = isCompleted ? "已完成" : isUnlocked ? "可開始" : "未解封";
+              const firstLevel = file.levels[0];
+
+              const levelMeta = LEVEL_FILES.find(
+                (item) => item.id === firstLevel
+              );
+
+              const isUnlocked =
+                !levelMeta?.requiredLevel ||
+                unlockedLevel >= firstLevel;
+
+              const isCompleted =
+                file.levels.every((level) => unlockedLevel > level);
+
+              const statusText = isCompleted
+                ? "已完成"
+                : isUnlocked
+                ? "可開始"
+                : "尚未解鎖";
 
               return (
                 <button
                   key={file.id}
-                  className={`mission-file-card ${isUnlocked ? "unlocked" : "locked"} ${isCompleted ? "completed" : ""}`}
-                  onClick={() => handleStartGame(file.levels[0])}
+                  className={`mission-file-card ${file.theme} ${isUnlocked ? "unlocked" : "locked"} ${isCompleted ? "completed" : ""}`}
+                  onClick={() => {
+                    if (!isUnlocked) return;
+                      handleStartGame(file.levels[0]);
+                    }}
                   disabled={!isUnlocked}
                   style={{ animationDelay: `${0.12 + index * 0.1}s` }}
                 >
@@ -991,16 +1055,12 @@ function App() {
                   </div>
 
                   <div className="mission-file-seal" aria-hidden="true">
-                    {isUnlocked ? file.icon : "🔒"}
+                    <CaseFileIcon type={file.icon} />
                   </div>
 
-                  <div className="mission-file-label"></div>
-                  <h2 className="mission-file-title"></h2>
-                  <p className="mission-file-theme">
-                  {file.subtitle}
-                  </p>
-                  <p className="mission-file-theme"></p>
-                  <p className="mission-file-desc"></p>
+                  <div className="mission-file-label">{file.id}</div>
+                  <h2 className="mission-file-title">{file.title}</h2>
+                  <p className="mission-file-theme">{file.subtitle}</p>
 
                   <div className="mission-file-footer" aria-hidden="true">
                     <span>→</span>
@@ -1227,47 +1287,120 @@ function App() {
             </section>
 
             <section className="field-notebook-right-page">
-              <div className="field-notebook-page-head">
-                <button onClick={goNotebookPrev} disabled={notebookPage === 1}>‹</button>
-                <div>
-                  <span>PAGE {notebookPage}/5</span>
-                  <h3>{notebookCurrentFile.label}｜{notebookCurrentFile.title}</h3>
-                </div>
-                <button onClick={goNotebookNext} disabled={notebookPage === 5}>›</button>
-              </div>
 
-              <div className={`field-notebook-status ${notebookCurrentRecord ? "done" : "pending"}`}>
-                {notebookCurrentRecord ? `已完成・${notebookCurrentRecord.time_seconds}s` : "尚未完成"}
-              </div>
+  {notebookView === "index" ? (
 
-              <div className="field-notebook-entry">
-                <h4>劇情紀錄</h4>
-                <p>{CHAPTERS[notebookPage]?.title || notebookCurrentFile.title}</p>
-              </div>
+    <div className="field-record-index">
 
-              <div className="field-notebook-entry">
-                <h4>觀念筆記</h4>
-                <p>{CHAPTERS[notebookPage]?.concept || "完成此關後，這裡會留下你的觀念紀錄。"}</p>
-              </div>
+      <h2 className="field-record-index-title">
+        FIELD RECORDS
+      </h2>
 
-              <div className="field-notebook-entry compact">
-                <h4>五頁索引</h4>
-                <div className="field-notebook-page-dots">
-                  {[1, 2, 3, 4, 5].map((level) => {
-                    const hasRecord = notebookCompletedRecords.some((record) => record.puzzle_id === `puzzle_0${level}`);
-                    return (
-                      <button
-                        key={level}
-                        className={`${notebookPage === level ? "active" : ""} ${hasRecord ? "done" : ""}`}
-                        onClick={() => setNotebookPage(level)}
-                      >
-                        {level}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
+      {CASE_FILES.map((file) => {
+
+        const completedCount = file.levels.filter(
+          (level) => unlockedLevel > level
+        ).length;
+
+        return (
+
+          <button
+            key={file.id}
+            className={`field-record-case-card ${file.theme}`}
+            onClick={() => {
+              setSelectedNotebookCase(file);
+              setNotebookView("case");
+            }}
+          >
+
+            <div className="field-record-case-top">
+              <span>{file.code}</span>
+              <span>
+                {completedCount}/{file.levels.length}
+              </span>
+            </div>
+
+            <h3>{file.title}</h3>
+
+            <p>{file.subtitle}</p>
+
+          </button>
+        );
+      })}
+    </div>
+
+  ) : (
+
+    <>
+
+      <div className="field-notebook-page-head">
+        <button onClick={goNotebookPrev} disabled={notebookPage === 1}>‹</button>
+
+        <div>
+          <span>PAGE {notebookPage}/5</span>
+          <h3>
+            {notebookCurrentFile.label}｜
+            {notebookCurrentFile.title}
+          </h3>
+        </div>
+
+        <button onClick={goNotebookNext} disabled={notebookPage === 5}>›</button>
+      </div>
+
+      <div className={`field-notebook-status ${notebookCurrentRecord ? "done" : "pending"}`}>
+        {notebookCurrentRecord
+          ? `已完成・${notebookCurrentRecord.time_seconds}s`
+          : "尚未完成"}
+      </div>
+
+      <div className="field-notebook-entry">
+        <h4>劇情紀錄</h4>
+        <p>
+          {CHAPTERS[notebookPage]?.title || notebookCurrentFile.title}
+        </p>
+      </div>
+
+      <div className="field-notebook-entry">
+        <h4>觀念筆記</h4>
+        <p>
+          {CHAPTERS[notebookPage]?.concept ||
+            "完成此關後，這裡會留下你的觀念紀錄。"}
+        </p>
+      </div>
+
+      <div className="field-notebook-entry compact">
+
+        <h4>五頁索引</h4>
+
+        <div className="field-notebook-page-dots">
+
+          {[1, 2, 3, 4, 5].map((level) => {
+
+            const hasRecord =
+              notebookCompletedRecords.some(
+                (record) =>
+                  record.puzzle_id === `puzzle_0${level}`
+              );
+
+            return (
+              <button
+                key={level}
+                className={`${notebookPage === level ? "active" : ""} ${hasRecord ? "done" : ""}`}
+                onClick={() => setNotebookPage(level)}
+              >
+                {level}
+              </button>
+            );
+          })}
+
+        </div>
+      </div>
+
+    </>
+
+  )}
+
+</section>
           </div>
         </div>
       )}

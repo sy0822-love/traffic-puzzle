@@ -755,21 +755,17 @@ input {
 }
 
 .hero-diary-btn {
-  top: 24px;
-  right: 24px;
-  background: rgba(8, 45, 40, 0.8);
-  border: 1px solid rgba(185, 255, 233, 0.18);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+  display: none !important;
 }
 
 .hero-visual {
   position: relative;
-  z-index: 1;
-  min-height: 420px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  perspective: 1200px;
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  overflow: visible;
 }
 
 .envelope-stage {
@@ -880,23 +876,43 @@ input {
 .floating-letter {
   position: absolute;
   left: 50%;
-  bottom: 76px;
-  width: 250px;
-  height: 320px;
-  padding: 28px 24px;
-  transform: translateX(-50%) translateY(112px) rotate(1deg);
-  border-radius: 14px 14px 8px 8px;
+  bottom: 120px;
+  width: min(88vw, 340px);
+  padding: 24px 22px;
+  transform: translateX(-50%);
+  border-radius: 16px 16px 10px 10px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 228, 205, 0.98)),
-    repeating-linear-gradient(transparent, transparent 28px, rgba(30, 50, 45, 0.08) 29px);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.34);
-  opacity: 0.15;
-  z-index: 3;
-  transition:
-    transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.8s ease;
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.97),
+      rgba(239,229,207,0.98)
+    );
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.34),
+    0 8px 24px rgba(0,0,0,0.18);
+  opacity: 1;
+  z-index: 100;
+  animation:
+    letterRise 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    letterFloat 4s ease-in-out infinite;
 }
+@keyframes letterRise {
+  0% {
+    opacity: 0;
+    transform:
+      translateX(-50%)
+      translateY(120px)
+      scale(0.82);
+  }
 
+  100% {
+    opacity: 1;
+    transform:
+      translateX(-50%)
+      translateY(0px)
+      scale(1);
+  }
+}
 .envelope-stage.is-open .floating-letter {
   transform: translateX(-50%) translateY(-92px) rotate(-2deg);
   opacity: 1;
@@ -1405,8 +1421,8 @@ input {
 }
 
 .mission-file-title { position: relative; z-index: 2; margin: 0 0 10px; color: #f6fffb; font-size: 23px; line-height: 1.25; letter-spacing: 0.04em; }
-.mission-file-theme { position: relative; z-index: 2; margin: 0 0 14px; color: #f0d58a; font-size: 14px; font-weight: 800; letter-spacing: 0.05em; }
-.mission-file-desc { position: relative; z-index: 2; margin: 0; color: rgba(237, 255, 248, 0.70); font-size: 15px; line-height: 1.7; }
+.mission-file-theme {position: relative;z-index: 2;margin: 0 0 14px;color: rgba(255, 255, 255, 0.82);font-size: 14px;font-weight: 400;line-height: 1.8;letter-spacing: 0.02em;}
+.mission-file-desc {position: relative;z-index: 2;margin: 0;color: rgba(255, 255, 255, 0.72);font-size: 15px;line-height: 1.9;font-weight: 400;}
 .mission-file-footer { position: absolute; left: 22px; right: 22px; bottom: 20px; color: rgba(237, 255, 248, 0.76); }
 .mission-file-card.locked .mission-file-footer,
 .mission-file-card.locked .mission-file-label,
@@ -2370,8 +2386,7 @@ input {
 }
 
 .home-hero-opening .hero-visual {
-  min-height: 360px;
-  margin-top: 8px;
+  min-height: 420px;
 }
 
 .home-hero-opening .envelope-stage {
@@ -2507,18 +2522,18 @@ input {
 
   .home-hero-opening .hero-visual {
   width: 100%;
-  min-height: 100vh;
+  min-height: 320px;
 
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
 
   padding-top: 0;
 }
 
   .home-hero-opening .envelope-stage {
   margin: 0 auto;
-  transform: translateY(-60px) scale(0.92);
+  transform: translateY(10px) scale(0.96);
 }
 }
 
@@ -2731,4 +2746,196 @@ input {
     justify-content: center !important;
     align-items: center !important;
   }
+}
+/* =====================================================
+   0601 FINAL Homepage Login Opening Fix
+   只修：登入頁巨大綠框、信封位置、登入卡動畫
+===================================================== */
+
+.home-hero-opening {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  backdrop-filter: none !important;
+
+  min-height: 100vh !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  overflow: visible !important;
+}
+
+.home-hero-opening::before {
+  display: none !important;
+}
+
+.home-hero-opening .hero-copy {
+  display: none !important;
+}
+
+.home-hero-opening .hero-visual {
+  width: 100% !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  overflow: visible !important;
+}
+
+.home-hero-opening .envelope-stage {
+  width: 320px !important;
+  height: 300px !important;
+
+  margin: 0 auto !important;
+  transform: translateY(40px) scale(0.95) !important;
+
+  animation: envelopeFloat 4s ease-in-out infinite !important;
+}
+
+.home-hero-opening .floating-letter {
+  left: 50% !important;
+  bottom: 52px !important;
+  width: min(86vw, 320px) !important;
+  height: auto !important;
+  min-height: 260px !important;
+  opacity: 1 !important;
+  z-index: 100 !important;
+  animation:
+  loginLetterRise 2.4s cubic-bezier(0.22, 1, 0.36, 1) both,
+  letterFloat 4s ease-in-out infinite 2.4s !important;
+}
+
+@keyframes loginLetterRise {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateX(-50%)
+      translateY(120px)
+      scale(0.88);
+  }
+  15% {
+    opacity: 1;
+  }
+  55% {
+    transform:
+      translateX(-50%)
+      translateY(-18px)
+      scale(1.01);
+  }
+  72% {
+    transform:
+      translateX(-50%)
+      translateY(4px)
+      scale(0.995);
+  }
+  100% {
+    transform:
+      translateX(-50%)
+      translateY(0px)
+      scale(1);
+  }
+}
+/* =========================================
+   CASE FILE COLORS
+========================================= */
+
+.mission-file-card.green {
+
+  background:
+    radial-gradient(circle at top left,
+      rgba(120,160,145,0.16),
+      rgba(0,0,0,0)
+    ),
+    linear-gradient(
+      145deg,
+      rgba(6,28,24,0.92),
+      rgba(2,18,16,0.96)
+    );
+}
+
+.mission-file-card.red {
+
+  background:
+    radial-gradient(circle at top left,
+      rgba(160,95,95,0.14),
+      rgba(0,0,0,0)
+    ),
+    linear-gradient(
+      145deg,
+      rgba(34,12,12,0.92),
+      rgba(20,6,6,0.96)
+    );
+}
+
+.mission-file-card.yellow {
+
+  background:
+    radial-gradient(circle at top left,
+      rgba(186,170,110,0.12),
+      rgba(0,0,0,0)
+    ),
+    linear-gradient(
+      145deg,
+      rgba(42,36,16,0.92),
+      rgba(26,20,8,0.96)
+    );
+}
+/* =========================================
+   LOCKED CASE FILE
+========================================= */
+
+.mission-file-card.locked {
+
+  position: relative;
+
+  opacity: 0.5;
+
+  filter: grayscale(0.2);
+
+  overflow: hidden;
+}
+/* =========================================
+   LOCKED CASE FILE
+========================================= */
+
+.mission-file-card.locked {
+  position: relative;
+  opacity: 0.58;
+  filter: grayscale(0.15);
+  pointer-events: none;
+}
+
+.mission-file-card.locked .mission-file-seal {
+  position: relative;
+}
+
+.mission-file-card.locked .mission-file-seal::after {
+  content: "🔒";
+  position: absolute;
+  right: -8px;
+  top: -10px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(15, 18, 18, 0.88);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 14px;
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.32);
+  z-index: 5;
 }

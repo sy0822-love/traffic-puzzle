@@ -240,6 +240,7 @@ function App() {
   const [notebookPage, setNotebookPage] = useState(1);
   const [notebookView, setNotebookView] = useState("index");
   const [selectedNotebookCase, setSelectedNotebookCase] = useState(null);
+  const [expandedCaseId, setExpandedCaseId] = useState(null);
 
   const STORAGE_KEY = "trafficPuzzleUnlockedLevel";
   const [unlockedLevel, setUnlockedLevel] = useState(() => {
@@ -1308,23 +1309,16 @@ function App() {
             key={file.id}
             className={`field-record-case-card ${file.theme}`}
             onClick={() => {
-              setSelectedNotebookCase(file);
-              setNotebookView("case");
-            }}
+            if (expandedCaseId === file.id) {
+              setExpandedCaseId(null);
+            } else {
+              setExpandedCaseId(file.id);
+            }
+          }}
           >
-
-            <div className="field-record-case-top">
-              <span>{file.code}</span>
-              <span>
-                {completedCount}/{file.levels.length}
-              </span>
-            </div>
-
             <h3>{file.title}</h3>
-
-            <p>{file.subtitle}</p>
-
           </button>
+          
         );
       })}
     </div>

@@ -3139,3 +3139,32 @@ input {
     color: #173b35 !important;
   }
 }
+
+.page-fade-slide {
+  animation:
+    notebookPageEnter 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+
+}
+
+@keyframes notebookPageEnter {
+
+  from {
+    opacity: 0;
+    transform:
+      translateX(34px)
+      translateY(6px);
+    filter:
+      blur(4px);
+
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateX(0)
+      translateY(0);
+    filter:
+      blur(0);
+  }
+
+}

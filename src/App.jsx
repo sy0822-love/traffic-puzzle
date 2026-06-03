@@ -154,11 +154,102 @@ const LEVEL_FILES = [
   { id: 4,requiredLevel: 3, code: "FILE 04", label: "3-1", icon: "🛣️", title: "被迫繞遠的路", theme: "可達性與路線成本", desc: "比較不同移動路徑，理解繞路背後的交通不平等。" },
   { id: 5,requiredLevel: 4, code: "FILE 05", label: "4-1", icon: "🏙️", title: "城市的回信", theme: "整體交通安全回顧", desc: "整合所有任務線索，完成最後的城市安全觀念挑戰。" }
 ];
+const NOTEBOOK_PAGES = [
+  {
+    type: "cover",
+    title: "FIELD RECORDS",
+    subtitle: "城市交通筆記",
+    content:
+      "這本筆記會在你完成關卡後，留下每一關的交通安全知識重點。"
+  },
+  {
+    type: "toc",
+    title: "目錄",
+    chapters: [
+      {
+        id: "case-01",
+        code: "01",
+        title: "搶回走路專用道！",
+        bookPage: 2
+      },
+      {
+        id: "case-02",
+        code: "02",
+        title: "斑馬線真的是保命符？",
+        bookPage: 4
+      },
+      {
+        id: "case-03",
+        code: "03",
+        title: "路口的人車大塞車",
+        bookPage: 6
+      }
+    ]
+  },
+  {
+    type: "chapter",
+    id: "case-01",
+    code: "01",
+    title: "搶回走路專用道！",
+    levels: [1, 2, 3]
+  },
+  {
+    type: "blank"
+  },
+  {
+    type: "chapter",
+    id: "case-02",
+    code: "02",
+    title: "斑馬線真的是保命符？",
+    levels: [4]
+  },
+  {
+    type: "blank"
+  },
+  {
+    type: "chapter",
+    id: "case-03",
+    code: "03",
+    title: "路口的人車大塞車",
+    levels: [5]
+  },
+  {
+    type: "blank"
+  }
+];
 
+const NOTEBOOK_LEVEL_NOTES = {
+  1: {
+    title: "1-1 人行道的重要性",
+    content:
+      "你知道嗎？腳下看似普通的磚道，其實隱藏著都市的貼心設計：一條合格的人行道，必須留出至少 1.5 公尺寬度、且絕對不能有任何路燈或電箱阻擋的「步行通行空間」，才能讓坐輪椅或推嬰兒車的人安全通過喔！"
+  },
+  2: {
+    title: "1-2 騎樓不停車",
+    content:
+      "腳下這片騎樓，是台灣都市最奇妙的灰色地帶：它承載著私人的產權，卻也肩負著大眾通行的義務，這份空間的複雜歸屬，其實正考驗著每個人用「讓步」去成就彼此的智慧。"
+  },
+  3: {
+    title: "1-3 人行道上的障礙物",
+    content:
+      "人行道的存在是為了「人」，而不是為了擺放變電箱、路燈和公車站牌。當我們習慣在狹縫中與變電箱擦身而過時，其實已經默默讓出了原本屬於我們的安全路權。"
+  },
+  4: {
+    title: "2-1 斑馬線安全性",
+    content:
+      "斑馬線不是絕對安全的保命符。真正的安全來自清楚視線、駕駛停讓、合理號誌，以及讓行人能被看見的道路設計。"
+  },
+  5: {
+    title: "3-1 路口的人車衝突",
+    content:
+      "路口是行人與車輛最容易交會的地方。當轉彎車、直行行人與號誌時間沒有被妥善安排時，就容易形成危險的人車衝突。"
+  }
+};
 
 function CaseFileIcon({ type }) {
   if (type === "walk") {
-    return (
+
+  return (
       <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="21" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
         <path d="M21 13V24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -239,6 +330,7 @@ function App() {
   const [showNotebook, setShowNotebook] = useState(false);
   const [notebookPage, setNotebookPage] = useState(1);
   const [notebookView, setNotebookView] = useState("index");
+  const [currentBookPage, setCurrentBookPage] = useState(0);
   const [selectedNotebookCase, setSelectedNotebookCase] = useState(null);
   const [expandedCaseId, setExpandedCaseId] = useState(null);
 
@@ -848,15 +940,13 @@ function App() {
   const notebookCurrentFile = LEVEL_FILES.find((file) => file.id === notebookPage) || LEVEL_FILES[0];
   const notebookCurrentRecord = notebookCompletedRecords.find(
     (record) => record.puzzle_id === `puzzle_0${notebookPage}`
-  );
-
-  const openNotebook = () => {
-  setNotebookView("index");
-  setSelectedNotebookCase(null);
-  setNotebookPage(Math.min(Math.max(notebookCompletedCount || 1, 1), 5));
-  setShowNotebook(true);
+  );const openNotebook = () => {
+    setNotebookView("index");
+    setSelectedNotebookCase(null);
+    setNotebookPage(1);
+    setCurrentBookPage(0);
+    setShowNotebook(true);
   };
-
   const goNotebookPrev = () => {
     setNotebookPage((prev) => Math.max(1, prev - 1));
   };
@@ -864,6 +954,338 @@ function App() {
   const goNotebookNext = () => {
     setNotebookPage((prev) => Math.min(5, prev + 1));
   };
+
+  const nextBookPage = () => {
+    setCurrentBookPage((prev) =>
+      Math.min(prev + 2, NOTEBOOK_PAGES.length - 2)
+    );
+  };
+
+  const prevBookPage = () => {
+    setCurrentBookPage((prev) =>
+      Math.max(prev - 2, 0)
+    );
+  };
+
+  const isNotebookLevelCompleted = (level) =>
+    notebookCompletedRecords.some(
+      (record) => record.puzzle_id === `puzzle_0${level}`
+    );
+
+  const jumpToNotebookPage = (targetPage) => {
+    setCurrentBookPage(targetPage);
+  };
+
+  const renderNotebookPage = (page, side = "left") => {
+    const pageRadius = side === "left" ? "22px 6px 6px 22px" : "6px 22px 22px 6px";
+    const pageShadow =
+      side === "left"
+        ? "inset -18px 0 30px rgba(32, 24, 10, 0.14)"
+        : "inset 18px 0 30px rgba(32, 24, 10, 0.12)";
+
+    const basePageStyle = {
+      minHeight: "520px",
+      padding: side === "left" ? "34px 34px 30px 54px" : "34px",
+      borderRadius: pageRadius,
+      background:
+        "linear-gradient(135deg, rgba(239, 222, 180, 0.96), rgba(207, 183, 134, 0.92))",
+      boxShadow: pageShadow,
+      color: "#173d35",
+      position: "relative",
+      overflow: "hidden"
+    };
+
+    const paperTexture = (
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.16,
+          background:
+            "repeating-linear-gradient(45deg, rgba(92,68,35,0.18) 0px, rgba(92,68,35,0.18) 1px, transparent 1px, transparent 9px)",
+          pointerEvents: "none"
+        }}
+      />
+    );
+
+    const spiralBinding = side === "left" ? (
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "6px",
+          top: "16px",
+          bottom: "16px",
+          width: "28px",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          pointerEvents: "none"
+        }}
+      >
+        {Array.from({ length: 13 }).map((_, index) => (
+          <div
+            key={index}
+            style={{
+              position: "relative",
+              width: "24px",
+              height: "14px"
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                left: "0px",
+                top: "0px",
+                width: "10px",
+                height: "12px",
+                border: "2px solid #1e1e1e",
+                borderRight: "none",
+                borderRadius: "10px 0 0 10px",
+                background: "transparent"
+              }}
+            />
+            <span
+              style={{
+                position: "absolute",
+                left: "8px",
+                top: "0px",
+                width: "10px",
+                height: "12px",
+                border: "2px solid #1e1e1e",
+                borderLeft: "none",
+                borderRadius: "0 10px 10px 0",
+                background: "transparent"
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    ) : null;
+
+    if (!page) {
+      return (
+        <div className="field-book-page page-fade-slide" style={basePageStyle}>
+          {paperTexture}
+          {spiralBinding}
+        </div>
+      );
+    }
+
+    if (page.type === "blank") {
+      return (
+        <div
+          className="field-book-page page-fade-slide"
+          style={{
+            ...basePageStyle,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          {paperTexture}
+          {spiralBinding}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 3,
+              width: "100%",
+              height: "100%",
+              borderRadius: "18px",
+              border: "1px dashed rgba(18,53,47,0.18)",
+              opacity: 0.45
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (page.type === "cover") {
+      return (
+        <div
+          className="field-book-page page-fade-slide"
+          style={{
+            ...basePageStyle,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between"
+          }}
+        >
+          {paperTexture}
+          {spiralBinding}
+          <div style={{ position: "relative", zIndex: 3 }}>
+            <div style={{ fontSize: "13px", letterSpacing: "0.22em", fontWeight: 800, opacity: 0.72 }}>
+              FIELD NOTEBOOK
+            </div>
+            <h1 style={{ margin: "24px 0 14px", fontSize: "46px", lineHeight: 1.03, color: "#12352f" }}>
+              {page.title}
+            </h1>
+            <h3 style={{ margin: "30px 0 12px", fontSize: "24px", color: "#24483f" }}>
+              {page.subtitle}
+            </h3>
+            <p style={{ fontSize: "17px", lineHeight: 1.85, color: "#3b5b52" }}>
+              {page.content}
+            </p>
+          </div>
+
+          <button
+            className="field-book-nav"
+            onClick={nextBookPage}
+            style={{
+              position: "relative",
+              zIndex: 1,
+              alignSelf: "flex-end",
+              border: "1px solid rgba(247,231,189,0.22)",
+              borderRadius: "999px",
+              padding: "11px 22px",
+              background: "rgba(18, 53, 47, 0.92)",
+              color: "#f7e7bd",
+              fontWeight: 800,
+              letterSpacing: "0.08em",
+              cursor: "pointer"
+            }}
+          >
+            NEXT →
+          </button>
+        </div>
+      );
+    }
+
+    if (page.type === "toc") {
+      return (
+        <div className="field-book-page page-fade-slide" style={basePageStyle}>
+          {paperTexture}
+          {spiralBinding}
+          <div style={{ position: "relative", zIndex: 3 }}>
+            <h2 style={{ margin: "0 0 30px", textAlign: "center", fontSize: "36px", color: "#12352f" }}>
+              {page.title}
+            </h2>
+
+            <div style={{ display: "grid", gap: "18px" }}>
+              {page.chapters.map((chapter) => (
+                <button
+                  key={chapter.id}
+                  onClick={() => jumpToNotebookPage(chapter.bookPage)}
+                  style={{
+                    width: "100%",
+                    border: "1px solid rgba(18, 53, 47, 0.22)",
+                    borderRadius: "999px",
+                    padding: "16px 22px",
+                    background: "rgba(255, 249, 231, 0.34)",
+                    color: "#12352f",
+                    boxShadow: "0 10px 20px rgba(35, 26, 10, 0.10)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "18px",
+                    fontSize: "18px",
+                    fontWeight: 800,
+                    cursor: "pointer"
+                  }}
+                >
+                  <span style={{ fontSize: "24px", letterSpacing: "0.08em" }}>{chapter.code}</span>
+                  <span style={{ textAlign: "left" }}>{chapter.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (page.type === "chapter") {
+      return (
+        <div className="field-book-page field-book-record-page page-fade-slide" style={basePageStyle}>
+          {paperTexture}
+          {spiralBinding}
+          <div style={{ position: "relative", zIndex: 3 }}>
+            <div style={{ marginBottom: "20px" }}>
+              <div style={{ fontSize: "13px", letterSpacing: "0.18em", fontWeight: 900, color: "#84612c" }}>
+                CHAPTER {page.code}
+              </div>
+              <h2 style={{ margin: "8px 0 0", fontSize: "27px", lineHeight: 1.25, color: "#12352f" }}>
+                {page.title}
+              </h2>
+            </div>
+
+            <div style={{ display: "grid", gap: "13px" }}>
+              {page.levels.filter((level) => isNotebookLevelCompleted(level)).length > 0 ? (
+                page.levels
+                  .filter((level) => isNotebookLevelCompleted(level))
+                  .map((level) => {
+                    const note = NOTEBOOK_LEVEL_NOTES[level];
+
+                    return (
+                      <article
+                        key={level}
+                        style={{
+                          borderRadius: "17px",
+                          padding: "16px 18px",
+                          background: "rgba(255, 249, 231, 0.50)",
+                          border: "1px solid rgba(18,53,47,0.18)",
+                          boxShadow: "0 8px 18px rgba(44, 31, 13, 0.10)"
+                        }}
+                      >
+                        <div style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: "12px",
+                          alignItems: "center",
+                          marginBottom: "8px"
+                        }}>
+                          <div>
+                            <div style={{ margin: "0 0 4px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
+                              KNOWLEDGE NOTE
+                            </div>
+                            <h3 style={{ margin: 0, fontSize: "18px", color: "#12352f" }}>
+                              {note.title}
+                            </h3>
+                          </div>
+                          <span style={{
+                            flex: "0 0 auto",
+                            fontSize: "12px",
+                            fontWeight: 900,
+                            borderRadius: "999px",
+                            padding: "5px 9px",
+                            background: "rgba(18, 53, 47, 0.14)",
+                            color: "#12352f"
+                          }}>
+                            已記錄
+                          </span>
+                        </div>
+
+                        <p style={{ margin: 0, fontSize: "15px", lineHeight: 1.72, color: "#36564d" }}>
+                          {note.content}
+                        </p>
+                      </article>
+                    );
+                  })
+              ) : (
+                <div
+                  style={{
+                    borderRadius: "17px",
+                    padding: "18px",
+                    background: "rgba(255, 249, 231, 0.22)",
+                    border: "1px dashed rgba(18,53,47,0.22)",
+                    color: "#6b6b57",
+                    fontSize: "15px",
+                    lineHeight: 1.7
+                  }}
+                >
+                  這一章的闖關筆記還沒有解鎖。完成對應小關後，這裡才會出現知識重點。
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+
 
   return (
     <div className={`main-container unified-city-mode ${!hasStartedGame && !showLevelSelect ? "home-mode" : ""} ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""}`}>
@@ -1259,142 +1681,140 @@ function App() {
 
 
       {showNotebook && (
-        <div className="field-notebook-overlay" onClick={() => setShowNotebook(false)}>
-          <div className="field-notebook-book" onClick={(event) => event.stopPropagation()}>
+        <div
+          className="field-notebook-overlay"
+          onClick={() => setShowNotebook(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 2000,
+            background:
+              "radial-gradient(circle at 50% 20%, rgba(43, 75, 64, 0.42), rgba(3, 13, 12, 0.86) 62%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "22px",
+            backdropFilter: "blur(5px)"
+          }}
+        >
+          <div
+            className="field-notebook-book"
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              position: "relative",
+              width: "min(940px, 96vw)",
+              minHeight: "600px",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0",
+              borderRadius: "28px",
+              padding: "14px 14px 14px 24px",
+              background:
+                "linear-gradient(90deg, rgba(83,65,38,0.86) 0%, rgba(228,207,163,0.9) 3%, rgba(218,196,152,0.9) 48%, rgba(76,57,31,0.55) 50%, rgba(218,196,152,0.9) 52%, rgba(228,207,163,0.9) 97%, rgba(83,65,38,0.86) 100%)",
+              boxShadow:
+                "0 28px 85px rgba(0,0,0,0.44), 0 0 0 1px rgba(247,231,189,0.12)"
+            }}
+          >
             <button
               className="field-notebook-close"
               onClick={() => setShowNotebook(false)}
               aria-label="關閉闖關紀錄"
+              style={{
+                position: "absolute",
+                top: "-14px",
+                right: "-14px",
+                zIndex: 5,
+                width: "54px",
+                height: "54px",
+                borderRadius: "50%",
+                border: "1px solid rgba(247,231,189,0.28)",
+                background: "rgba(231,184,79,0.94)",
+                color: "#11332d",
+                fontSize: "32px",
+                lineHeight: 1,
+                cursor: "pointer",
+                boxShadow: "0 12px 26px rgba(0,0,0,0.28)"
+              }}
             >
               ×
             </button>
 
-            <section className="field-notebook-left-page">
-              <div className="field-notebook-badge">FIELD RECORD</div>
-              <div className="field-notebook-drawn-book" aria-hidden="true">
-                <span className="drawn-book-cover"></span>
-                <span className="drawn-book-page"></span>
-                <span className="drawn-book-ribbon"></span>
-              </div>
-              <h2>闖關紀錄</h2>
-              <p>即時記錄你的任務進度、劇情線索與每關通關時間。</p>
-              <div className="field-notebook-progress-small">
-                <span>目前進度</span>
-                <strong>{notebookCompletedCount}/5</strong>
-              </div>
-              <div className="field-notebook-progress-track">
-                <span style={{ width: `${Math.round((notebookCompletedCount / 5) * 100)}%` }}></span>
-              </div>
+            <section
+              className="field-notebook-left-page"
+              style={{
+                padding: 0,
+                background: "transparent",
+                border: "none",
+                boxShadow: "none"
+              }}
+            >
+              {renderNotebookPage(NOTEBOOK_PAGES[currentBookPage], "left")}
             </section>
 
-            <section className="field-notebook-right-page">
+            <section
+              className="field-notebook-right-page"
+              style={{
+                position: "relative",
+                padding: 0,
+                background: "transparent",
+                border: "none",
+                boxShadow: "none"
+              }}
+            >
+              {renderNotebookPage(NOTEBOOK_PAGES[currentBookPage + 1], "right")}
 
-  {notebookView === "index" ? (
-
-    <div className="field-record-index">
-
-      <h2 className="field-record-index-title">
-        FIELD RECORDS
-      </h2>
-
-      {CASE_FILES.map((file) => {
-
-        const completedCount = file.levels.filter(
-          (level) => unlockedLevel > level
-        ).length;
-
-        return (
-
-          <button
-            key={file.id}
-            className={`field-record-case-card ${file.theme}`}
-            onClick={() => {
-            if (expandedCaseId === file.id) {
-              setExpandedCaseId(null);
-            } else {
-              setExpandedCaseId(file.id);
-            }
-          }}
-          >
-            <h3>{file.title}</h3>
-          </button>
-          
-        );
-      })}
-    </div>
-
-  ) : (
-
-    <>
-
-      <div className="field-notebook-page-head">
-        <button onClick={goNotebookPrev} disabled={notebookPage === 1}>‹</button>
-
-        <div>
-          <span>PAGE {notebookPage}/5</span>
-          <h3>
-            {notebookCurrentFile.label}｜
-            {notebookCurrentFile.title}
-          </h3>
-        </div>
-
-        <button onClick={goNotebookNext} disabled={notebookPage === 5}>›</button>
-      </div>
-
-      <div className={`field-notebook-status ${notebookCurrentRecord ? "done" : "pending"}`}>
-        {notebookCurrentRecord
-          ? `已完成・${notebookCurrentRecord.time_seconds}s`
-          : "尚未完成"}
-      </div>
-
-      <div className="field-notebook-entry">
-        <h4>劇情紀錄</h4>
-        <p>
-          {CHAPTERS[notebookPage]?.title || notebookCurrentFile.title}
-        </p>
-      </div>
-
-      <div className="field-notebook-entry">
-        <h4>觀念筆記</h4>
-        <p>
-          {CHAPTERS[notebookPage]?.concept ||
-            "完成此關後，這裡會留下你的觀念紀錄。"}
-        </p>
-      </div>
-
-      <div className="field-notebook-entry compact">
-
-        <h4>五頁索引</h4>
-
-        <div className="field-notebook-page-dots">
-
-          {[1, 2, 3, 4, 5].map((level) => {
-
-            const hasRecord =
-              notebookCompletedRecords.some(
-                (record) =>
-                  record.puzzle_id === `puzzle_0${level}`
-              );
-
-            return (
-              <button
-                key={level}
-                className={`${notebookPage === level ? "active" : ""} ${hasRecord ? "done" : ""}`}
-                onClick={() => setNotebookPage(level)}
+              <div
+                className="field-book-controls"
+                style={{
+                  position: "absolute",
+                  left: "32px",
+                  right: "32px",
+                  bottom: "24px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  pointerEvents: "none"
+                }}
               >
-                {level}
-              </button>
-            );
-          })}
+                <button
+                  className="field-book-nav"
+                  onClick={prevBookPage}
+                  disabled={currentBookPage === 0}
+                  style={{
+                    pointerEvents: "auto",
+                    border: "1px solid rgba(247,231,189,0.18)",
+                    borderRadius: "999px",
+                    padding: "9px 16px",
+                    background: currentBookPage === 0 ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
+                    color: currentBookPage === 0 ? "rgba(18,53,47,0.44)" : "#f7e7bd",
+                    fontWeight: 900,
+                    letterSpacing: "0.08em",
+                    cursor: currentBookPage === 0 ? "default" : "pointer"
+                  }}
+                >
+                  ← PREV
+                </button>
 
-        </div>
-      </div>
-
-    </>
-
-  )}
-
-</section>
+                <button
+                  className="field-book-nav"
+                  onClick={nextBookPage}
+                  disabled={currentBookPage >= NOTEBOOK_PAGES.length - 2}
+                  style={{
+                    pointerEvents: "auto",
+                    border: "1px solid rgba(247,231,189,0.18)",
+                    borderRadius: "999px",
+                    padding: "9px 16px",
+                    background: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
+                    color: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.44)" : "#f7e7bd",
+                    fontWeight: 900,
+                    letterSpacing: "0.08em",
+                    cursor: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "default" : "pointer"
+                  }}
+                >
+                  NEXT →
+                </button>
+              </div>
+            </section>
           </div>
         </div>
       )}

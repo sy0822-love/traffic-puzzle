@@ -3168,3 +3168,400 @@ input {
   }
 
 }
+
+
+/* =====================================================
+   0604 Notebook Final Override
+   修正舊 CSS 蓋掉新版 JSX：
+   1. 不再把新版書本壓成舊版右頁
+   2. 手機版顯示單頁筆記本
+   3. 線圈限制在米色筆記頁高度內
+   4. 移除舊 field-notebook 左右頁背景干擾
+===================================================== */
+
+.field-notebook-overlay {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(43, 75, 64, 0.42), rgba(3, 13, 12, 0.88) 62%) !important;
+}
+
+.field-notebook-book {
+  overflow: visible !important;
+}
+
+.field-notebook-left-page,
+.field-notebook-right-page {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 避免舊版書本中線干擾新版 inline layout */
+.field-notebook-left-page::after {
+  display: none !important;
+}
+
+/* 新版每一頁的米色筆記紙 */
+.field-book-page {
+  position: relative !important;
+  background:
+    linear-gradient(135deg, rgba(239, 222, 180, 0.96), rgba(207, 183, 134, 0.92)) !important;
+  color: #173d35 !important;
+}
+
+/* 讓線圈只存在於筆記紙左側，不跑到整個黑背景 */
+.field-book-page::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 18px;
+  bottom: 18px;
+  width: 30px;
+  z-index: 4;
+  pointer-events: none;
+
+  background:
+    radial-gradient(ellipse at 58% 50%,
+      transparent 0 5px,
+      #191919 5.4px 7px,
+      transparent 7.4px
+    );
+  background-size: 28px 38px;
+  background-repeat: repeat-y;
+}
+
+.field-book-page::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  top: 18px;
+  bottom: 18px;
+  width: 8px;
+  z-index: 4;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle,
+      rgba(65, 50, 28, 0.75) 0 2.6px,
+      rgba(245, 231, 196, 0.95) 2.8px 5px,
+      transparent 5.2px
+    );
+  background-size: 8px 38px;
+  background-repeat: repeat-y;
+}
+
+/* 右頁不要出現線圈，只有左頁像活頁本 */
+.field-notebook-right-page .field-book-page::before,
+.field-notebook-right-page .field-book-page::after {
+  display: none !important;
+}
+
+/* 左頁內容往右避開線圈 */
+.field-notebook-left-page .field-book-page {
+  padding-left: 58px !important;
+}
+
+/* 手機版：只顯示目前主要頁面，但維持筆記本紙張與線圈 */
+@media (max-width: 768px) {
+  .field-notebook-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(43, 75, 64, 0.42), rgba(3, 13, 12, 0.90) 64%) !important;
+    z-index: 99999 !important;
+    perspective: none !important;
+  }
+
+  .field-notebook-book {
+    position: relative !important;
+    width: min(94vw, 540px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    display: block !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    filter: drop-shadow(0 28px 60px rgba(0, 0, 0, 0.55)) !important;
+    animation: notebookOverlayIn 0.28s ease both !important;
+  }
+
+  .field-notebook-left-page {
+    display: none !important;
+  }
+
+  .field-notebook-right-page {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .field-notebook-right-page .field-book-page {
+    width: 100% !important;
+    min-height: min(78vh, 680px) !important;
+    max-height: calc(100vh - 84px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    padding:
+      calc(54px + env(safe-area-inset-top))
+      28px
+      calc(88px + env(safe-area-inset-bottom))
+      58px !important;
+
+    border-radius: 18px !important;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(92, 68, 35, 0.055) 0px,
+        rgba(92, 68, 35, 0.055) 1px,
+        transparent 1px,
+        transparent 9px
+      ),
+      linear-gradient(135deg, #eadbbd 0%, #d3bb8b 100%) !important;
+    box-shadow:
+      0 22px 58px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+  }
+
+  /* 手機單頁也要有左側線圈 */
+  .field-notebook-right-page .field-book-page::before {
+    display: block !important;
+    left: 8px !important;
+    top: 18px !important;
+    bottom: 18px !important;
+  }
+
+  .field-notebook-right-page .field-book-page::after {
+    display: block !important;
+    left: 28px !important;
+    top: 18px !important;
+    bottom: 18px !important;
+  }
+
+  .field-notebook-close {
+    position: fixed !important;
+    top: calc(14px + env(safe-area-inset-top)) !important;
+    right: calc(14px + env(safe-area-inset-right)) !important;
+    width: 52px !important;
+    height: 52px !important;
+    z-index: 100001 !important;
+    border-radius: 999px !important;
+    font-size: 30px !important;
+    line-height: 1 !important;
+  }
+
+  .field-book-controls {
+    position: absolute !important;
+    left: 24px !important;
+    right: 24px !important;
+    bottom: 18px !important;
+    z-index: 20 !important;
+  }
+
+  .field-book-nav {
+    font-size: 14px !important;
+    padding: 10px 18px !important;
+  }
+}
+
+
+/* =====================================================
+   0604 Notebook Navigation Fix
+   1. PREV / NEXT 不跟左側線圈重疊
+   2. 手機版每次顯示 currentBookPage
+   3. NEXT：封面→目錄→1-1→1-2→1-3→2-1→3-1
+===================================================== */
+
+@media (max-width: 768px) {
+  .field-notebook-book {
+    position: relative !important;
+    width: min(94vw, 540px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    display: block !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .field-notebook-left-page {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .field-notebook-right-page {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
+  }
+
+  .field-notebook-right-page > .field-book-page {
+    display: none !important;
+  }
+
+  .field-notebook-left-page .field-book-page {
+    width: 100% !important;
+    min-height: min(78vh, 680px) !important;
+    max-height: calc(100vh - 84px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    padding:
+      calc(54px + env(safe-area-inset-top))
+      28px
+      calc(88px + env(safe-area-inset-bottom))
+      64px !important;
+
+    border-radius: 18px !important;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(92, 68, 35, 0.055) 0px,
+        rgba(92, 68, 35, 0.055) 1px,
+        transparent 1px,
+        transparent 9px
+      ),
+      linear-gradient(135deg, #eadbbd 0%, #d3bb8b 100%) !important;
+    box-shadow:
+      0 22px 58px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+  }
+
+  .field-book-controls {
+    position: absolute !important;
+    left: 70px !important;
+    right: 24px !important;
+    bottom: 18px !important;
+    z-index: 50 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    pointer-events: none !important;
+  }
+
+  .field-book-nav {
+    pointer-events: auto !important;
+    font-size: 14px !important;
+    padding: 10px 18px !important;
+  }
+}
+
+
+/* =====================================================
+   0604 Notebook Spiral + Duplicate NEXT Fix
+   1. 只保留圓形線圈，不顯示兩種線圈
+   2. 首頁只保留底部共用 NEXT，不再有第二顆 NEXT
+   3. PREV 往右，避免壓到線圈
+===================================================== */
+
+/* 關掉 JSX 內舊的 span 線圈保險 */
+.field-book-page > div[aria-hidden="true"][style*="space-between"] {
+  display: none !important;
+}
+
+/* 每張筆記紙左側只畫一排圓形活頁孔 */
+.field-book-page::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 14px !important;
+  top: 22px !important;
+  bottom: 22px !important;
+  width: 18px !important;
+  z-index: 4 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle,
+      transparent 0 4px,
+      #1e1e1e 4.5px 6.2px,
+      transparent 6.6px
+    ) !important;
+  background-size: 18px 42px !important;
+  background-repeat: repeat-y !important;
+  background-position: center top !important;
+}
+
+/* 不再畫第二種線圈/金屬點 */
+.field-book-page::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* 右側頁面不要有線圈 */
+.field-notebook-right-page .field-book-page::before,
+.field-notebook-right-page .field-book-page::after {
+  display: none !important;
+}
+
+/* 手機單頁顯示時右頁是隱藏內容，不畫；左頁保留圓形線圈 */
+@media (max-width: 768px) {
+  .field-notebook-right-page .field-book-page::before,
+  .field-notebook-right-page .field-book-page::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .field-notebook-left-page .field-book-page::before {
+    display: block !important;
+    left: 14px !important;
+    top: 22px !important;
+    bottom: 22px !important;
+    width: 18px !important;
+    background:
+      radial-gradient(circle,
+        transparent 0 4px,
+        #1e1e1e 4.5px 6.2px,
+        transparent 6.6px
+      ) !important;
+    background-size: 18px 42px !important;
+    background-repeat: repeat-y !important;
+    background-position: center top !important;
+  }
+
+  .field-notebook-left-page .field-book-page::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .field-notebook-left-page .field-book-page {
+    padding-left: 70px !important;
+  }
+
+  .field-book-controls {
+    left: 74px !important;
+    right: 24px !important;
+    bottom: 18px !important;
+  }
+}

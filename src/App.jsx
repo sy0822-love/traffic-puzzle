@@ -82,7 +82,7 @@ const CASE_FILES = [
 ];
 const CHAPTERS = {
   1: {
-    title: "【1-1 劇情：斷裂的終點】",
+    title: "1-1：烈日下的差事",
     content: `七月十四．正午。
 又是個悶得發慌的中午後。我坐在櫃檯邊，看見阿明伯出現在郵局門口。他是個讀書人，學音樂的，偏偏一雙眼瞧不見。那天熱得連狗都懶得叫，他卻穿著筆挺的西裝，坐在輪椅上。
 
@@ -176,7 +176,7 @@ const NOTEBOOK_PAGES = [
         id: "case-02",
         code: "02",
         title: "斑馬線真的是保命符？",
-        bookPage: 4
+        bookPage: 5
       },
       {
         id: "case-03",
@@ -187,34 +187,29 @@ const NOTEBOOK_PAGES = [
     ]
   },
   {
-    type: "chapter",
-    id: "case-01",
-    code: "01",
-    title: "搶回走路專用道！",
-    levels: [1, 2, 3]
+    type: "level",
+    chapterCode: "01",
+    level: 1
   },
   {
-    type: "blank"
+    type: "level",
+    chapterCode: "01",
+    level: 2
   },
   {
-    type: "chapter",
-    id: "case-02",
-    code: "02",
-    title: "斑馬線真的是保命符？",
-    levels: [4]
+    type: "level",
+    chapterCode: "01",
+    level: 3
   },
   {
-    type: "blank"
+    type: "level",
+    chapterCode: "02",
+    level: 4
   },
   {
-    type: "chapter",
-    id: "case-03",
-    code: "03",
-    title: "路口的人車大塞車",
-    levels: [5]
-  },
-  {
-    type: "blank"
+    type: "level",
+    chapterCode: "03",
+    level: 5
   }
 ];
 
@@ -957,13 +952,13 @@ function App() {
 
   const nextBookPage = () => {
     setCurrentBookPage((prev) =>
-      Math.min(prev + 2, NOTEBOOK_PAGES.length - 2)
+      Math.min(prev + 1, NOTEBOOK_PAGES.length - 1)
     );
   };
 
   const prevBookPage = () => {
     setCurrentBookPage((prev) =>
-      Math.max(prev - 2, 0)
+      Math.max(prev - 1, 0)
     );
   };
 
@@ -1009,61 +1004,7 @@ function App() {
       />
     );
 
-    const spiralBinding = side === "left" ? (
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          left: "6px",
-          top: "16px",
-          bottom: "16px",
-          width: "28px",
-          zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          pointerEvents: "none"
-        }}
-      >
-        {Array.from({ length: 13 }).map((_, index) => (
-          <div
-            key={index}
-            style={{
-              position: "relative",
-              width: "24px",
-              height: "14px"
-            }}
-          >
-            <span
-              style={{
-                position: "absolute",
-                left: "0px",
-                top: "0px",
-                width: "10px",
-                height: "12px",
-                border: "2px solid #1e1e1e",
-                borderRight: "none",
-                borderRadius: "10px 0 0 10px",
-                background: "transparent"
-              }}
-            />
-            <span
-              style={{
-                position: "absolute",
-                left: "8px",
-                top: "0px",
-                width: "10px",
-                height: "12px",
-                border: "2px solid #1e1e1e",
-                borderLeft: "none",
-                borderRadius: "0 10px 10px 0",
-                background: "transparent"
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    ) : null;
+    const spiralBinding = null;
 
     if (!page) {
       return (
@@ -1129,26 +1070,6 @@ function App() {
               {page.content}
             </p>
           </div>
-
-          <button
-            className="field-book-nav"
-            onClick={nextBookPage}
-            style={{
-              position: "relative",
-              zIndex: 1,
-              alignSelf: "flex-end",
-              border: "1px solid rgba(247,231,189,0.22)",
-              borderRadius: "999px",
-              padding: "11px 22px",
-              background: "rgba(18, 53, 47, 0.92)",
-              color: "#f7e7bd",
-              fontWeight: 800,
-              letterSpacing: "0.08em",
-              cursor: "pointer"
-            }}
-          >
-            NEXT →
-          </button>
         </div>
       );
     }
@@ -1194,89 +1115,57 @@ function App() {
       );
     }
 
-    if (page.type === "chapter") {
+    if (page.type === "level") {
+      const note = NOTEBOOK_LEVEL_NOTES[page.level];
+      const hasRecord = isNotebookLevelCompleted(page.level);
+
       return (
         <div className="field-book-page field-book-record-page page-fade-slide" style={basePageStyle}>
           {paperTexture}
           {spiralBinding}
           <div style={{ position: "relative", zIndex: 3 }}>
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{ marginBottom: "22px" }}>
               <div style={{ fontSize: "13px", letterSpacing: "0.18em", fontWeight: 900, color: "#84612c" }}>
-                CHAPTER {page.code}
+                CHAPTER {page.chapterCode}
               </div>
               <h2 style={{ margin: "8px 0 0", fontSize: "27px", lineHeight: 1.25, color: "#12352f" }}>
-                {page.title}
+                {note.title}
               </h2>
             </div>
 
-            <div style={{ display: "grid", gap: "13px" }}>
-              {page.levels.filter((level) => isNotebookLevelCompleted(level)).length > 0 ? (
-                page.levels
-                  .filter((level) => isNotebookLevelCompleted(level))
-                  .map((level) => {
-                    const note = NOTEBOOK_LEVEL_NOTES[level];
-
-                    return (
-                      <article
-                        key={level}
-                        style={{
-                          borderRadius: "17px",
-                          padding: "16px 18px",
-                          background: "rgba(255, 249, 231, 0.50)",
-                          border: "1px solid rgba(18,53,47,0.18)",
-                          boxShadow: "0 8px 18px rgba(44, 31, 13, 0.10)"
-                        }}
-                      >
-                        <div style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          gap: "12px",
-                          alignItems: "center",
-                          marginBottom: "8px"
-                        }}>
-                          <div>
-                            <div style={{ margin: "0 0 4px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
-                              KNOWLEDGE NOTE
-                            </div>
-                            <h3 style={{ margin: 0, fontSize: "18px", color: "#12352f" }}>
-                              {note.title}
-                            </h3>
-                          </div>
-                          <span style={{
-                            flex: "0 0 auto",
-                            fontSize: "12px",
-                            fontWeight: 900,
-                            borderRadius: "999px",
-                            padding: "5px 9px",
-                            background: "rgba(18, 53, 47, 0.14)",
-                            color: "#12352f"
-                          }}>
-                            已記錄
-                          </span>
-                        </div>
-
-                        <p style={{ margin: 0, fontSize: "15px", lineHeight: 1.72, color: "#36564d" }}>
-                          {note.content}
-                        </p>
-                      </article>
-                    );
-                  })
-              ) : (
-                <div
-                  style={{
-                    borderRadius: "17px",
-                    padding: "18px",
-                    background: "rgba(255, 249, 231, 0.22)",
-                    border: "1px dashed rgba(18,53,47,0.22)",
-                    color: "#6b6b57",
-                    fontSize: "15px",
-                    lineHeight: 1.7
-                  }}
-                >
-                  這一章的闖關筆記還沒有解鎖。完成對應小關後，這裡才會出現知識重點。
+            {hasRecord ? (
+              <article
+                style={{
+                  borderRadius: "17px",
+                  padding: "17px 18px",
+                  background: "rgba(255, 249, 231, 0.50)",
+                  border: "1px solid rgba(18,53,47,0.18)",
+                  boxShadow: "0 8px 18px rgba(44, 31, 13, 0.10)"
+                }}
+              >
+                <div style={{ margin: "0 0 8px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
+                  KNOWLEDGE NOTE
                 </div>
-              )}
-            </div>
+
+                <p style={{ margin: 0, fontSize: "15px", lineHeight: 1.76, color: "#36564d" }}>
+                  {note.content}
+                </p>
+              </article>
+            ) : (
+              <div
+                style={{
+                  borderRadius: "17px",
+                  padding: "18px",
+                  background: "rgba(255, 249, 231, 0.22)",
+                  border: "1px dashed rgba(18,53,47,0.22)",
+                  color: "#6b6b57",
+                  fontSize: "15px",
+                  lineHeight: 1.7
+                }}
+              >
+                完成此小關後，這裡才會出現知識重點。
+              </div>
+            )}
           </div>
         </div>
       );
@@ -1798,17 +1687,17 @@ function App() {
                 <button
                   className="field-book-nav"
                   onClick={nextBookPage}
-                  disabled={currentBookPage >= NOTEBOOK_PAGES.length - 2}
+                  disabled={currentBookPage >= NOTEBOOK_PAGES.length - 1}
                   style={{
                     pointerEvents: "auto",
                     border: "1px solid rgba(247,231,189,0.18)",
                     borderRadius: "999px",
                     padding: "9px 16px",
-                    background: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
-                    color: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.44)" : "#f7e7bd",
+                    background: currentBookPage >= NOTEBOOK_PAGES.length - 1 ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
+                    color: currentBookPage >= NOTEBOOK_PAGES.length - 1 ? "rgba(18,53,47,0.44)" : "#f7e7bd",
                     fontWeight: 900,
                     letterSpacing: "0.08em",
-                    cursor: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "default" : "pointer"
+                    cursor: currentBookPage >= NOTEBOOK_PAGES.length - 1 ? "default" : "pointer"
                   }}
                 >
                   NEXT →

@@ -13,16 +13,6 @@ import {
 // ===== Realtime DB（在線人數）=====
 import { ref, set, onValue, onDisconnect, remove } from 'firebase/database';
 import './App.css';
-import card01 from './assets/card-01.png';
-import card02 from './assets/card-02.png';
-import card03 from './assets/card-03.png';
-import card04 from './assets/card-04.png';
-import card05 from './assets/card-05.png';
-import card06 from './assets/card-06.png';
-import card07 from './assets/card-07.png';
-import card08 from './assets/card-08.png';
-import card09 from './assets/card-09.png';
-import card10 from './assets/card-10.png';
 import mysteryCityBg from "./assets/mystery-city-bg.png";
 const ALLOWED_ACCESS_CODES = {
   KWA1116: {
@@ -37,18 +27,18 @@ const ALLOWED_ACCESS_CODES = {
 
 const LETTER_CONTENT = `致 親愛的 新進郵差們：\n\n歡迎加入本局。身為一名稱職的郵務人員，除了送達信件，更要擁有一雙洞察環境的眼睛。\n\n神祕郵差留下的信件中，隱藏著這座城市的交通安全關鍵。你需要破解信中隱含的交通謎題...\n\n準備好迎接挑戰了嗎？\n\n—— 郵務長敬上`;
 
-const CHAPTER2_CARDS = [
-  card01,
-  card02,
-  card03,
-  card04,
-  card05,
-  card06,
-  card07,
-  card08,
-  card09,
-  card10
-];
+const DEMO_MODE = true;
+const DEMO_END_LEVEL = 4;
+
+const DEMO_WRONG_HINT = "別灰心～再根據劇情卡找到更細的脈絡吧？";
+
+const DEMO_KNOWLEDGE_POINTS = {
+  1: "了解人行道需要足夠淨寬，避免障礙物阻擋，才能保障行人與輪椅使用者通行安全。",
+  2: "理解騎樓與人行空間若被停車或私人物品佔據，會讓行人被迫在狹縫中移動。",
+  3: "知道人行道是為了行人而存在，設施與障礙物不應壓縮原本屬於行人的安全空間。",
+  4: "理解斑馬線不是畫上去就絕對安全，仍需注意穿越距離、號誌時間與視線條件。"
+};
+
 const CASE_FILES = [
   {
     id: "CASE-01",
@@ -82,59 +72,59 @@ const CASE_FILES = [
 ];
 const CHAPTERS = {
   1: {
-    title: "1-1 烈日下的差事",
+    title: "1-1：烈日下的差事",
     content: ``,
-    taskTitle: "【系統提示】",
+    taskTitle: "系統提示",
     taskContent: `請拿出綠色解謎包
-取出街區圖並打開劇情提示：`,
+取出街區圖並打開劇情提示。`,
     answer: "1",
-    concept: "一條合格的人行道，必須保留足夠寬度，並避免障礙物阻擋，才能讓行人、輪椅使用者與推嬰兒車的人安全通行。",
+    concept: DEMO_KNOWLEDGE_POINTS[1],
     nextMsg: "你完成了第一份街區調查，開始看見道路中被忽略的行人空間。"
   },
 
   2: {
-    title: "1-2 狹縫中的選擇",
+    title: "1-2：狹縫中的選擇",
     content: ``,
-    taskTitle: "【系統提示】",
+    taskTitle: "系統提示",
     taskContent: `請拿出超商收據與信封袋，搭配劇情提示
 推論出藏在其中的秘密吧！`,
     answer: "2",
-    concept: "騎樓與人行空間雖然看似平常，卻常因停車、堆放物品或私人使用而壓縮通行寬度，使行人被迫在狹縫中移動。",
+    concept: DEMO_KNOWLEDGE_POINTS[2],
     nextMsg: "你找出了藏在收據與信封中的線索，也理解了狹窄通行空間背後的問題。"
   },
 
   3: {
-    title: "1-3 消失的下班準星",
+    title: "1-3：消失的下班準星",
     content: ``,
-    taskTitle: "【系統提示】",
+    taskTitle: "系統提示",
     taskContent: `請拿出綠色解謎包中的劇情提示與圖卡
 找出周邊隱藏的綠色怪獸傳達的訊息吧！`,
     answer: "3",
-    concept: "人行道的存在是為了行人，而不是為了放置變電箱、路燈、公車站牌或其他障礙物。當障礙物佔據通行空間時，行人的安全路權就會被壓縮。",
+    concept: DEMO_KNOWLEDGE_POINTS[3],
     nextMsg: "你破解了綠色怪獸留下的訊息，也發現人行道上被忽略的障礙。"
   },
 
   4: {
-    title: "2-1 碎裂的斑馬線",
+    title: "2-1：碎裂的斑馬線",
     content: ``,
-    taskTitle: "【系統提示】",
+    taskTitle: "系統提示",
     taskContent: `請拿出綠色解謎包中的催繳通知信封與街區圖卡。
 抬頭尋找黑匣子裡的奔跑行者，動手收攏這段不合理的危險長廊吧！`,
     answer: "4",
-    concept: "斑馬線不是畫上去就代表安全。若穿越距離過長、號誌時間不足或視線不清，行人仍可能暴露在危險的道路環境中。",
+    concept: DEMO_KNOWLEDGE_POINTS[4],
     nextMsg: "你收攏了危險長廊，也看見斑馬線背後真正需要被修正的問題。"
   },
 
   5: {
-    title: "3-1 暫定關卡",
+    title: "3-1：暫定關卡",
     content: ``,
-    taskTitle: "【系統提示】",
+    taskTitle: "系統提示",
     taskContent: `此關卡內容暫定中，請依現場紙本任務提示進行操作，並在系統輸入答案完成挑戰。`,
     answer: "5",
     concept: "交通安全需要整體規劃，包含無障礙、路權、資訊設計與行人安全，而不是只解決單一問題。",
     nextMsg: "你完成了所有調查，城市的盲點正在被重新看見。"
   }
-}
+};
 
 const LEVEL_FILES = [
   {
@@ -142,7 +132,7 @@ const LEVEL_FILES = [
     requiredLevel: null,
     code: "FILE 01",
     label: "1-1",
-    icon: "🧭",
+    icon: "🚦",
     title: "烈日下的差事",
     theme: "街區圖與劇情提示",
     desc: "拿出綠色解謎包，取出街區圖並打開劇情提示。"
@@ -152,7 +142,7 @@ const LEVEL_FILES = [
     requiredLevel: 1,
     code: "FILE 02",
     label: "1-2",
-    icon: "🧾",
+    icon: "🛵",
     title: "狹縫中的選擇",
     theme: "收據與信封袋推理",
     desc: "拿出超商收據與信封袋，搭配劇情提示推論秘密。"
@@ -162,7 +152,7 @@ const LEVEL_FILES = [
     requiredLevel: 2,
     code: "FILE 03",
     label: "1-3",
-    icon: "🟢",
+    icon: "⚡",
     title: "消失的下班準星",
     theme: "圖卡與隱藏訊息",
     desc: "拿出劇情提示與圖卡，找出綠色怪獸傳達的訊息。"
@@ -172,7 +162,7 @@ const LEVEL_FILES = [
     requiredLevel: 3,
     code: "FILE 04",
     label: "2-1",
-    icon: "🚶",
+    icon: "🚸",
     title: "碎裂的斑馬線",
     theme: "斑馬線與危險長廊",
     desc: "拿出催繳通知信封與街區圖卡，收攏不合理的危險長廊。"
@@ -210,7 +200,7 @@ const NOTEBOOK_PAGES = [
         id: "case-02",
         code: "02",
         title: "斑馬線真的是保命符？",
-        bookPage: 5
+        bookPage: 4
       },
       {
         id: "case-03",
@@ -221,29 +211,34 @@ const NOTEBOOK_PAGES = [
     ]
   },
   {
-    type: "level",
-    chapterCode: "01",
-    level: 1
+    type: "chapter",
+    id: "case-01",
+    code: "01",
+    title: "搶回走路專用道！",
+    levels: [1, 2, 3]
   },
   {
-    type: "level",
-    chapterCode: "01",
-    level: 2
+    type: "blank"
   },
   {
-    type: "level",
-    chapterCode: "01",
-    level: 3
+    type: "chapter",
+    id: "case-02",
+    code: "02",
+    title: "斑馬線真的是保命符？",
+    levels: [4]
   },
   {
-    type: "level",
-    chapterCode: "02",
-    level: 4
+    type: "blank"
   },
   {
-    type: "level",
-    chapterCode: "03",
-    level: 5
+    type: "chapter",
+    id: "case-03",
+    code: "03",
+    title: "路口的人車大塞車",
+    levels: [5]
+  },
+  {
+    type: "blank"
   }
 ];
 
@@ -318,6 +313,75 @@ function CaseFileIcon({ type }) {
 }
 
 
+
+function TrafficPromptIllustration({ level }) {
+  const commonStyle = {
+    width: "126px",
+    height: "126px",
+    opacity: 0.95,
+    filter: "drop-shadow(0 12px 18px rgba(0,0,0,0.20))"
+  };
+
+  if (level === 1) {
+    return (
+      <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
+        <rect x="48" y="32" width="64" height="82" rx="18" fill="#243b35" stroke="#f0c768" strokeWidth="5" />
+        <circle cx="80" cy="56" r="14" fill="#78e08f" />
+        <path d="M80 72V98" stroke="#78e08f" strokeWidth="8" strokeLinecap="round" />
+        <path d="M62 82L80 74L98 82" stroke="#78e08f" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M78 98L62 125" stroke="#78e08f" strokeWidth="7" strokeLinecap="round" />
+        <path d="M83 98L102 124" stroke="#78e08f" strokeWidth="7" strokeLinecap="round" />
+        <rect x="40" y="120" width="82" height="12" rx="6" fill="#f0c768" opacity="0.85" />
+      </svg>
+    );
+  }
+
+  if (level === 2) {
+    return (
+      <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
+        <path d="M42 92h72c10 0 20 8 20 18v10H34v-12c0-9 6-16 8-16Z" fill="#f0c768" stroke="#d6a64b" strokeWidth="5" />
+        <path d="M58 70h45c9 0 16 7 16 16v8H47l11-24Z" fill="#89a79c" stroke="#587268" strokeWidth="5" />
+        <circle cx="55" cy="122" r="14" fill="#223d36" stroke="#f7e9bd" strokeWidth="5" />
+        <circle cx="116" cy="122" r="14" fill="#223d36" stroke="#f7e9bd" strokeWidth="5" />
+        <path d="M67 77h28" stroke="#f7e9bd" strokeWidth="6" strokeLinecap="round" />
+        <path d="M123 92h14" stroke="#f0c768" strokeWidth="7" strokeLinecap="round" />
+        <circle cx="42" cy="88" r="6" fill="#f7e9bd" />
+      </svg>
+    );
+  }
+
+  if (level === 3) {
+    return (
+      <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
+        <rect x="42" y="32" width="76" height="96" rx="14" fill="#7b928b" stroke="#f0c768" strokeWidth="5" />
+        <rect x="56" y="48" width="48" height="12" rx="6" fill="#173f36" opacity="0.6" />
+        <rect x="56" y="70" width="48" height="12" rx="6" fill="#173f36" opacity="0.45" />
+        <rect x="56" y="92" width="48" height="12" rx="6" fill="#173f36" opacity="0.35" />
+        <circle cx="80" cy="118" r="8" fill="#173f36" opacity="0.55" />
+        <path d="M120 42c12 8 15 21 7 32" fill="none" stroke="#78e08f" strokeWidth="6" strokeLinecap="round" />
+        <path d="M36 50c-10 10-11 23-2 34" fill="none" stroke="#78e08f" strokeWidth="6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
+      <rect x="26" y="54" width="108" height="18" rx="9" fill="#f7e9bd" />
+      <rect x="36" y="82" width="108" height="18" rx="9" fill="#f7e9bd" />
+      <rect x="18" y="110" width="108" height="18" rx="9" fill="#f7e9bd" />
+      <rect x="40" y="54" width="16" height="18" fill="#173f36" opacity="0.75" />
+      <rect x="78" y="54" width="16" height="18" fill="#173f36" opacity="0.75" />
+      <rect x="112" y="54" width="16" height="18" fill="#173f36" opacity="0.75" />
+      <rect x="60" y="82" width="16" height="18" fill="#173f36" opacity="0.75" />
+      <rect x="98" y="82" width="16" height="18" fill="#173f36" opacity="0.75" />
+      <rect x="32" y="110" width="16" height="18" fill="#173f36" opacity="0.75" />
+      <rect x="70" y="110" width="16" height="18" fill="#173f36" opacity="0.75" />
+      <circle cx="116" cy="34" r="13" fill="#78e08f" stroke="#f0c768" strokeWidth="5" />
+      <path d="M116 47v22" stroke="#78e08f" strokeWidth="6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function App() {
   const [hasStartedGame, setHasStartedGame] = useState(false);
   const [showLevelSelect, setShowLevelSelect] = useState(false);
@@ -341,6 +405,8 @@ function App() {
   const [showChapterTransition, setShowChapterTransition] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState("");
   const [isGameFinished, setIsGameFinished] = useState(false);
+  const [finalRank, setFinalRank] = useState(null);
+  const [reportImageUrl, setReportImageUrl] = useState("");
 
   const [onlineCount, setOnlineCount] = useState(0);
   const [visibleLevelCount, setVisibleLevelCount] = useState(0);
@@ -369,47 +435,11 @@ function App() {
     return saved ? Number(saved) : 1;
   });
 
-  const [cardIndex, setCardIndex] = useState(0);
-  const [isPlayingCards, setIsPlayingCards] = useState(false);
-  const [hasPlayedChapter2Cards, setHasPlayedChapter2Cards] = useState(false);
-  const [chapter2PromptReady, setChapter2PromptReady] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, unlockedLevel);
   }, [unlockedLevel]);
 
-  // ===== 第二關卡牌播放動畫 =====
-  useEffect(() => {
-    if (!hasStartedGame || currentChapter !== 3) return;
-    if (storyPhase !== "task") return;
-    if (!chapter2PromptReady || hasPlayedChapter2Cards) return;
-
-    setCardIndex(0);
-    setIsPlayingCards(true);
-    setShowUI(false);
-    setIsWrong(false);
-    setShowHint(false);
-    setUserInput("");
-
-    let i = 0;
-
-    const interval = setInterval(() => {
-      setCardIndex(i);
-      i++;
-
-      if (i >= CHAPTER2_CARDS.length) {
-        clearInterval(interval);
-
-        setTimeout(() => {
-          setIsPlayingCards(false);
-          setShowUI(true);
-          setHasPlayedChapter2Cards(true);
-        }, 120);
-      }
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [hasStartedGame, currentChapter, storyPhase, chapter2PromptReady, hasPlayedChapter2Cards]);
 
   const saveUserSession = (name, code) => {
     localStorage.setItem("trafficPuzzleUserName", name);
@@ -440,23 +470,16 @@ function App() {
   };
 
   const handleLogoutUser = () => {
-  if (userCode) {
-    remove(ref(rtdb, `online_users/${userCode}/sessions/${onlineUserId}`))
-      .catch((error) => {
-        console.error("移除在線狀態失敗：", error);
-      });
-  }
-
-  localStorage.removeItem("trafficPuzzleUserName");
-  localStorage.removeItem("trafficPuzzleUserCode");
-  setUserName("");
-  setUserCode("");
-  setLoginCodeInput("");
-  setAuthError("");
-  setShowDiaryDrawer(false);
-  setShowLevelSelect(false);
-  setHasStartedGame(false);
-};
+    localStorage.removeItem("trafficPuzzleUserName");
+    localStorage.removeItem("trafficPuzzleUserCode");
+    setUserName("");
+    setUserCode("");
+    setLoginCodeInput("");
+    setAuthError("");
+    setShowDiaryDrawer(false);
+    setShowLevelSelect(false);
+    setHasStartedGame(false);
+  };
 
   const onlineUserId = useMemo(() => {
     const stored = sessionStorage.getItem("trafficPuzzleUserId");
@@ -546,33 +569,7 @@ function App() {
       const targetText =
         storyPhase === "story"
           ? chapterData.content
-          : `${chapterData.taskTitle}\n${chapterData.taskContent}`;
-
-      if (currentChapter === 3 && storyPhase === "task") {
-        if (isPlayingCards) {
-          setDisplayedText("");
-          setShowUI(false);
-          return;
-        }
-
-        setDisplayedText(targetText);
-
-        if (!chapter2PromptReady && !hasPlayedChapter2Cards) {
-          const timer = setTimeout(() => {
-            setChapter2PromptReady(true);
-          }, 900);
-
-          return () => clearTimeout(timer);
-        }
-
-        if (hasPlayedChapter2Cards) {
-          setShowUI(true);
-        } else {
-          setShowUI(false);
-        }
-
-        return;
-      }
+          : chapterData.taskContent;
 
       setDisplayedText(targetText);
       setShowUI(true);
@@ -585,10 +582,7 @@ function App() {
     hasStartedGame,
     showLevelSelect,
     currentChapter,
-    storyPhase,
-    isPlayingCards,
-    hasPlayedChapter2Cards,
-    chapter2PromptReady
+    storyPhase
   ]);
 
   useEffect(() => {
@@ -618,7 +612,7 @@ function App() {
     return () => clearInterval(interval);
   }, [hasStartedGame, gameStartTime, questionStartTime, isGameFinished]);
 
-useEffect(() => {
+  useEffect(() => {
   if (!userCode) {
     setOnlineCount(0);
     return;
@@ -712,10 +706,6 @@ useEffect(() => {
       setTotalElapsedTime(0);
     }
 
-    setCardIndex(0);
-    setIsPlayingCards(false);
-    setHasPlayedChapter2Cards(false);
-    setChapter2PromptReady(false);
     setStoryPhase("task");
   };
 
@@ -746,30 +736,6 @@ useEffect(() => {
     const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
     return CHAPTERS[level];
   });
-  useEffect(() => {
-  if (!userCode) {
-    setUnlockedLevel(1);
-    return;
-  }
-
-  const completedLevels = getCompletedRecords()
-    .map((record) => Number(String(record.puzzle_id).replace("puzzle_0", "")))
-    .filter((level) => Number.isFinite(level));
-
-  const maxCompletedLevel = completedLevels.length
-    ? Math.max(...completedLevels)
-    : 0;
-
-  const nextUnlockedLevel = Math.min(
-    maxCompletedLevel + 1,
-    Object.keys(CHAPTERS).length + 1
-  );
-
-  setUnlockedLevel((prev) => {
-    if (prev === nextUnlockedLevel) return prev;
-    return nextUnlockedLevel;
-  });
-}, [records, userCode]);
 
   const handleLevelComplete = async () => {
     const chapterData = CHAPTERS[currentChapter];
@@ -790,30 +756,9 @@ useEffect(() => {
       let nextRecords = records;
 
       if (!alreadyPassed) {
-  const nextTotalSeconds = gameStartTime
-    ? Math.max(0, Math.floor((now - gameStartTime) / 1000))
-    : finalQuestionSeconds;
-
-  let rankAtCompletion = null;
-
-  try {
-    const rankingQuery = query(
-      collection(db, "learning_results"),
-      where("puzzle_id", "==", puzzleId)
-    );
-
-    const rankingSnapshot = await getDocs(rankingQuery);
-
-    const samePuzzleRecords = rankingSnapshot.docs.map((doc) => doc.data());
-
-    const fasterCount = samePuzzleRecords.filter((record) => {
-      return Number(record.time_seconds || Infinity) < finalQuestionSeconds;
-    }).length;
-
-    rankAtCompletion = fasterCount + 1;
-  } catch (error) {
-    console.error("計算即時排名失敗：", error);
-  }
+        const nextTotalSeconds = gameStartTime
+          ? Math.max(0, Math.floor((now - gameStartTime) / 1000))
+          : finalQuestionSeconds;
 
         const localRecord = {
           id: `local-${Date.now()}`,
@@ -822,25 +767,24 @@ useEffect(() => {
           puzzle_id: puzzleId,
           time_seconds: finalQuestionSeconds,
           total_seconds: nextTotalSeconds,
-          rank_at_completion: rankAtCompletion,
           wrong: wasWrongBeforeCorrect,
           timestamp: { seconds: Math.floor(now / 1000) }
         };
+
         nextRecords = [localRecord, ...records];
         setRecords(nextRecords);
         setTotalElapsedTime(nextTotalSeconds);
 
         try {
           await addDoc(collection(db, "learning_results"), {
-          userCode,
-          userName,
-          puzzle_id: puzzleId,
-          time_seconds: finalQuestionSeconds,
-          total_seconds: nextTotalSeconds,
-          rank_at_completion: rankAtCompletion,
-          wrong: wasWrongBeforeCorrect,
-          timestamp: serverTimestamp()
-        });
+            userCode,
+            userName,
+            puzzle_id: puzzleId,
+            time_seconds: finalQuestionSeconds,
+            total_seconds: nextTotalSeconds,
+            wrong: wasWrongBeforeCorrect,
+            timestamp: serverTimestamp()
+          });
           console.log("Firebase 上傳成功");
         } catch (e) {
           console.error("Firebase 上傳失敗：", e);
@@ -860,6 +804,13 @@ useEffect(() => {
   };
 
   const handleNextChapter = () => {
+    if (DEMO_MODE && currentChapter >= DEMO_END_LEVEL) {
+      setUnlockedLevel((prev) => Math.max(prev, DEMO_END_LEVEL + 1));
+      setShowChapterTransition(false);
+      setIsGameFinished(true);
+      return;
+    }
+
     if (CHAPTERS[currentChapter + 1]) {
       const nextChapter = currentChapter + 1;
 
@@ -870,10 +821,6 @@ useEffect(() => {
       setQuestionStartTime(Date.now());
       setQuestionElapsedTime(0);
       setStoryPhase("task");
-      setCardIndex(0);
-      setIsPlayingCards(false);
-      setHasPlayedChapter2Cards(false);
-      setChapter2PromptReady(false);
     } else {
       setShowChapterTransition(false);
       setIsGameFinished(true);
@@ -891,7 +838,7 @@ useEffect(() => {
     setShowUI(false);
     setQuestionElapsedTime(0);
     setQuestionStartTime(null);
-    setStoryPhase("story");
+    setStoryPhase("task");
   };
 
   const getResultStats = () => {
@@ -915,96 +862,200 @@ useEffect(() => {
   };
 
   const handleDownloadResult = () => {
-    const { completedRecords, completionRate, longestRecord, wrongRecords } = getResultStats();
+    const demoLevels = [1, 2, 3, 4];
+    const completedRecords = getUniqueRecords(records).filter((record) => {
+      const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
+      return demoLevels.includes(level);
+    });
+
+    const finalRecord = completedRecords.find(
+      (record) => record.puzzle_id === `puzzle_0${DEMO_END_LEVEL}`
+    );
+
+    const totalSeconds = Number(finalRecord?.total_seconds || totalElapsedTime || 0);
+    const wrongRecords = completedRecords.filter((record) => record.wrong);
+
+    const levelRows = demoLevels.map((level) => {
+      const record = completedRecords.find(
+        (item) => item.puzzle_id === `puzzle_0${level}`
+      );
+
+      return {
+        level,
+        title: CHAPTERS[level]?.title || `第 ${level} 關`,
+        time: Number(record?.time_seconds || 0),
+        wrong: Boolean(record?.wrong),
+        completed: Boolean(record),
+        concept: CHAPTERS[level]?.concept || DEMO_KNOWLEDGE_POINTS[level] || ""
+      };
+    });
+
+    const completedCount = levelRows.filter((item) => item.completed).length;
+    const accuracyText = `${completedCount - wrongRecords.length}/${completedCount || demoLevels.length}`;
+    const maxTime = Math.max(...levelRows.map((item) => item.time || 0), 1);
+
     const canvas = document.createElement("canvas");
     const scale = 2;
-    canvas.width = 900 * scale;
-    canvas.height = 1200 * scale;
+    const width = 1080;
+    const height = 1500;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+
     const ctx = canvas.getContext("2d");
     ctx.scale(scale, scale);
 
-    ctx.fillStyle = "#06231f";
-    ctx.fillRect(0, 0, 900, 1200);
+    const roundRect = (x, y, w, h, r) => {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+    };
 
-    const gradient = ctx.createLinearGradient(0, 0, 900, 1200);
-    gradient.addColorStop(0, "rgba(67, 209, 175, 0.28)");
-    gradient.addColorStop(1, "rgba(216, 160, 71, 0.18)");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 900, 1200);
+    const wrapText = (value, x, y, maxWidth, lineHeight, maxLines = 2) => {
+      const chars = String(value || "").split("");
+      let line = "";
+      let currentY = y;
+      let lines = 0;
 
-    ctx.fillStyle = "#f6fffb";
-    ctx.font = "bold 48px sans-serif";
-    ctx.fillText("Traffic Puzzle 挑戰成果", 70, 95);
+      for (const char of chars) {
+        const testLine = line + char;
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+          ctx.fillText(line, x, currentY);
+          line = char;
+          currentY += lineHeight;
+          lines += 1;
+          if (lines >= maxLines - 1) break;
+        } else {
+          line = testLine;
+        }
+      }
 
-    ctx.fillStyle = "#f0d58a";
-    ctx.font = "bold 30px sans-serif";
-    ctx.fillText(`完成率：${completionRate}%`, 70, 155);
+      if (line) ctx.fillText(line, x, currentY);
+      return currentY + lineHeight;
+    };
 
-    ctx.fillStyle = "rgba(237,255,248,0.88)";
-    ctx.font = "24px sans-serif";
-    ctx.fillText(`最卡關：${longestRecord ? `第${String(longestRecord.puzzle_id).replace("puzzle_0", "")}關（${longestRecord.time_seconds}s）` : "尚無"}`, 70, 205);
+    const bg = ctx.createLinearGradient(0, 0, width, height);
+    bg.addColorStop(0, "#0f332e");
+    bg.addColorStop(1, "#061917");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, width, height);
 
-    let y = 280;
-    ctx.fillStyle = "#9fe7d5";
+    ctx.fillStyle = "#f4ead0";
+    roundRect(72, 70, 936, 1360, 42);
+
+    ctx.fillStyle = "#fffaf0";
+    roundRect(108, 108, 864, 1288, 32);
+
+    ctx.fillStyle = "#173f36";
     ctx.font = "bold 28px sans-serif";
-    ctx.fillText("每關時間", 70, y);
-    y += 42;
+    ctx.fillText("TRAFFIC PUZZLE CLEAR REPORT", 152, 176);
 
-    completedRecords.forEach((record) => {
-      const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
-      const barWidth = Math.min(560, Math.max(24, Number(record.time_seconds || 0) * 18));
+    ctx.font = "bold 60px sans-serif";
+    ctx.fillText("闖關結果紀錄表", 152, 258);
 
-      ctx.fillStyle = "rgba(255,255,255,0.12)";
-      ctx.fillRect(70, y - 22, 620, 28);
-      ctx.fillStyle = "#d8a047";
-      ctx.fillRect(70, y - 22, barWidth, 28);
-      ctx.fillStyle = "#f6fffb";
-      ctx.font = "22px sans-serif";
-      ctx.fillText(`第${level}關  ${record.time_seconds}s${record.wrong ? "  曾答錯" : ""}`, 710, y);
-      y += 54;
+    ctx.fillStyle = "#52655d";
+    ctx.font = "24px sans-serif";
+    ctx.fillText(`${userName || userCode || "玩家"} 的交通安全學習成果`, 152, 304);
+
+    const stats = [
+      ["同梯次名次", finalRank ? `第 ${finalRank} 名` : "計算中"],
+      ["總作答時間", formatTime(totalSeconds)],
+      ["首次答對", accuracyText]
+    ];
+
+    let statX = 152;
+    stats.forEach(([label, value], idx) => {
+      ctx.fillStyle = idx === 1 ? "#d7a246" : "#173f36";
+      roundRect(statX, 354, 240, 118, 22);
+      ctx.fillStyle = idx === 1 ? "#173f36" : "#f7e7bd";
+      ctx.font = "20px sans-serif";
+      ctx.fillText(label, statX + 26, 396);
+      ctx.font = "bold 38px sans-serif";
+      ctx.fillText(value, statX + 26, 448);
+      statX += 270;
     });
 
-    y += 30;
-    ctx.fillStyle = "#f0d58a";
-    ctx.font = "bold 28px sans-serif";
-    ctx.fillText("錯題觀念回顧", 70, y);
-    y += 42;
+    ctx.fillStyle = "#173f36";
+    ctx.font = "bold 34px sans-serif";
+    ctx.fillText("學習趨勢表", 152, 554);
 
-    if (wrongRecords.length === 0) {
-      ctx.fillStyle = "rgba(237,255,248,0.82)";
+    // Table header
+    ctx.fillStyle = "#e8d6aa";
+    roundRect(152, 584, 776, 58, 16);
+    ctx.fillStyle = "#173f36";
+    ctx.font = "bold 22px sans-serif";
+    ctx.fillText("關卡", 182, 622);
+    ctx.fillText("時間", 508, 622);
+    ctx.fillText("狀態", 690, 622);
+
+    let y = 660;
+    levelRows.forEach((item) => {
+      ctx.fillStyle = "#fbf6e8";
+      roundRect(152, y, 776, 78, 16);
+
+      ctx.fillStyle = "#173f36";
+      ctx.font = "bold 22px sans-serif";
+      ctx.fillText(item.title, 182, y + 48);
+
+      ctx.fillStyle = "#52655d";
       ctx.font = "22px sans-serif";
-      ctx.fillText("本次挑戰沒有留下錯題紀錄。", 70, y);
-    } else {
-      wrongRecords.forEach((record) => {
-        const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
-        const concept = CHAPTERS[level]?.concept || "請回顧該關交通安全觀念。";
-        ctx.fillStyle = "#f6fffb";
-        ctx.font = "bold 22px sans-serif";
-        ctx.fillText(`第${level}關`, 70, y);
-        y += 30;
-        ctx.fillStyle = "rgba(237,255,248,0.78)";
-        ctx.font = "20px sans-serif";
-        const words = concept.split("");
-        let line = "";
-        const maxWidth = 740;
-        words.forEach((char) => {
-          const testLine = line + char;
-          if (ctx.measureText(testLine).width > maxWidth) {
-            ctx.fillText(line, 70, y);
-            y += 28;
-            line = char;
-          } else {
-            line = testLine;
-          }
-        });
-        if (line) ctx.fillText(line, 70, y);
-        y += 48;
-      });
-    }
+      ctx.fillText(item.completed ? formatTime(item.time) : "--", 508, y + 48);
+      ctx.fillText(item.completed ? (item.wrong ? "曾答錯" : "首次答對") : "未完成", 690, y + 48);
+
+      const barWidth = item.completed ? Math.max(36, Math.round((item.time / maxTime) * 180)) : 0;
+      ctx.fillStyle = "#d7a246";
+      roundRect(182, y + 62, barWidth, 8, 4);
+
+      y += 92;
+    });
+
+    ctx.fillStyle = "#173f36";
+    ctx.font = "bold 34px sans-serif";
+    ctx.fillText("知識點摘要", 152, 1080);
+
+    let ky = 1130;
+    levelRows.forEach((item) => {
+      ctx.fillStyle = item.completed ? "#173f36" : "#9b8b6a";
+      ctx.beginPath();
+      ctx.arc(172, ky - 8, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "#f7e7bd";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(166, ky - 8);
+      ctx.lineTo(171, ky - 3);
+      ctx.lineTo(180, ky - 14);
+      ctx.stroke();
+
+      ctx.fillStyle = "#36564d";
+      ctx.font = "21px sans-serif";
+      wrapText(item.concept, 202, ky, 680, 30, 2);
+      ky += 74;
+    });
+
+    ctx.fillStyle = "#d7a246";
+    roundRect(152, 1320, 776, 42, 21);
+    ctx.fillStyle = "#173f36";
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText("交通安全意識完成記錄", 410, 1348);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const fileName = `${userCode || "player"}_traffic_puzzle_report.png`;
+
+    setReportImageUrl(dataUrl);
 
     const link = document.createElement("a");
-    link.download = "traffic-puzzle-result.png";
-    link.href = canvas.toDataURL("image/png");
+    link.download = fileName;
+    link.href = dataUrl;
     link.click();
   };
 
@@ -1022,10 +1073,11 @@ useEffect(() => {
     setShowUI(false);
     setQuestionElapsedTime(0);
     setQuestionStartTime(null);
-    setStoryPhase("story");
+    setStoryPhase("task");
     setIsEnvelopeOpening(false);
     setShowNotebook(false);
     setNotebookPage(1);
+    setReportImageUrl("");
   };
 
   const levelClasses = (level, unlocked) => {
@@ -1057,13 +1109,13 @@ useEffect(() => {
 
   const nextBookPage = () => {
     setCurrentBookPage((prev) =>
-      Math.min(prev + 1, NOTEBOOK_PAGES.length - 1)
+      Math.min(prev + 2, NOTEBOOK_PAGES.length - 2)
     );
   };
 
   const prevBookPage = () => {
     setCurrentBookPage((prev) =>
-      Math.max(prev - 1, 0)
+      Math.max(prev - 2, 0)
     );
   };
 
@@ -1071,10 +1123,6 @@ useEffect(() => {
     notebookCompletedRecords.some(
       (record) => record.puzzle_id === `puzzle_0${level}`
     );
-  const getNotebookLevelRecord = (level) =>
-  notebookCompletedRecords.find(
-    (record) => record.puzzle_id === `puzzle_0${level}`
-  );
 
   const jumpToNotebookPage = (targetPage) => {
     setCurrentBookPage(targetPage);
@@ -1113,7 +1161,61 @@ useEffect(() => {
       />
     );
 
-    const spiralBinding = null;
+    const spiralBinding = side === "left" ? (
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "6px",
+          top: "16px",
+          bottom: "16px",
+          width: "28px",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          pointerEvents: "none"
+        }}
+      >
+        {Array.from({ length: 13 }).map((_, index) => (
+          <div
+            key={index}
+            style={{
+              position: "relative",
+              width: "24px",
+              height: "14px"
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                left: "0px",
+                top: "0px",
+                width: "10px",
+                height: "12px",
+                border: "2px solid #1e1e1e",
+                borderRight: "none",
+                borderRadius: "10px 0 0 10px",
+                background: "transparent"
+              }}
+            />
+            <span
+              style={{
+                position: "absolute",
+                left: "8px",
+                top: "0px",
+                width: "10px",
+                height: "12px",
+                border: "2px solid #1e1e1e",
+                borderLeft: "none",
+                borderRadius: "0 10px 10px 0",
+                background: "transparent"
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    ) : null;
 
     if (!page) {
       return (
@@ -1179,6 +1281,8 @@ useEffect(() => {
               {page.content}
             </p>
           </div>
+
+          
         </div>
       );
     }
@@ -1224,71 +1328,89 @@ useEffect(() => {
       );
     }
 
-    if (page.type === "level") {
-    const note = NOTEBOOK_LEVEL_NOTES[page.level];
-    const levelRecord = getNotebookLevelRecord(page.level);
-    const hasRecord = Boolean(levelRecord);
+    if (page.type === "chapter") {
       return (
         <div className="field-book-page field-book-record-page page-fade-slide" style={basePageStyle}>
           {paperTexture}
           {spiralBinding}
           <div style={{ position: "relative", zIndex: 3 }}>
-            <div style={{ marginBottom: "22px" }}>
+            <div style={{ marginBottom: "20px" }}>
               <div style={{ fontSize: "13px", letterSpacing: "0.18em", fontWeight: 900, color: "#84612c" }}>
-                CHAPTER {page.chapterCode}
+                CHAPTER {page.code}
               </div>
               <h2 style={{ margin: "8px 0 0", fontSize: "27px", lineHeight: 1.25, color: "#12352f" }}>
-                {note.title}
+                {page.title}
               </h2>
             </div>
 
-            {hasRecord ? (
-              <article
-                style={{
-                  borderRadius: "17px",
-                  padding: "17px 18px",
-                  background: "rgba(255, 249, 231, 0.50)",
-                  border: "1px solid rgba(18,53,47,0.18)",
-                  boxShadow: "0 8px 18px rgba(44, 31, 13, 0.10)"
-                }}
-              >
-                <div style={{ margin: "0 0 8px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
-  CLEAR RECORD
-</div>
+            <div style={{ display: "grid", gap: "13px" }}>
+              {page.levels.filter((level) => isNotebookLevelCompleted(level)).length > 0 ? (
+                page.levels
+                  .filter((level) => isNotebookLevelCompleted(level))
+                  .map((level) => {
+                    const note = NOTEBOOK_LEVEL_NOTES[level];
 
-<div style={{ marginBottom: "14px", fontSize: "14px", lineHeight: 1.8, color: "#36564d" }}>
-  <div>作答時間：{formatTime(Number(levelRecord.time_seconds || 0))}</div>
-  <div>
-    當時排名：
-    {levelRecord.rank_at_completion
-      ? `第 ${levelRecord.rank_at_completion} 名`
-      : "尚未記錄"}
-  </div>
-</div>
+                    return (
+                      <article
+                        key={level}
+                        style={{
+                          borderRadius: "17px",
+                          padding: "16px 18px",
+                          background: "rgba(255, 249, 231, 0.50)",
+                          border: "1px solid rgba(18,53,47,0.18)",
+                          boxShadow: "0 8px 18px rgba(44, 31, 13, 0.10)"
+                        }}
+                      >
+                        <div style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: "12px",
+                          alignItems: "center",
+                          marginBottom: "8px"
+                        }}>
+                          <div>
+                            <div style={{ margin: "0 0 4px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
+                              KNOWLEDGE NOTE
+                            </div>
+                            <h3 style={{ margin: 0, fontSize: "18px", color: "#12352f" }}>
+                              {note.title}
+                            </h3>
+                          </div>
+                          <span style={{
+                            flex: "0 0 auto",
+                            fontSize: "12px",
+                            fontWeight: 900,
+                            borderRadius: "999px",
+                            padding: "5px 9px",
+                            background: "rgba(18, 53, 47, 0.14)",
+                            color: "#12352f"
+                          }}>
+                            已記錄
+                          </span>
+                        </div>
 
-<div style={{ margin: "0 0 8px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
-  KNOWLEDGE NOTE
-</div>
-
-<p style={{ margin: 0, fontSize: "15px", lineHeight: 1.76, color: "#36564d" }}>
-  {note.content}
-</p>
-              </article>
-            ) : (
-              <div
-                style={{
-                  borderRadius: "17px",
-                  padding: "18px",
-                  background: "rgba(255, 249, 231, 0.22)",
-                  border: "1px dashed rgba(18,53,47,0.22)",
-                  color: "#6b6b57",
-                  fontSize: "15px",
-                  lineHeight: 1.7
-                }}
-              >
-                完成此小關後，這裡才會出現知識重點。
-              </div>
-            )}
+                        <p style={{ margin: 0, fontSize: "15px", lineHeight: 1.72, color: "#36564d" }}>
+                          {note.content}
+                        </p>
+                      </article>
+                    );
+                  })
+              ) : (
+                <div
+                  style={{
+                    borderRadius: "17px",
+                    padding: "18px",
+                    background: "rgba(255, 249, 231, 0.22)",
+                    border: "1px dashed rgba(18,53,47,0.22)",
+                    color: "#6b6b57",
+                    fontSize: "15px",
+                    lineHeight: 1.7
+                  }}
+                >
+                  這一章的闖關筆記還沒有解鎖。完成對應小關後，這裡才會出現知識重點。
+                </div>
+              )}
+            </div>
           </div>
         </div>
       );
@@ -1520,28 +1642,20 @@ useEffect(() => {
           </div>
 
           <h1 className="puzzle-title">
-          {CHAPTERS[currentChapter].taskTitle}
+            {CHAPTERS[currentChapter].title}
           </h1>
-          {isPlayingCards && currentChapter === 3 && (
-            <div className="card-display">
-              <img
-                src={CHAPTER2_CARDS[cardIndex]}
-                alt={`chapter-2-card-${cardIndex + 1}`}
-                className="card-image"
-              />
-            </div>
-          )}
+
 
           {isWrong ? (
             <div className="error-area">
-              <p className="error-text">需要小明給的提示嗎？</p>
+              <p className="error-text">答案還不太對喔！</p>
               {!showHint ? (
                 <button className="help-btn" onClick={() => setShowHint(true)}>
-                  請幫幫我
+                  查看提示
                 </button>
               ) : (
                 <>
-                  <p className="hint-text">不告訴你</p>
+                  <p className="hint-text">{DEMO_WRONG_HINT}</p>
                   <button
                     className="glow-btn"
                     onClick={() => {
@@ -1557,17 +1671,75 @@ useEffect(() => {
             </div>
           ) : (
             <>
-              {!isPlayingCards && (
-                <>
-                  <div className="typewriter-text">{displayedText}</div>
+                  {storyPhase === "task" ? (
+                    <div
+                      className="physical-task-panel"
+                      style={{
+                        position: "relative",
+                        marginTop: "10px",
+                        padding: "26px 24px 104px",
+                        borderRadius: "30px",
+                        background: "linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.06))",
+                        border: "1px solid rgba(255,255,255,0.14)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 36px rgba(0,0,0,0.12)",
+                        textAlign: "left",
+                        overflow: "hidden",
+                        minHeight: "260px"
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: "clamp(1.25rem, 3.2vw, 1.75rem)",
+                          fontWeight: 900,
+                          color: "#f5f2ea",
+                          marginBottom: "18px",
+                          letterSpacing: "0.02em"
+                        }}
+                      >
+                        【{CHAPTERS[currentChapter].taskTitle}】
+                      </div>
 
+                      <div
+                        style={{
+                          fontSize: "clamp(1.12rem, 2.8vw, 1.45rem)",
+                          lineHeight: 1.95,
+                          color: "rgba(255,255,255,0.95)",
+                          whiteSpace: "pre-line",
+                          maxWidth: "78%"
+                        }}
+                      >
+                        {CHAPTERS[currentChapter].taskContent}
+                      </div>
+
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: "12px",
+                          bottom: "8px",
+                          pointerEvents: "none"
+                        }}
+                      >
+                        <TrafficPromptIllustration level={currentChapter} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="typewriter-text">{displayedText}</div>
+                  )}
+
+                  {showUI && storyPhase === "story" && (
+                    <div className="input-area">
+                      <button className="glow-btn" onClick={handleStoryContinue}>
+                        繼續
+                      </button>
+                    </div>
+                  )}
 
                   {showUI && storyPhase === "task" && (
                     <div className="input-area">
                       <input
                         type="text"
                         value={userInput}
-                      onChange={(e) => setUserInput(e.target.value)}
+                        onChange={(e) => setUserInput(e.target.value)}
                         placeholder="在此輸入解答..."
                       />
                       <button className="glow-btn" onClick={handleLevelComplete}>
@@ -1581,8 +1753,6 @@ useEffect(() => {
                       </button>
                     </div>
                   )}
-                </>
-              )}
             </>
           )}
         </div>
@@ -1669,12 +1839,85 @@ useEffect(() => {
       )}
 
       {showChapterTransition && (
-        <div className="overlay transition-overlay">
-          <div className="transition-card float-in-card">
-            <h2 className="puzzle-title">🎉 過關成功</h2>
-            <div className="typewriter-text transition-text">{transitionMessage}</div>
-            <button className="glow-btn" onClick={handleNextChapter}>
-              確認
+        <div
+          className="overlay transition-overlay"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 3000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "22px",
+            background: "rgba(3, 16, 14, 0.58)",
+            backdropFilter: "blur(6px)"
+          }}
+        >
+          <div
+            className="transition-card float-in-card"
+            style={{
+              width: "min(88vw, 430px)",
+              borderRadius: "30px",
+              padding: "42px 34px 36px",
+              textAlign: "center",
+              background:
+                "linear-gradient(145deg, rgba(255, 250, 235, 0.98), rgba(232, 213, 171, 0.96))",
+              border: "1px solid rgba(247, 231, 189, 0.7)",
+              boxShadow:
+                "0 26px 70px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.65)"
+            }}
+          >
+            <h2
+              className="puzzle-title"
+              style={{
+                margin: "0 0 18px",
+                textAlign: "center",
+                fontSize: "clamp(2rem, 7vw, 2.8rem)",
+                lineHeight: 1.15,
+                color: "#173f36",
+                fontFamily:
+                  "'Noto Serif TC', 'Songti TC', 'PMingLiU', serif",
+                fontWeight: 900,
+                letterSpacing: "0.08em"
+              }}
+            >
+              過關成功
+            </h2>
+
+            <div
+              className="typewriter-text transition-text"
+              style={{
+                margin: "0 auto 30px",
+                maxWidth: "320px",
+                textAlign: "center",
+                fontSize: "clamp(1.05rem, 4.4vw, 1.22rem)",
+                lineHeight: 1.85,
+                color: "#3b5b52",
+                whiteSpace: "pre-wrap"
+              }}
+            >
+              {transitionMessage}
+            </div>
+
+            <button
+              className="glow-btn"
+              onClick={handleNextChapter}
+              style={{
+                width: "min(100%, 310px)",
+                borderRadius: "999px",
+                padding: "16px 22px",
+                background:
+                  "linear-gradient(135deg, #123b34, #1f5a4e)",
+                color: "#f7e7bd",
+                border: "1px solid rgba(247, 231, 189, 0.45)",
+                boxShadow:
+                  "0 14px 30px rgba(11, 47, 39, 0.38), inset 0 1px 0 rgba(255,255,255,0.15)",
+                fontSize: "1.18rem",
+                fontWeight: 900,
+                letterSpacing: "0.08em"
+              }}
+            >
+              繼續闖關
             </button>
           </div>
         </div>
@@ -1800,17 +2043,17 @@ useEffect(() => {
                 <button
                   className="field-book-nav"
                   onClick={nextBookPage}
-                  disabled={currentBookPage >= NOTEBOOK_PAGES.length - 1}
+                  disabled={currentBookPage >= NOTEBOOK_PAGES.length - 2}
                   style={{
                     pointerEvents: "auto",
                     border: "1px solid rgba(247,231,189,0.18)",
                     borderRadius: "999px",
                     padding: "9px 16px",
-                    background: currentBookPage >= NOTEBOOK_PAGES.length - 1 ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
-                    color: currentBookPage >= NOTEBOOK_PAGES.length - 1 ? "rgba(18,53,47,0.44)" : "#f7e7bd",
+                    background: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
+                    color: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.44)" : "#f7e7bd",
                     fontWeight: 900,
                     letterSpacing: "0.08em",
-                    cursor: currentBookPage >= NOTEBOOK_PAGES.length - 1 ? "default" : "pointer"
+                    cursor: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "default" : "pointer"
                   }}
                 >
                   NEXT →
@@ -1822,84 +2065,280 @@ useEffect(() => {
       )}
 
       {isGameFinished && (() => {
-        const { completedRecords, completedCount, completionRate, longestRecord, wrongRecords } = getResultStats();
+        const demoLevels = [1, 2, 3, 4];
+        const completedRecords = getUniqueRecords(records).filter((record) => {
+          const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
+          return demoLevels.includes(level);
+        });
+
+        const finalRecord = completedRecords.find(
+          (record) => record.puzzle_id === `puzzle_0${DEMO_END_LEVEL}`
+        );
+
+        const demoTotalSeconds = Number(finalRecord?.total_seconds || totalElapsedTime || 0);
+        const wrongRecords = completedRecords.filter((record) => record.wrong);
+
+        const levelRows = demoLevels.map((level) => {
+          const record = completedRecords.find(
+            (item) => item.puzzle_id === `puzzle_0${level}`
+          );
+
+          return {
+            level,
+            title: CHAPTERS[level]?.title || `第 ${level} 關`,
+            time: Number(record?.time_seconds || 0),
+            wrong: Boolean(record?.wrong),
+            completed: Boolean(record),
+            concept: CHAPTERS[level]?.concept || DEMO_KNOWLEDGE_POINTS[level] || ""
+          };
+        });
+
+        const completedCount = levelRows.filter((item) => item.completed).length;
+        const firstTryCount = levelRows.filter((item) => item.completed && !item.wrong).length;
+        const maxTime = Math.max(...levelRows.map((item) => item.time || 0), 1);
 
         return (
-          <div className="result-screen" id="result-screen">
-            <div className="result-panel">
-              <div className="result-kicker">MISSION COMPLETE</div>
-              <h1 className="result-title">挑戰成果回顧</h1>
-              <p className="result-subtitle">
-                這份回顧整理了你的通關時間、完成進度，以及曾經答錯的觀念。
-              </p>
-
-              <div className="result-summary-grid">
-                <div className="result-summary-card">
-                  <span>完成進度</span>
-                  <strong>{completedCount}/5</strong>
+          <div
+            className="result-screen"
+            id="result-screen"
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 4000,
+              minHeight: "100vh",
+              overflowY: "auto",
+              overflowX: "hidden",
+              WebkitOverflowScrolling: "touch",
+              padding: "24px 14px 42px",
+              background:
+                "radial-gradient(circle at top, rgba(220, 167, 77, 0.24), transparent 34%), linear-gradient(135deg, #0a2a26, #061917)",
+              display: "block"
+            }}
+          >
+            <div
+              className="result-panel"
+              style={{
+                width: "min(560px, 94vw)",
+                margin: "0 auto",
+                borderRadius: "34px",
+                padding: "22px",
+                background: "linear-gradient(135deg, #fff8e8, #e7d1a4)",
+                color: "#173f36",
+                boxShadow: "0 28px 90px rgba(0,0,0,0.42)"
+              }}
+            >
+              <div
+                style={{
+                  borderRadius: "26px",
+                  padding: "24px 18px",
+                  background: "rgba(255,255,255,0.52)",
+                  border: "1px solid rgba(23,63,54,0.12)"
+                }}
+              >
+                <div style={{ fontSize: "12px", letterSpacing: "0.16em", fontWeight: 900, color: "#a36f2f" }}>
+                  TRAFFIC PUZZLE · CLEAR REPORT
                 </div>
-                <div className="result-summary-card">
-                  <span>完成率</span>
-                  <strong>{completionRate}%</strong>
-                </div>
-                <div className="result-summary-card">
-                  <span>最卡關</span>
-                  <strong>
-                    {longestRecord
-                      ? `第${String(longestRecord.puzzle_id).replace("puzzle_0", "")}關`
-                      : "尚無"}
-                  </strong>
-                </div>
-              </div>
 
-              <section className="result-section">
-                <h2>每關作答時間</h2>
-                <div className="result-bars">
-                  {[1, 2, 3, 4, 5].map((level) => {
-                    const record = completedRecords.find((item) => item.puzzle_id === `puzzle_0${level}`);
-                    const seconds = Number(record?.time_seconds || 0);
-                    const maxSeconds = Math.max(...completedRecords.map((item) => Number(item.time_seconds || 0)), 1);
-                    const width = record ? Math.max(10, Math.round((seconds / maxSeconds) * 100)) : 0;
+                <h1 style={{ margin: "10px 0 6px", fontSize: "clamp(2rem, 9vw, 3rem)", lineHeight: 1.15, color: "#173f36" }}>
+                  闖關結果紀錄表
+                </h1>
 
-                    return (
-                      <div className="result-bar-row" key={level}>
-                        <div className="result-bar-label">第{level}關</div>
-                        <div className="result-bar-track">
-                          <div className="result-bar-fill" style={{ width: `${width}%` }}></div>
+                <p style={{ margin: 0, color: "#52655d", fontSize: "16px", lineHeight: 1.7 }}>
+                  {userName || userCode || "玩家"} 的交通安全學習成果
+                </p>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr",
+                    gap: "12px",
+                    marginTop: "22px"
+                  }}
+                >
+                  <div style={{ borderRadius: "20px", padding: "18px", background: "#173f36", color: "#f4efe3" }}>
+                    <div style={{ fontSize: "13px", opacity: 0.82 }}>同梯次名次</div>
+                    <strong style={{ fontSize: "32px" }}>{finalRank ? `第 ${finalRank} 名` : "計算中"}</strong>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div style={{ borderRadius: "20px", padding: "16px", background: "#d9a246", color: "#173f36" }}>
+                      <div style={{ fontSize: "13px", opacity: 0.82 }}>總作答時間</div>
+                      <strong style={{ fontSize: "26px" }}>{formatTime(demoTotalSeconds)}</strong>
+                    </div>
+
+                    <div style={{ borderRadius: "20px", padding: "16px", background: "#e8eee5", color: "#173f36" }}>
+                      <div style={{ fontSize: "13px", opacity: 0.82 }}>首次答對</div>
+                      <strong style={{ fontSize: "26px" }}>{firstTryCount}/{completedCount || demoLevels.length}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <section style={{ marginTop: "26px" }}>
+                  <h2 style={{ margin: "0 0 12px", color: "#173f36", fontSize: "24px" }}>學習趨勢表</h2>
+
+                  <div
+                    style={{
+                      borderRadius: "18px",
+                      overflow: "hidden",
+                      border: "1px solid rgba(23,63,54,0.14)",
+                      background: "rgba(255,255,255,0.42)"
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1.5fr 0.8fr 0.9fr",
+                        gap: "8px",
+                        padding: "12px 14px",
+                        background: "rgba(23,63,54,0.12)",
+                        color: "#173f36",
+                        fontWeight: 900,
+                        fontSize: "14px"
+                      }}
+                    >
+                      <span>關卡</span>
+                      <span>時間</span>
+                      <span>狀態</span>
+                    </div>
+
+                    {levelRows.map((item) => (
+                      <div
+                        key={item.level}
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1.5fr 0.8fr 0.9fr",
+                          gap: "8px",
+                          padding: "13px 14px",
+                          borderTop: "1px solid rgba(23,63,54,0.10)",
+                          color: "#36564d",
+                          fontSize: "14px",
+                          lineHeight: 1.55
+                        }}
+                      >
+                        <strong style={{ color: "#173f36" }}>{item.title}</strong>
+                        <span>{item.completed ? formatTime(item.time) : "--"}</span>
+                        <span>{item.completed ? (item.wrong ? "曾答錯" : "首次答對") : "未完成"}</span>
+
+                        <div style={{ gridColumn: "1 / -1", height: "7px", borderRadius: "999px", background: "rgba(23,63,54,0.10)", overflow: "hidden" }}>
+                          <div
+                            style={{
+                              width: item.completed ? `${Math.max(12, Math.round((item.time / maxTime) * 100))}%` : "0%",
+                              height: "100%",
+                              borderRadius: "999px",
+                              background: item.wrong ? "#a96a42" : "#d9a246"
+                            }}
+                          />
                         </div>
-                        <div className="result-bar-value">{record ? `${seconds}s` : "未完成"}</div>
                       </div>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className="result-section">
-                <h2>錯題觀念回顧</h2>
-                {wrongRecords.length === 0 ? (
-                  <div className="result-concept-card success">
-                    本次挑戰沒有留下錯題紀錄，代表你在首次通關前沒有答錯。
+                    ))}
                   </div>
-                ) : (
-                  <div className="result-concepts">
-                    {wrongRecords.map((record) => {
-                      const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
-                      return (
-                        <div className="result-concept-card" key={record.puzzle_id}>
-                          <strong>第{level}關曾答錯</strong>
-                          <p>{CHAPTERS[level]?.concept || "請回顧該關交通安全觀念。"}</p>
+                </section>
+
+                <section style={{ marginTop: "26px" }}>
+                  <h2 style={{ margin: "0 0 12px", color: "#173f36", fontSize: "24px" }}>知識點摘要</h2>
+
+                  <div style={{ display: "grid", gap: "12px" }}>
+                    {levelRows.map((item) => (
+                      <div
+                        key={item.level}
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "28px 1fr",
+                          gap: "10px",
+                          alignItems: "flex-start",
+                          padding: "14px",
+                          borderRadius: "16px",
+                          background: "rgba(255,255,255,0.48)",
+                          border: "1px solid rgba(23,63,54,0.10)"
+                        }}
+                      >
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            marginTop: "2px",
+                            borderRadius: "50%",
+                            background: item.completed ? "#173f36" : "rgba(23,63,54,0.18)",
+                            color: "#f7e7bd",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "13px",
+                            fontWeight: 900,
+                            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)"
+                          }}
+                        >
+                          ✓
+                        </span>
+
+                        <div>
+                          <strong style={{ display: "block", marginBottom: "5px", color: "#173f36" }}>{item.title}</strong>
+                          <p style={{ margin: 0, color: "#52655d", lineHeight: 1.7, fontSize: "15px" }}>
+                            {item.concept}
+                          </p>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
-                )}
-              </section>
-
-              <div className="result-actions">
-                <button className="glow-btn" onClick={handleDownloadResult}>📸 保存圖片</button>
-                <button className="back-cancel-btn" onClick={handleFinishChallenge}>🏁 已結束挑戰</button>
+                </section>
               </div>
             </div>
+
+            <div
+              className="result-actions"
+              style={{
+                width: "min(560px, 94vw)",
+                margin: "20px auto 0",
+                display: "grid",
+                gap: "12px"
+              }}
+            >
+              <button
+                className="glow-btn"
+                onClick={handleDownloadResult}
+                style={{
+                  borderRadius: "18px",
+                  background: "linear-gradient(135deg, #123b34, #1f5a4e)",
+                  color: "#f7e7bd",
+                  border: "1px solid rgba(247,231,189,0.35)",
+                  padding: "16px 20px",
+                  fontWeight: 900,
+                  letterSpacing: "0.06em"
+                }}
+              >
+                儲存闖關記錄表
+              </button>
+
+              <button className="back-cancel-btn" onClick={handleFinishChallenge}>
+                已結束挑戰
+              </button>
+            </div>
+
+            {reportImageUrl && (
+              <div
+                style={{
+                  width: "min(94vw, 460px)",
+                  margin: "22px auto 0",
+                  textAlign: "center",
+                  color: "#f4efe3"
+                }}
+              >
+                <p style={{ margin: "0 0 12px", fontWeight: 800, lineHeight: 1.6 }}>
+                  圖片已生成。手機可長按下方圖片儲存，電腦可直接下載 PNG。
+                </p>
+                <img
+                  src={reportImageUrl}
+                  alt="闖關記錄表"
+                  style={{
+                    width: "100%",
+                    borderRadius: "18px",
+                    boxShadow: "0 18px 50px rgba(0,0,0,0.42)",
+                    border: "1px solid rgba(255,255,255,0.18)"
+                  }}
+                />
+              </div>
+            )}
           </div>
         );
       })()}

@@ -11,7 +11,7 @@ import {
   where
 } from 'firebase/firestore';
 // ===== Realtime DB（在線人數）=====
-import { ref, set, onValue, onDisconnect } from 'firebase/database';
+import { ref, set, onValue, onDisconnect, remove } from 'firebase/database';
 import './App.css';
 import card01 from './assets/card-01.png';
 import card02 from './assets/card-02.png';
@@ -82,65 +82,54 @@ const CASE_FILES = [
 ];
 const CHAPTERS = {
   1: {
-    title: "1-1：烈日下的差事",
-    content: `七月十四．正午。
-又是個悶得發慌的中午後。我坐在櫃檯邊，看見阿明伯出現在郵局門口。他是個讀書人，學音樂的，偏偏一雙眼瞧不見。那天熱得連狗都懶得叫，他卻穿著筆挺的西裝，坐在輪椅上。
-
-郵局門前那幾級高得嚇人的老石階，對他來說就像南天門一樣難跨。他那雙枯瘦的手死死按著信封，指節泛白，非要自己到櫃檯前。我看著他西裝被汗浸了一圈，心裡納悶：是什麼樣的信，非得要一個看不見的人，跨過這幾級『不存在的路』才能寄出去？`,
-    taskTitle: "【實體操作提示】",
-    taskContent: `請取出配件包中的「量測用直尺」與「坡道設計圖（折紙）」。
-使用直尺測量實體道具（郵局模型）中石階的總高度。
-請根據坡道設計紙，嘗試摺疊出合乎比例的設計，揭開這個被我們視而不見的殘酷真相。`,
+    title: "1-1 烈日下的差事",
+    content: ``,
+    taskTitle: "【系統提示】",
+    taskContent: `請拿出綠色解謎包
+取出街區圖並打開劇情提示：`,
     answer: "1",
-    concept: "無障礙坡道需要符合安全比例，否則看似短短幾階的高度，也會變成輪椅使用者難以跨越的斷點。",
-    nextMsg: "你開始意識到這個問題的本質了..."
+    concept: "一條合格的人行道，必須保留足夠寬度，並避免障礙物阻擋，才能讓行人、輪椅使用者與推嬰兒車的人安全通行。",
+    nextMsg: "你完成了第一份街區調查，開始看見道路中被忽略的行人空間。"
   },
+
   2: {
-    title: "【1-2 劇情：剝離冷漠的偽裝】",
-    content: `最後，我們幾個老骨頭使了把勁，連人帶輪椅把他抬過那幾層疊疊的階梯。金屬輪子磕碰石階的聲音，在空蕩蕩的大廳裡迴盪，聽著像是在跟這間沒坡道的老房子賭氣。
-
-他終於親手把信遞過來了。但我看著那張地圖，才明白阿明伯眼中的世界更令人窒息。變電箱像巨大的墓碑，機車如同鏽蝕的鎖鏈，將路勒得密不透風。這些我們習以為常的『便利』，全成了他的路障。如果不親手剝開這些冷漠，我們永遠看不見通往公平的生路。`,
-    taskTitle: "【實體操作指引】",
-    taskContent: `請取出「Level 1：混亂街景圖」與「障礙物貼紙組」。
-請親手撕下那些擋路的機車、變電箱與違規招牌貼紙。
-當偽裝被剝離，請注視底層露出的斑駁痕跡，並在系統輸入你發現的答案。`,
+    title: "1-2 狹縫中的選擇",
+    content: ``,
+    taskTitle: "【系統提示】",
+    taskContent: `請拿出超商收據與信封袋，搭配劇情提示
+推論出藏在其中的秘密吧！`,
     answer: "2",
-    concept: "街道上的機車、變電箱與違規招牌，會壓縮行人空間，讓原本應該安全通行的路變成障礙。",
-    nextMsg: "你看見了被遮蔽的真相..."
+    concept: "騎樓與人行空間雖然看似平常，卻常因停車、堆放物品或私人使用而壓縮通行寬度，使行人被迫在狹縫中移動。",
+    nextMsg: "你找出了藏在收據與信封中的線索，也理解了狹窄通行空間背後的問題。"
   },
+
   3: {
-    title: "【2-1 劇情：霓虹下的盲點】",
-    content: `九月二十．雨後傍晚。
-日記這頁我畫了一個被圈起來的紅十字。我想起那個叫小娟的女孩，每天這時間她都趕著最後一班公車。這路口是城市的『心臟』，但我看著卻像絞肉機。
-
-燈號像瘋了似地閃爍，路標在廣告夾縫中求生。小娟站在斑馬線邊緣，臉色慘白。路口太快了，號誌跳動的速度快得像在嘲笑行人。在這個路口，『慢』就是一種原罪。我看見她手忙腳亂地對著地圖，卻發現大腦根本跟不上那種超載的頻率。`,
-    taskTitle: "【實體操作提示】",
-    taskContent: `請取出配件包中的「10 張文字路標卡牌」。
-接下來系統將進入高速閃現模式，請在混亂中捕捉小娟賴以生存的號誌。`,
+    title: "1-3 消失的下班準星",
+    content: ``,
+    taskTitle: "【系統提示】",
+    taskContent: `請拿出綠色解謎包中的劇情提示與圖卡
+找出周邊隱藏的綠色怪獸傳達的訊息吧！`,
     answer: "3",
-    concept: "交通資訊過多、出現太快或擺放混亂時，會造成資訊過載，使行人難以及時做出正確判斷。",
-    nextMsg: "你成功抓住了混亂中的秩序..."
+    concept: "人行道的存在是為了行人，而不是為了放置變電箱、路燈、公車站牌或其他障礙物。當障礙物佔據通行空間時，行人的安全路權就會被壓縮。",
+    nextMsg: "你破解了綠色怪獸留下的訊息，也發現人行道上被忽略的障礙。"
   },
+
   4: {
-    title: "【3-1 劇情：被迫繞遠的路】",
-    content: `有些路看起來通往同一個方向，真正走上去才知道差別。對行動不便的人來說，一次不合理的繞路，不只是多花幾分鐘，而是體力、時間與尊嚴的消耗。
-
-當城市只替速度最快的人設計路線，其他人的需求就會被推到邊角。那些被迫繞遠的軌跡，其實都是城市沒有被看見的缺口。`,
-    taskTitle: "【實體操作提示】",
-    taskContent: `請觀察實體路線圖，找出最不友善的繞行路徑。
-請比較直接路線與替代路線的差異，並輸入你得到的答案。`,
+    title: "2-1 碎裂的斑馬線",
+    content: ``,
+    taskTitle: "【系統提示】",
+    taskContent: `請拿出綠色解謎包中的催繳通知信封與街區圖卡。
+抬頭尋找黑匣子裡的奔跑行者，動手收攏這段不合理的危險長廊吧！`,
     answer: "4",
-    concept: "交通設計不能只追求最快路徑，也需要照顧不同族群的移動成本與可達性。",
-    nextMsg: "你看見了繞路背後被忽略的成本..."
+    concept: "斑馬線不是畫上去就代表安全。若穿越距離過長、號誌時間不足或視線不清，行人仍可能暴露在危險的道路環境中。",
+    nextMsg: "你收攏了危險長廊，也看見斑馬線背後真正需要被修正的問題。"
   },
-  5: {
-    title: "【4-1 劇情：城市的回信】",
-    content: `當最後一封信被打開時，郵袋裡不再只是線索，而是這座城市給出的回信。每一個坡道、每一條人行道、每一次號誌等待，都在回答同一個問題：這座城市願不願意讓所有人安全抵達？
 
-真正的交通安全，不只是避免事故，而是讓每一個人都能被考慮、被尊重、被接住。`,
-    taskTitle: "【實體操作提示】",
-    taskContent: `請回顧前面所有任務中發現的問題。
-整理你認為最重要的交通安全觀念，並輸入最後答案完成挑戰。`,
+  5: {
+    title: "3-1 暫定關卡",
+    content: ``,
+    taskTitle: "【系統提示】",
+    taskContent: `此關卡內容暫定中，請依現場紙本任務提示進行操作，並在系統輸入答案完成挑戰。`,
     answer: "5",
     concept: "交通安全需要整體規劃，包含無障礙、路權、資訊設計與行人安全，而不是只解決單一問題。",
     nextMsg: "你完成了所有調查，城市的盲點正在被重新看見。"
@@ -148,11 +137,56 @@ const CHAPTERS = {
 }
 
 const LEVEL_FILES = [
-  { id: 1,requiredLevel: null, code: "FILE 01", label: "1-1", icon: "🧭", title: "斷裂的終點", theme: "無障礙坡道調查", desc: "量測郵局石階高度，摺出合乎比例的坡道設計。" },
-  { id: 2,requiredLevel: 1, code: "FILE 02", label: "1-2", icon: "🚧", title: "剝離冷漠的偽裝", theme: "街道障礙辨識", desc: "撕下混亂街景中的障礙物，找出被遮蔽的答案。" },
-  { id: 3,requiredLevel: 2, code: "FILE 03", label: "2-1", icon: "🧠", title: "霓虹下的盲點", theme: "記憶與號誌挑戰", desc: "觀察高速閃現的路標卡牌，在混亂中捕捉順序。" },
-  { id: 4,requiredLevel: 3, code: "FILE 04", label: "3-1", icon: "🛣️", title: "被迫繞遠的路", theme: "可達性與路線成本", desc: "比較不同移動路徑，理解繞路背後的交通不平等。" },
-  { id: 5,requiredLevel: 4, code: "FILE 05", label: "4-1", icon: "🏙️", title: "城市的回信", theme: "整體交通安全回顧", desc: "整合所有任務線索，完成最後的城市安全觀念挑戰。" }
+  {
+    id: 1,
+    requiredLevel: null,
+    code: "FILE 01",
+    label: "1-1",
+    icon: "🧭",
+    title: "烈日下的差事",
+    theme: "街區圖與劇情提示",
+    desc: "拿出綠色解謎包，取出街區圖並打開劇情提示。"
+  },
+  {
+    id: 2,
+    requiredLevel: 1,
+    code: "FILE 02",
+    label: "1-2",
+    icon: "🧾",
+    title: "狹縫中的選擇",
+    theme: "收據與信封袋推理",
+    desc: "拿出超商收據與信封袋，搭配劇情提示推論秘密。"
+  },
+  {
+    id: 3,
+    requiredLevel: 2,
+    code: "FILE 03",
+    label: "1-3",
+    icon: "🟢",
+    title: "消失的下班準星",
+    theme: "圖卡與隱藏訊息",
+    desc: "拿出劇情提示與圖卡，找出綠色怪獸傳達的訊息。"
+  },
+  {
+    id: 4,
+    requiredLevel: 3,
+    code: "FILE 04",
+    label: "2-1",
+    icon: "🚶",
+    title: "碎裂的斑馬線",
+    theme: "斑馬線與危險長廊",
+    desc: "拿出催繳通知信封與街區圖卡，收攏不合理的危險長廊。"
+  },
+  {
+    id: 5,
+    requiredLevel: 4,
+    code: "FILE 05",
+    label: "3-1",
+    icon: "🏙️",
+    title: "暫定關卡",
+    theme: "紙本任務提示",
+    desc: "依照現場紙本任務提示進行操作。"
+  }
 ];
 const NOTEBOOK_PAGES = [
   {
@@ -406,16 +440,23 @@ function App() {
   };
 
   const handleLogoutUser = () => {
-    localStorage.removeItem("trafficPuzzleUserName");
-    localStorage.removeItem("trafficPuzzleUserCode");
-    setUserName("");
-    setUserCode("");
-    setLoginCodeInput("");
-    setAuthError("");
-    setShowDiaryDrawer(false);
-    setShowLevelSelect(false);
-    setHasStartedGame(false);
-  };
+  if (userCode) {
+    remove(ref(rtdb, `online_users/${userCode}/sessions/${onlineUserId}`))
+      .catch((error) => {
+        console.error("移除在線狀態失敗：", error);
+      });
+  }
+
+  localStorage.removeItem("trafficPuzzleUserName");
+  localStorage.removeItem("trafficPuzzleUserCode");
+  setUserName("");
+  setUserCode("");
+  setLoginCodeInput("");
+  setAuthError("");
+  setShowDiaryDrawer(false);
+  setShowLevelSelect(false);
+  setHasStartedGame(false);
+};
 
   const onlineUserId = useMemo(() => {
     const stored = sessionStorage.getItem("trafficPuzzleUserId");
@@ -577,44 +618,62 @@ function App() {
     return () => clearInterval(interval);
   }, [hasStartedGame, gameStartTime, questionStartTime, isGameFinished]);
 
-  useEffect(() => {
-    if (!hasStartedGame) return;
+useEffect(() => {
+  if (!userCode) {
+    setOnlineCount(0);
+    return;
+  }
 
-    const connectedRef = ref(rtdb, ".info/connected");
-    const userStatusRef = ref(rtdb, `online_users/${onlineUserId}`);
-    const onlineUsersRef = ref(rtdb, "online_users");
+  const connectedRef = ref(rtdb, ".info/connected");
+  const userSessionRef = ref(
+    rtdb,
+    `online_users/${userCode}/sessions/${onlineUserId}`
+  );
+  const onlineUsersRef = ref(rtdb, "online_users");
 
-    const unsubscribeConnected = onValue(connectedRef, async (snapshot) => {
-      if (snapshot.val() !== true) return;
+  const unsubscribeConnected = onValue(connectedRef, async (snapshot) => {
+    if (snapshot.val() !== true) return;
 
-      try {
-        await onDisconnect(userStatusRef).remove();
+    try {
+      await onDisconnect(userSessionRef).remove();
 
-        await set(userStatusRef, {
-          online: true,
-          joinedAt: Date.now()
-        });
-      } catch (error) {
-        console.error("設定即時在線狀態失敗：", error);
-      }
+      await set(userSessionRef, {
+        online: true,
+        userCode,
+        userName,
+        sessionId: onlineUserId,
+        lastSeen: Date.now()
+      });
+    } catch (error) {
+      console.error("設定即時在線狀態失敗：", error);
+    }
+  });
+
+  const unsubscribeOnlineUsers = onValue(
+    onlineUsersRef,
+    (snapshot) => {
+      const data = snapshot.val() || {};
+
+      const activeAccountCount = Object.values(data).filter((user) => {
+        return user?.sessions && Object.keys(user.sessions).length > 0;
+      }).length;
+
+      setOnlineCount(activeAccountCount);
+    },
+    (error) => {
+      console.error("監聽在線人數失敗：", error);
+    }
+  );
+
+  return () => {
+    unsubscribeConnected();
+    unsubscribeOnlineUsers();
+
+    remove(userSessionRef).catch((error) => {
+      console.error("清除在線狀態失敗：", error);
     });
-
-    const unsubscribeOnlineUsers = onValue(
-      onlineUsersRef,
-      (snapshot) => {
-        const data = snapshot.val();
-        setOnlineCount(data ? Object.keys(data).length : 0);
-      },
-      (error) => {
-        console.error("監聽在線人數失敗：", error);
-      }
-    );
-
-    return () => {
-      unsubscribeConnected();
-      unsubscribeOnlineUsers();
-    };
-  }, [hasStartedGame, onlineUserId]);
+  };
+}, [userCode, userName, onlineUserId]);
 
   const formatTime = (seconds) => {
     const mm = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -657,7 +716,7 @@ function App() {
     setIsPlayingCards(false);
     setHasPlayedChapter2Cards(false);
     setChapter2PromptReady(false);
-    setStoryPhase("story");
+    setStoryPhase("task");
   };
 
   const handleStoryContinue = () => {
@@ -687,6 +746,30 @@ function App() {
     const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
     return CHAPTERS[level];
   });
+  useEffect(() => {
+  if (!userCode) {
+    setUnlockedLevel(1);
+    return;
+  }
+
+  const completedLevels = getCompletedRecords()
+    .map((record) => Number(String(record.puzzle_id).replace("puzzle_0", "")))
+    .filter((level) => Number.isFinite(level));
+
+  const maxCompletedLevel = completedLevels.length
+    ? Math.max(...completedLevels)
+    : 0;
+
+  const nextUnlockedLevel = Math.min(
+    maxCompletedLevel + 1,
+    Object.keys(CHAPTERS).length + 1
+  );
+
+  setUnlockedLevel((prev) => {
+    if (prev === nextUnlockedLevel) return prev;
+    return nextUnlockedLevel;
+  });
+}, [records, userCode]);
 
   const handleLevelComplete = async () => {
     const chapterData = CHAPTERS[currentChapter];
@@ -707,9 +790,30 @@ function App() {
       let nextRecords = records;
 
       if (!alreadyPassed) {
-        const nextTotalSeconds = gameStartTime
-          ? Math.max(0, Math.floor((now - gameStartTime) / 1000))
-          : finalQuestionSeconds;
+  const nextTotalSeconds = gameStartTime
+    ? Math.max(0, Math.floor((now - gameStartTime) / 1000))
+    : finalQuestionSeconds;
+
+  let rankAtCompletion = null;
+
+  try {
+    const rankingQuery = query(
+      collection(db, "learning_results"),
+      where("puzzle_id", "==", puzzleId)
+    );
+
+    const rankingSnapshot = await getDocs(rankingQuery);
+
+    const samePuzzleRecords = rankingSnapshot.docs.map((doc) => doc.data());
+
+    const fasterCount = samePuzzleRecords.filter((record) => {
+      return Number(record.time_seconds || Infinity) < finalQuestionSeconds;
+    }).length;
+
+    rankAtCompletion = fasterCount + 1;
+  } catch (error) {
+    console.error("計算即時排名失敗：", error);
+  }
 
         const localRecord = {
           id: `local-${Date.now()}`,
@@ -718,24 +822,25 @@ function App() {
           puzzle_id: puzzleId,
           time_seconds: finalQuestionSeconds,
           total_seconds: nextTotalSeconds,
+          rank_at_completion: rankAtCompletion,
           wrong: wasWrongBeforeCorrect,
           timestamp: { seconds: Math.floor(now / 1000) }
         };
-
         nextRecords = [localRecord, ...records];
         setRecords(nextRecords);
         setTotalElapsedTime(nextTotalSeconds);
 
         try {
           await addDoc(collection(db, "learning_results"), {
-            userCode,
-            userName,
-            puzzle_id: puzzleId,
-            time_seconds: finalQuestionSeconds,
-            total_seconds: nextTotalSeconds,
-            wrong: wasWrongBeforeCorrect,
-            timestamp: serverTimestamp()
-          });
+          userCode,
+          userName,
+          puzzle_id: puzzleId,
+          time_seconds: finalQuestionSeconds,
+          total_seconds: nextTotalSeconds,
+          rank_at_completion: rankAtCompletion,
+          wrong: wasWrongBeforeCorrect,
+          timestamp: serverTimestamp()
+        });
           console.log("Firebase 上傳成功");
         } catch (e) {
           console.error("Firebase 上傳失敗：", e);
@@ -764,7 +869,7 @@ function App() {
       setCurrentChapter(nextChapter);
       setQuestionStartTime(Date.now());
       setQuestionElapsedTime(0);
-      setStoryPhase("story");
+      setStoryPhase("task");
       setCardIndex(0);
       setIsPlayingCards(false);
       setHasPlayedChapter2Cards(false);
@@ -966,6 +1071,10 @@ function App() {
     notebookCompletedRecords.some(
       (record) => record.puzzle_id === `puzzle_0${level}`
     );
+  const getNotebookLevelRecord = (level) =>
+  notebookCompletedRecords.find(
+    (record) => record.puzzle_id === `puzzle_0${level}`
+  );
 
   const jumpToNotebookPage = (targetPage) => {
     setCurrentBookPage(targetPage);
@@ -1116,9 +1225,9 @@ function App() {
     }
 
     if (page.type === "level") {
-      const note = NOTEBOOK_LEVEL_NOTES[page.level];
-      const hasRecord = isNotebookLevelCompleted(page.level);
-
+    const note = NOTEBOOK_LEVEL_NOTES[page.level];
+    const levelRecord = getNotebookLevelRecord(page.level);
+    const hasRecord = Boolean(levelRecord);
       return (
         <div className="field-book-page field-book-record-page page-fade-slide" style={basePageStyle}>
           {paperTexture}
@@ -1144,12 +1253,26 @@ function App() {
                 }}
               >
                 <div style={{ margin: "0 0 8px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
-                  KNOWLEDGE NOTE
-                </div>
+  CLEAR RECORD
+</div>
 
-                <p style={{ margin: 0, fontSize: "15px", lineHeight: 1.76, color: "#36564d" }}>
-                  {note.content}
-                </p>
+<div style={{ marginBottom: "14px", fontSize: "14px", lineHeight: 1.8, color: "#36564d" }}>
+  <div>作答時間：{formatTime(Number(levelRecord.time_seconds || 0))}</div>
+  <div>
+    當時排名：
+    {levelRecord.rank_at_completion
+      ? `第 ${levelRecord.rank_at_completion} 名`
+      : "尚未記錄"}
+  </div>
+</div>
+
+<div style={{ margin: "0 0 8px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
+  KNOWLEDGE NOTE
+</div>
+
+<p style={{ margin: 0, fontSize: "15px", lineHeight: 1.76, color: "#36564d" }}>
+  {note.content}
+</p>
               </article>
             ) : (
               <div
@@ -1397,11 +1520,8 @@ function App() {
           </div>
 
           <h1 className="puzzle-title">
-            {storyPhase === "story"
-              ? CHAPTERS[currentChapter].title
-              : CHAPTERS[currentChapter].taskTitle}
+          {CHAPTERS[currentChapter].taskTitle}
           </h1>
-
           {isPlayingCards && currentChapter === 3 && (
             <div className="card-display">
               <img
@@ -1441,20 +1561,13 @@ function App() {
                 <>
                   <div className="typewriter-text">{displayedText}</div>
 
-                  {showUI && storyPhase === "story" && (
-                    <div className="input-area">
-                      <button className="glow-btn" onClick={handleStoryContinue}>
-                        繼續
-                      </button>
-                    </div>
-                  )}
 
                   {showUI && storyPhase === "task" && (
                     <div className="input-area">
                       <input
                         type="text"
                         value={userInput}
-                        onChange={(e) => setUserInput(e.target.value)}
+                      onChange={(e) => setUserInput(e.target.value)}
                         placeholder="在此輸入解答..."
                       />
                       <button className="glow-btn" onClick={handleLevelComplete}>

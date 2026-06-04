@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "traffic-puzzle-81c14.firebasestorage.app",
   messagingSenderId: "324138790555",
   appId: "1:324138790555:web:a078fab1bd1f1c3c49203e",
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL
+  databaseURL: "https://traffic-puzzle-81c14-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
 
 const app = initializeApp(firebaseConfig);

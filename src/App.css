@@ -3565,3 +3565,65 @@ input {
     bottom: 18px !important;
   }
 }
+/* =====================================================
+   0604 Mobile Modal Layout Fix
+   修正手機版確認返回變成左右分割
+===================================================== */
+
+@media (max-width: 768px) {
+  .main-container.unified-city-mode {
+    width: 100vw !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    padding: 16px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow-x: hidden !important;
+  }
+
+  .card.mission-style-card {
+    width: min(100%, 430px) !important;
+    max-width: calc(100vw - 32px) !important;
+    margin: 0 auto !important;
+    padding: 22px 18px !important;
+  }
+
+  .overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 99999 !important;
+
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    padding: 20px !important;
+    background: rgba(0, 0, 0, 0.68) !important;
+    backdrop-filter: blur(6px) !important;
+  }
+
+  .transition-card {
+    width: min(86vw, 360px) !important;
+    max-width: 360px !important;
+    padding: 34px 26px !important;
+    border-radius: 26px !important;
+    text-align: center !important;
+  }
+
+  .transition-card .puzzle-title {
+    text-align: center !important;
+    font-size: 26px !important;
+    line-height: 1.35 !important;
+  }
+
+  .transition-card .transition-text {
+    min-height: auto !important;
+    text-align: center !important;
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+}

@@ -38,6 +38,26 @@ const DEMO_KNOWLEDGE_POINTS = {
   3: "知道人行道是為了行人而存在，設施與障礙物不應壓縮原本屬於行人的安全空間。",
   4: "理解斑馬線不是畫上去就絕對安全，仍需注意穿越距離、號誌時間與視線條件。"
 };
+//後測
+const POST_TEST_QUESTIONS = [
+  {
+    id: "post_1",
+    type: "situation",
+    relatedLevel: 1,
+    title: "情境判斷｜人行道通行空間",
+    question:
+      "某條人行道上設有電箱、路燈與招牌，導致可通行寬度變得很窄。下列哪一個說法最能指出這個空間的主要問題？",
+    options: [
+      "地磚顏色不夠明顯，容易讓行人看錯方向",
+      "行人可能被迫繞到車道上，增加與車輛衝突的風險",
+      "附近沒有商店，因此人行道使用率會下降",
+      "路燈數量太多，會讓夜間照明過亮"
+    ],
+    answerIndex: 1,
+    concept:
+      "人行道設計的重點不只是有沒有鋪設步道，而是是否保留連續、足夠、無障礙的步行空間。"
+  }
+];
 
 const CASE_FILES = [
   {
@@ -405,6 +425,8 @@ function App() {
   const [showChapterTransition, setShowChapterTransition] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState("");
   const [isGameFinished, setIsGameFinished] = useState(false);
+  const [postTestIndex, setPostTestIndex] = useState(0);
+  const [postTestAnswers, setPostTestAnswers] = useState({});
   const [finalRank, setFinalRank] = useState(null);
   const [reportImageUrl, setReportImageUrl] = useState("");
 

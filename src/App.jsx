@@ -22,6 +22,10 @@ const ALLOWED_ACCESS_CODES = {
   WSN1208: {
     userName: "WSN1208 玩家",
     userCode: "WSN1208"
+  },
+  TEST0706: {
+    userName: "TEST0706 測試玩家",
+    userCode: "TEST0706"
   }
 };
 
@@ -29,6 +33,7 @@ const LETTER_CONTENT = `致 親愛的 新進郵差們：\n\n歡迎加入本局�
 
 const DEMO_MODE = true;
 const DEMO_END_LEVEL = 4;
+const TIMING_RULE_VERSION = "v1-login-new-run-first-level-start";
 
 const DEMO_WRONG_HINT = "別灰心～再根據劇情卡找到更細的脈絡吧？";
 
@@ -264,32 +269,31 @@ const NOTEBOOK_PAGES = [
 
 const NOTEBOOK_LEVEL_NOTES = {
   1: {
-    title: "1-1 人行道的重要性",
+    title: "1-1 烈日下的差事",
     content:
-      "你知道嗎？腳下看似普通的磚道，其實隱藏著都市的貼心設計：一條合格的人行道，必須留出至少 1.5 公尺寬度、且絕對不能有任何路燈或電箱阻擋的「步行通行空間」，才能讓坐輪椅或推嬰兒車的人安全通過喔！"
+      "你成功發現了街區裡看似存在、實際上卻被障礙物壓縮的人行空間。也學到：真正安全的人行道不只是『有鋪設』，還必須保留連續、足夠且無障礙的步行通行空間，才能讓行人、輪椅與嬰兒車安心通過。"
   },
   2: {
-    title: "1-2 騎樓不停車",
+    title: "1-2 狹縫中的選擇",
     content:
-      "腳下這片騎樓，是台灣都市最奇妙的灰色地帶：它承載著私人的產權，卻也肩負著大眾通行的義務，這份空間的複雜歸屬，其實正考驗著每個人用「讓步」去成就彼此的智慧。"
+      "你成功從超商收據與信封線索中，找出騎樓被停車與私人物品佔用的問題。也學到：當通行空間被壓縮，行人就可能被迫繞行甚至走入車道；騎樓雖有複雜產權，仍肩負公共通行的重要功能。"
   },
   3: {
-    title: "1-3 人行道上的障礙物",
+    title: "1-3 消失的下班準星",
     content:
-      "人行道的存在是為了「人」，而不是為了擺放變電箱、路燈和公車站牌。當我們習慣在狹縫中與變電箱擦身而過時，其實已經默默讓出了原本屬於我們的安全路權。"
+      "你成功破解綠色怪獸留下的訊息，發現電箱、路燈與設施正在侵蝕原本屬於行人的安全空間。也學到：人行道的核心使用者是『人』，公共設施的配置不應讓行人只能在狹縫中通過。"
   },
   4: {
-    title: "2-1 斑馬線安全性",
+    title: "2-1 碎裂的斑馬線",
     content:
-      "斑馬線不是絕對安全的保命符。真正的安全來自清楚視線、駕駛停讓、合理號誌，以及讓行人能被看見的道路設計。"
+      "你成功收攏了不合理的危險長廊，發現斑馬線本身並不是絕對安全的保命符。也學到：真正的穿越安全還需要清楚視線、合理號誌、適當穿越距離，以及駕駛確實停讓。"
   },
   5: {
-    title: "3-1 路口的人車衝突",
+    title: "3-1 路口的人車大塞車",
     content:
-      "路口是行人與車輛最容易交會的地方。當轉彎車、直行行人與號誌時間沒有被妥善安排時，就容易形成危險的人車衝突。"
+      "你成功辨認出路口中轉彎車與直行行人的衝突來源。也學到：交通安全需要從號誌、動線、視線與路權一起規劃，而不是只處理單一設施或單一問題。"
   }
 };
-
 function CaseFileIcon({ type }) {
   if (type === "walk") {
 
@@ -442,6 +446,8 @@ function App() {
   const [userCode, setUserCode] = useState(() => localStorage.getItem("trafficPuzzleUserCode") || "");
   const [loginCodeInput, setLoginCodeInput] = useState("");
   const [authError, setAuthError] = useState("");
+  const [gameSessionId, setGameSessionId] = useState("");
+  const [isCompletedViewer, setIsCompletedViewer] = useState(false);
 
   const [records, setRecords] = useState([]);
   const [showNotebook, setShowNotebook] = useState(false);
@@ -470,6 +476,68 @@ function App() {
     setUserCode(code);
   };
 
+  const createGameSessionId = () => {
+    return typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `run_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  };
+
+  const getUserGameData = async (code) => {
+    const q = query(
+      collection(db, "learning_results"),
+      where("userCode", "==", code)
+    );
+
+    const snapshot = await getDocs(q);
+    const allRecords = snapshot.docs
+      .map((item) => ({
+        id: item.id,
+        ...item.data()
+      }))
+      .sort((a, b) => {
+        const aTime = a.timestamp?.seconds || 0;
+        const bTime = b.timestamp?.seconds || 0;
+        return bTime - aTime;
+      });
+
+    // 只認明確的整場完成標記。
+    const completedRecord = allRecords.find(
+      (item) => item.game_completed === true
+    );
+
+    return {
+      completed: Boolean(completedRecord),
+      completedSessionId: completedRecord?.session_id || "",
+      records: allRecords
+    };
+  };
+
+  const resetRunForNewLogin = (newSessionId) => {
+    sessionStorage.setItem("trafficPuzzleGameSessionId", newSessionId);
+    localStorage.setItem(STORAGE_KEY, "1");
+
+    setGameSessionId(newSessionId);
+    setIsCompletedViewer(false);
+    setRecords([]);
+    setUnlockedLevel(1);
+    setCurrentChapter(1);
+    setWrongChapters({});
+
+    setGameStartTime(null);
+    setQuestionStartTime(null);
+    setQuestionElapsedTime(0);
+    setTotalElapsedTime(0);
+
+    setHasStartedGame(false);
+    setIsGameFinished(false);
+    setShowChapterTransition(false);
+    setShowExitConfirm(false);
+    setIsWrong(false);
+    setShowHint(false);
+    setUserInput("");
+    setStoryPhase("task");
+  };
+
   const handleLoginUser = async () => {
     const trimmedCode = loginCodeInput.trim().toUpperCase();
 
@@ -485,7 +553,43 @@ function App() {
       return;
     }
 
+    // 重要規則：只要活動碼在白名單內，就一定允許登入。
+    // Firebase 的完成狀態只用來決定「能否進入關卡作答」，不能阻擋登入。
     saveUserSession(matchedUser.userName, matchedUser.userCode);
+    setAuthError("");
+
+    try {
+      const gameData = await getUserGameData(matchedUser.userCode);
+
+      if (gameData.completed) {
+        // 已完成者：登入後立刻把 Firestore 的完整歷史紀錄放進 records。
+        // 不再等待另一個 useEffect 二次查詢，避免重登時卡片與 Notebook 短暫/永久空白。
+        sessionStorage.removeItem("trafficPuzzleGameSessionId");
+        setGameSessionId(gameData.completedSessionId);
+        setIsCompletedViewer(true);
+        setRecords(gameData.records);
+        setHasStartedGame(false);
+        setCurrentChapter(1);
+        setGameStartTime(null);
+        setQuestionStartTime(null);
+        setQuestionElapsedTime(0);
+        setTotalElapsedTime(0);
+      } else {
+        // 未完成者：每次重新登入建立全新 run，從第一關與 00:00 重新開始。
+        const newSessionId = createGameSessionId();
+        resetRunForNewLogin(newSessionId);
+        saveUserSession(matchedUser.userName, matchedUser.userCode);
+      }
+    } catch (error) {
+      // Firebase 查詢失敗不再阻擋登入。
+      // 先讓玩家進入任務頁；錯誤只記錄在 Console，避免有效活動碼完全無法登入。
+      console.error("檢查活動碼完成狀態失敗，但仍允許登入：", error);
+
+      const newSessionId = createGameSessionId();
+      resetRunForNewLogin(newSessionId);
+      saveUserSession(matchedUser.userName, matchedUser.userCode);
+    }
+
     setAuthError("");
     setShowLoginModal(false);
     setShowLevelSelect(true);
@@ -494,8 +598,11 @@ function App() {
   const handleLogoutUser = () => {
     localStorage.removeItem("trafficPuzzleUserName");
     localStorage.removeItem("trafficPuzzleUserCode");
+    sessionStorage.removeItem("trafficPuzzleGameSessionId");
     setUserName("");
     setUserCode("");
+    setGameSessionId("");
+    setIsCompletedViewer(false);
     setLoginCodeInput("");
     setAuthError("");
     setShowDiaryDrawer(false);
@@ -527,33 +634,32 @@ function App() {
         return;
       }
 
+      if (!isCompletedViewer && !gameSessionId) {
+        setRecords([]);
+        return;
+      }
+
       try {
-        const q = query(
-          collection(db, "learning_results"),
-          where("userCode", "==", userCode)
-        );
+        const gameData = await getUserGameData(userCode);
+        const allData = gameData.records;
 
-        const snapshot = await getDocs(q);
-
-        const data = snapshot.docs
-          .map((item) => ({
-            id: item.id,
-            ...item.data()
-          }))
-          .sort((a, b) => {
-            const aTime = a.timestamp?.seconds || 0;
-            const bTime = b.timestamp?.seconds || 0;
-            return bTime - aTime;
-          });
-
-        setRecords(data);
+        if (isCompletedViewer) {
+          // 已完成者永遠顯示此活動碼的完整歷史紀錄。
+          setRecords(allData);
+        } else {
+          // 尚未完成的新 run，只顯示本次 session，避免接回上一次未完成進度。
+          setRecords(
+            allData.filter((item) => item.session_id === gameSessionId)
+          );
+        }
       } catch (error) {
         console.error("讀取個人紀錄失敗：", error);
+        // 已完成者若登入時已成功載入 records，後續暫時讀取失敗時不要把畫面清空。
       }
     };
 
     fetchRecords();
-  }, [userCode]);
+  }, [userCode, gameSessionId, isCompletedViewer]);
 
   // 首頁信件 / 關卡文字
   useEffect(() => {
@@ -709,26 +815,37 @@ function App() {
 
   const handleStartGame = (level = 1) => {
     const now = Date.now();
-    const shouldStartTotalTimer = level === 1 || !gameStartTime;
 
     setHasStartedGame(true);
     setShowLevelSelect(false);
     setShowDiaryDrawer(false);
     setShowExitConfirm(false);
     setCurrentChapter(level);
+    setStoryPhase("task");
 
-    // 總計時：從點進第一關開始算，直到最後一關完成。
-    // 若從其他關卡直接進入，視為測試情境，從當下開始。
+    if (isCompletedViewer) {
+      // 已完成玩家可以進入關卡「查看內容」，但不啟動任何作答計時。
+      setGameStartTime(null);
+      setQuestionStartTime(null);
+      setQuestionElapsedTime(0);
+      setTotalElapsedTime(0);
+      return;
+    }
+
+    const shouldStartTotalTimer = !gameStartTime;
+
+    // 計時規則 v1：
+    // 1. 每次有效活動碼「重新登入」都建立全新 session，舊未完成 session 不續接。
+    // 2. 總時間從該 session 第一次真正進入關卡時開始。
+    // 3. 同一 session 內回任務頁再進入，總時間持續累計、不歸零。
+    // 4. 各關時間每次進入該關時重新開始，直到答對為止。
     setGameStartTime(shouldStartTotalTimer ? now : gameStartTime);
-
     setQuestionStartTime(now);
     setQuestionElapsedTime(0);
 
     if (shouldStartTotalTimer) {
       setTotalElapsedTime(0);
     }
-
-    setStoryPhase("task");
   };
 
   const handleStoryContinue = () => {
@@ -739,27 +856,52 @@ function App() {
     setShowHint(false);
   };
 
+  const getRecordLevel = (record) => {
+    const explicitLevel = Number(record?.level_number);
+    if (Number.isFinite(explicitLevel) && explicitLevel > 0) {
+      return explicitLevel;
+    }
+
+    const match = String(record?.puzzle_id || "").match(/(\d+)$/);
+    return match ? Number(match[1]) : 0;
+  };
+
   const getUniqueRecords = (sourceRecords = records) => {
     const map = new Map();
 
     sourceRecords.forEach((record) => {
-      if (!record?.puzzle_id || map.has(record.puzzle_id)) return;
-      map.set(record.puzzle_id, record);
+      const level = getRecordLevel(record);
+      if (!level || map.has(level)) return;
+      map.set(level, record);
     });
 
-    return Array.from(map.values()).sort((a, b) => {
-      const aLevel = Number(String(a.puzzle_id).replace("puzzle_0", ""));
-      const bLevel = Number(String(b.puzzle_id).replace("puzzle_0", ""));
-      return aLevel - bLevel;
-    });
+    return Array.from(map.entries())
+      .sort(([aLevel], [bLevel]) => aLevel - bLevel)
+      .map(([, record]) => record);
   };
 
-  const getCompletedRecords = () => getUniqueRecords(records).filter((record) => {
-    const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
-    return CHAPTERS[level];
-  });
+  const getCompletedRecords = () =>
+    getUniqueRecords(records).filter((record) => CHAPTERS[getRecordLevel(record)]);
+
+  const getCompletedLevelSet = () => {
+    return new Set(
+      getCompletedRecords()
+        .map((record) => getRecordLevel(record))
+        .filter(Boolean)
+    );
+  };
+
+  const isCaseUnlockedByRecords = (fileIndex, completedLevelSet) => {
+    if (fileIndex === 0) return true;
+    const previousFile = CASE_FILES[fileIndex - 1];
+    return previousFile.levels.every((level) => completedLevelSet.has(level));
+  };
 
   const handleLevelComplete = async () => {
+    if (isCompletedViewer) {
+      return;
+    }
+
     const chapterData = CHAPTERS[currentChapter];
     const trimmedAnswer = userInput.trim();
 
@@ -773,7 +915,10 @@ function App() {
       setQuestionStartTime(null);
 
       const puzzleId = `puzzle_0${currentChapter}`;
-      const alreadyPassed = records.some((record) => record.puzzle_id === puzzleId);
+      const isFinalLevel = DEMO_MODE
+        ? currentChapter >= DEMO_END_LEVEL
+        : !CHAPTERS[currentChapter + 1];
+      const alreadyPassed = records.some((record) => getRecordLevel(record) === currentChapter);
       const wasWrongBeforeCorrect = Boolean(wrongChapters[currentChapter]);
       let nextRecords = records;
 
@@ -782,14 +927,39 @@ function App() {
           ? Math.max(0, Math.floor((now - gameStartTime) / 1000))
           : finalQuestionSeconds;
 
+        const runStartedAtMs = gameStartTime || now;
+        const levelStartedAtMs = questionStartTime || Math.max(0, now - finalQuestionSeconds * 1000);
+
         const localRecord = {
           id: `local-${Date.now()}`,
           userCode,
           userName,
+          session_id: gameSessionId,
+          game_completed: isFinalLevel,
+          completed: isFinalLevel,
+
+          timing_rule_version: TIMING_RULE_VERSION,
+          run_started_at: new Date(runStartedAtMs).toISOString(),
+          level_started_at: new Date(levelStartedAtMs).toISOString(),
+          level_completed_at: new Date(now).toISOString(),
+
           puzzle_id: puzzleId,
+          level_number: currentChapter,
+          level_title: chapterData.title,
+          case_id:
+            CASE_FILES.find((file) => file.levels.includes(currentChapter))?.id || "",
+
           time_seconds: finalQuestionSeconds,
           total_seconds: nextTotalSeconds,
+
           wrong: wasWrongBeforeCorrect,
+          first_try_correct: !wasWrongBeforeCorrect,
+          answer_status: wasWrongBeforeCorrect ? "correct_after_wrong" : "first_try",
+
+          completed_at: new Date(now).toISOString(),
+          completed_date: new Date(now).toLocaleDateString("zh-TW"),
+          completed_time: new Date(now).toLocaleTimeString("zh-TW"),
+
           timestamp: { seconds: Math.floor(now / 1000) }
         };
 
@@ -799,15 +969,50 @@ function App() {
 
         try {
           await addDoc(collection(db, "learning_results"), {
+          userCode,
+          userName,
+          session_id: gameSessionId,
+          game_completed: isFinalLevel,
+          completed: isFinalLevel,
+
+          timing_rule_version: TIMING_RULE_VERSION,
+          run_started_at: new Date(runStartedAtMs).toISOString(),
+          level_started_at: new Date(levelStartedAtMs).toISOString(),
+          level_completed_at: new Date(now).toISOString(),
+
+          puzzle_id: puzzleId,
+          level_number: currentChapter,
+          level_title: chapterData.title,
+          case_id:
+            CASE_FILES.find((file) => file.levels.includes(currentChapter))?.id || "",
+
+          time_seconds: finalQuestionSeconds,
+          total_seconds: nextTotalSeconds,
+
+          wrong: wasWrongBeforeCorrect,
+          first_try_correct: !wasWrongBeforeCorrect,
+          answer_status: wasWrongBeforeCorrect ? "correct_after_wrong" : "first_try",
+
+          completed_at: new Date(now).toISOString(),
+          completed_date: new Date(now).toLocaleDateString("zh-TW"),
+          completed_time: new Date(now).toLocaleTimeString("zh-TW"),
+
+          timestamp: serverTimestamp()
+        });
+
+          if (isFinalLevel) {
+            // 最終關完成後立即切成唯讀模式，避免同一頁面再次作答。
+            setIsCompletedViewer(true);
+          }
+
+          console.log("Firebase 上傳成功", {
             userCode,
-            userName,
-            puzzle_id: puzzleId,
+            session_id: gameSessionId,
+            level: currentChapter,
             time_seconds: finalQuestionSeconds,
             total_seconds: nextTotalSeconds,
-            wrong: wasWrongBeforeCorrect,
-            timestamp: serverTimestamp()
+            timing_rule_version: TIMING_RULE_VERSION
           });
-          console.log("Firebase 上傳成功");
         } catch (e) {
           console.error("Firebase 上傳失敗：", e);
         }
@@ -1113,7 +1318,7 @@ function App() {
   const notebookCompletedCount = notebookCompletedRecords.length;
   const notebookCurrentFile = LEVEL_FILES.find((file) => file.id === notebookPage) || LEVEL_FILES[0];
   const notebookCurrentRecord = notebookCompletedRecords.find(
-    (record) => record.puzzle_id === `puzzle_0${notebookPage}`
+    (record) => getRecordLevel(record) === notebookPage
   );const openNotebook = () => {
     setNotebookView("index");
     setSelectedNotebookCase(null);
@@ -1143,7 +1348,7 @@ function App() {
 
   const isNotebookLevelCompleted = (level) =>
     notebookCompletedRecords.some(
-      (record) => record.puzzle_id === `puzzle_0${level}`
+      (record) => getRecordLevel(record) === level
     );
 
   const jumpToNotebookPage = (targetPage) => {
@@ -1159,7 +1364,8 @@ function App() {
 
     const basePageStyle = {
       minHeight: "520px",
-      padding: side === "left" ? "34px 34px 30px 54px" : "34px",
+      // 預留底部導覽按鈕空間，避免手機版內容過長時與 PREV / NEXT 重疊
+      padding: side === "left" ? "34px 34px 124px 54px" : "34px 34px 124px 34px",
       borderRadius: pageRadius,
       background:
         "linear-gradient(135deg, rgba(239, 222, 180, 0.96), rgba(207, 183, 134, 0.92))",
@@ -1596,19 +1802,24 @@ function App() {
           <div className="mission-files-grid">
             {CASE_FILES.map((file, index) => {
               const firstLevel = file.levels[0];
+              const completedLevelSet = getCompletedLevelSet();
 
-              const levelMeta = LEVEL_FILES.find(
-                (item) => item.id === firstLevel
+              // 關卡解鎖以 Firebase / records 的實際破關紀錄為主，
+              // 不再只依賴 localStorage 的 unlockedLevel，避免換裝置或重新登入後卡片又被鎖住。
+              const unlockedByRecords = isCaseUnlockedByRecords(index, completedLevelSet);
+              const unlockedByLocalProgress = index === 0 || unlockedLevel >= firstLevel;
+              const isUnlocked = unlockedByRecords || unlockedByLocalProgress;
+
+              const isCompleted = file.levels.every((level) =>
+                completedLevelSet.has(level)
               );
 
-              const isUnlocked =
-                !levelMeta?.requiredLevel ||
-                unlockedLevel >= firstLevel;
+              // 已完成玩家仍可點進已解鎖卡片查看內容，只是作答區會鎖住。
+              const canEnterLevel = isUnlocked;
 
-              const isCompleted =
-                file.levels.every((level) => unlockedLevel > level);
-
-              const statusText = isCompleted
+              const statusText = isCompletedViewer
+                ? (isUnlocked ? "僅查看紀錄" : "尚未解鎖")
+                : isCompleted
                 ? "已完成"
                 : isUnlocked
                 ? "可開始"
@@ -1617,12 +1828,12 @@ function App() {
               return (
                 <button
                   key={file.id}
-                  className={`mission-file-card ${file.theme} ${isUnlocked ? "unlocked" : "locked"} ${isCompleted ? "completed" : ""}`}
+                  className={`mission-file-card ${file.theme} ${canEnterLevel ? "unlocked" : "locked"} ${isCompleted ? "completed" : ""}`}
                   onClick={() => {
-                    if (!isUnlocked) return;
-                      handleStartGame(file.levels[0]);
-                    }}
-                  disabled={!isUnlocked}
+                    if (!canEnterLevel) return;
+                    handleStartGame(file.levels[0]);
+                  }}
+                  disabled={!canEnterLevel}
                   style={{ animationDelay: `${0.12 + index * 0.1}s` }}
                 >
                   <div className="mission-file-topline">
@@ -1639,6 +1850,45 @@ function App() {
 
                   <div className="mission-file-label">{file.id}</div>
                   <h2 className="mission-file-title">{file.title}</h2>
+
+                  <div
+                    className="mission-file-level-list"
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "8px",
+                      margin: "12px 0 14px"
+                    }}
+                  >
+                    {file.levels.map((level) => {
+                      const meta = LEVEL_FILES.find((item) => item.id === level);
+                      const done = completedLevelSet.has(level);
+
+                      return (
+                        <span
+                          key={level}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            padding: "6px 10px",
+                            borderRadius: "999px",
+                            border: "1px solid rgba(255,255,255,0.18)",
+                            background: done
+                              ? "rgba(236, 197, 105, 0.20)"
+                              : "rgba(255,255,255,0.08)",
+                            fontSize: "13px",
+                            fontWeight: 800,
+                            letterSpacing: "0.04em"
+                          }}
+                        >
+                          <span>{done ? "✓" : "○"}</span>
+                          <span>{meta?.label || `第 ${level} 關`}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+
                   <p className="mission-file-theme">{file.subtitle}</p>
 
                   <div className="mission-file-footer" aria-hidden="true">
@@ -1758,21 +2008,49 @@ function App() {
 
                   {showUI && storyPhase === "task" && (
                     <div className="input-area">
-                      <input
-                        type="text"
-                        value={userInput}
-                        onChange={(e) => setUserInput(e.target.value)}
-                        placeholder="在此輸入解答..."
-                      />
-                      <button className="glow-btn" onClick={handleLevelComplete}>
-                        確認提交
-                      </button>
-                      <button
-                        className="back-page-btn"
-                        onClick={() => setShowExitConfirm(true)}
-                      >
-                        回上頁
-                      </button>
+                      {isCompletedViewer ? (
+                        <>
+                          <div
+                            style={{
+                              width: "100%",
+                              padding: "15px 18px",
+                              borderRadius: "16px",
+                              border: "1px solid rgba(240, 199, 104, 0.35)",
+                              background: "rgba(240, 199, 104, 0.10)",
+                              color: "#f7e9bd",
+                              fontWeight: 800,
+                              lineHeight: 1.65,
+                              textAlign: "center"
+                            }}
+                          >
+                            🔒 此活動碼已完成全部任務，目前為唯讀模式。你可以查看關卡內容與闖關紀錄，但不能再次作答。
+                          </div>
+                          <button
+                            className="back-page-btn"
+                            onClick={handleExitToLevelSelect}
+                          >
+                            回任務檔案
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            type="text"
+                            value={userInput}
+                            onChange={(e) => setUserInput(e.target.value)}
+                            placeholder="在此輸入解答..."
+                          />
+                          <button className="glow-btn" onClick={handleLevelComplete}>
+                            確認提交
+                          </button>
+                          <button
+                            className="back-page-btn"
+                            onClick={() => setShowExitConfirm(true)}
+                          >
+                            回上頁
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
             </>

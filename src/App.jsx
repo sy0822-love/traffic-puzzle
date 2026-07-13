@@ -26,6 +26,10 @@ const ALLOWED_ACCESS_CODES = {
   TEST0706: {
     userName: "TEST0706 測試玩家",
     userCode: "TEST0706"
+  },
+  DEMOJUDGE: {
+    userName: "評審 Demo 玩家",
+    userCode: "DEMOJUDGE"
   }
 };
 

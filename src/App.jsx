@@ -30,6 +30,18 @@ const ALLOWED_ACCESS_CODES = {
   DEMOJUDGE: {
     userName: "評審 Demo 玩家",
     userCode: "DEMOJUDGE"
+  },
+  TRAFFIC09161: {
+    userName: "TRAFFIC09161 測試玩家",
+    userCode: "TRAFFIC09161"
+  },
+  TRAFFIC09162: {
+    userName: "TRAFFIC09162 測試玩家",
+    userCode: "TRAFFIC09162"
+  },
+  TRAFFIC0919: {
+    userName: "TRAFFIC0919 測試玩家",
+    userCode: "TRAFFIC0919"
   }
 };
 

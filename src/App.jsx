@@ -33,7 +33,13 @@ const ALLOWED_ACCESS_CODES = {
   }
 };
 
-const LETTER_CONTENT = `致 親愛的 新進郵差們：\n\n歡迎加入本局。身為一名稱職的郵務人員，除了送達信件，更要擁有一雙洞察環境的眼睛。\n\n神祕郵差留下的信件中，隱藏著這座城市的交通安全關鍵。你需要破解信中隱含的交通謎題...\n\n準備好迎接挑戰了嗎？\n\n—— 郵務長敬上`;
+const LETTER_CONTENT = `在台灣的行人，最常遇到的 3 種危險狀況：
+
+1. 通行空間被占用，行人被迫走到車道上與車爭道。
+
+2. 通行空間設計不良，缺乏連續、寬敞且安全的人行空間可供通行。
+
+3. 駕駛人缺乏停讓行人、行人優先通行的意識。`;
 
 const DEMO_MODE = true;
 const DEMO_END_LEVEL = 4;
@@ -42,58 +48,37 @@ const TIMING_RULE_VERSION = "v1-login-new-run-first-level-start";
 const DEMO_WRONG_HINT = "別灰心～再根據劇情卡找到更細的脈絡吧？";
 
 const DEMO_KNOWLEDGE_POINTS = {
-  1: "了解人行道需要足夠淨寬，避免障礙物阻擋，才能保障行人與輪椅使用者通行安全。",
-  2: "理解騎樓與人行空間若被停車或私人物品佔據，會讓行人被迫在狹縫中移動。",
-  3: "知道人行道是為了行人而存在，設施與障礙物不應壓縮原本屬於行人的安全空間。",
-  4: "理解斑馬線不是畫上去就絕對安全，仍需注意穿越距離、號誌時間與視線條件。"
+  1: "在沒有人行道或騎樓、又遇到停放車輛或雜物阻擋時，應先確認前後方來車，再選擇安全方式繞越障礙物。",
+  2: "理解路邊私人雜物與車輛占用通行空間，會迫使行人進入車道；改善方向應回到連續、安全的人行空間與行人號誌。",
+  3: "能依觀察結果辨認號誌顏色順序，建立對紅、黃、綠交通號誌的基本辨識與觀察能力。",
+  4: "透過觀察小綠人與線索解出 8 碼密碼，連結交通安全觀察與臺灣智慧運輸相關資訊。"
 };
-//後測
-const POST_TEST_QUESTIONS = [
-  {
-    id: "post_1",
-    type: "situation",
-    relatedLevel: 1,
-    title: "情境判斷｜人行道通行空間",
-    question:
-      "某條人行道上設有電箱、路燈與招牌，導致可通行寬度變得很窄。下列哪一個說法最能指出這個空間的主要問題？",
-    options: [
-      "地磚顏色不夠明顯，容易讓行人看錯方向",
-      "行人可能被迫繞到車道上，增加與車輛衝突的風險",
-      "附近沒有商店，因此人行道使用率會下降",
-      "路燈數量太多，會讓夜間照明過亮"
-    ],
-    answerIndex: 1,
-    concept:
-      "人行道設計的重點不只是有沒有鋪設步道，而是是否保留連續、足夠、無障礙的步行空間。"
-  }
-];
-
 const CASE_FILES = [
   {
     id: "CASE-01",
     code: "FILE 01",
-    title: "搶回走路專用道！",
-    subtitle: "路上車子那麼多，行人到底要走哪？我們要一起找出為什麼路上沒有「走路專屬特區」，幫行人搶回可以安心散步的地面空間。",
+    title: "找回安全的行走空間！",
+    subtitle: "從沒有完整人行空間、路邊雜物與停車占用開始，觀察行人為什麼會被迫靠近車道，找出更安全的通行方式。",
     icon: "walk",
     theme: "green",
-    levels: [1, 2, 3]
+    levels: [1, 2]
   },
 
   {
     id: "CASE-02",
     code: "FILE 02",
-    title: "斑馬線真的是保命符？",
-    subtitle: "別以為踩在斑馬線上就絕對安全！我們要睜大眼睛，找出隱藏在這些黑白條紋裡的危險陷阱，看看車子是不是真的會看到並讓路。",
+    title: "號誌裡藏著什麼線索？",
+    subtitle: "觀察信封、交通號誌與小綠人的細節，依序破解顏色與密碼，找出藏在城市裡的交通線索。",
     icon: "crosswalk",
     theme: "red",
-    levels: [4]
+    levels: [3, 4]
   },
 
   {
     id: "CASE-03",
     code: "FILE 03",
     title: "路口的人車大塞車",
-    subtitle: "綠燈一亮，轉彎的車子和直行的人全部擠在路口，差點撞成一團！我們要找出為什麼人跟車會在這裡「狹路相逢」、互不相讓。",
+    subtitle: "後續關卡規劃中。",
     icon: "car",
     theme: "yellow",
     levels: [5]
@@ -101,47 +86,55 @@ const CASE_FILES = [
 ];
 const CHAPTERS = {
   1: {
-    title: "1-1：烈日下的差事",
+    title: "1-1：道路被擋住時怎麼辦？",
     content: ``,
-    taskTitle: "系統提示",
-    taskContent: `請拿出綠色解謎包
-取出街區圖並打開劇情提示。`,
-    answer: "1",
+    taskTitle: "任務問題",
+    taskContent: `在生活中遇到沒有人行道或騎樓的道路，又遇到停放的車輛或雜物時，我們該怎麼應對呢？
+
+提示：先確認前後方車輛，再想想要怎麼安全通過。`,
+    answer: "繞越",
+    acceptedAnswers: ["繞越", "先確認前後方車輛再繞越", "確認前後方車輛再繞越", "確認車輛後繞越", "安全繞越"],
     concept: DEMO_KNOWLEDGE_POINTS[1],
-    nextMsg: "你完成了第一份街區調查，開始看見道路中被忽略的行人空間。"
+    nextMsg: "答對了！遇到障礙物時，先確認前後方來車，再選擇安全方式繞越，不要直接走進車流中。"
   },
 
   2: {
-    title: "1-2：狹縫中的選擇",
+    title: "1-2：被占用的行走空間",
     content: ``,
-    taskTitle: "系統提示",
-    taskContent: `請拿出超商收據與信封袋，搭配劇情提示
-推論出藏在其中的秘密吧！`,
-    answer: "2",
+    taskTitle: "任務問題",
+    taskContent: `路邊堆滿了居民的私人雜物和車輛，讓人只能走到車道上，非常危險。
+
+我們應該怎麼做，才能讓人安心走路呢？似乎有什麼文字悄悄出現了呢？`,
+    answer: "號誌",
+    acceptedAnswers: ["號誌", "行人號誌"],
     concept: DEMO_KNOWLEDGE_POINTS[2],
-    nextMsg: "你找出了藏在收據與信封中的線索，也理解了狹窄通行空間背後的問題。"
+    nextMsg: "答對了！下一個地點，請找一個有行人號誌的地方，繼續尋找下一條線索。"
   },
 
   3: {
-    title: "1-3：消失的下班準星",
+    title: "2-1：信封的顏色順序",
     content: ``,
-    taskTitle: "系統提示",
-    taskContent: `請拿出綠色解謎包中的劇情提示與圖卡
-找出周邊隱藏的綠色怪獸傳達的訊息吧！`,
-    answer: "3",
+    taskTitle: "任務問題",
+    taskContent: `根據你的觀察，信封的排序從左到右到底是什麼顏色呢？
+
+請依照順序輸入三個顏色。`,
+    answer: "紅黃綠",
+    acceptedAnswers: ["紅黃綠", "紅、黃、綠", "紅 黃 綠", "紅，黃，綠"],
     concept: DEMO_KNOWLEDGE_POINTS[3],
-    nextMsg: "你破解了綠色怪獸留下的訊息，也發現人行道上被忽略的障礙。"
+    nextMsg: "答對了！從左到右的順序是「紅、黃、綠」；也可以把它和交通號誌從上到下的顏色順序連結起來。"
   },
 
   4: {
-    title: "2-1：碎裂的斑馬線",
+    title: "2-2：小綠人的 8 碼密碼",
     content: ``,
-    taskTitle: "系統提示",
-    taskContent: `請拿出綠色解謎包中的催繳通知信封與街區圖卡。
-抬頭尋找黑匣子裡的奔跑行者，動手收攏這段不合理的危險長廊吧！`,
-    answer: "4",
+    taskTitle: "任務問題",
+    taskContent: `觀察小綠人後，好像可以得到一串密碼……請問這串密碼是多少呢？
+
+提示：共有 8 碼。`,
+    answer: "20190925",
+    acceptedAnswers: ["20190925", "2019/09/25", "2019-09-25", "2019 09 25"],
     concept: DEMO_KNOWLEDGE_POINTS[4],
-    nextMsg: "你收攏了危險長廊，也看見斑馬線背後真正需要被修正的問題。"
+    nextMsg: "答對了！這組密碼是 20190925，對應中華郵政於 2019 年 9 月 25 日發行的臺灣智慧運輸建設郵票。"
   },
 
   5: {
@@ -161,40 +154,40 @@ const LEVEL_FILES = [
     requiredLevel: null,
     code: "FILE 01",
     label: "1-1",
-    icon: "🚦",
-    title: "烈日下的差事",
-    theme: "街區圖與劇情提示",
-    desc: "拿出綠色解謎包，取出街區圖並打開劇情提示。"
+    icon: "🚶",
+    title: "道路被擋住時怎麼辦？",
+    theme: "道路障礙與安全繞越",
+    desc: "觀察沒有人行道或騎樓時，遇到停放車輛與雜物該如何安全通過。"
   },
   {
     id: 2,
     requiredLevel: 1,
     code: "FILE 02",
     label: "1-2",
-    icon: "🛵",
-    title: "狹縫中的選擇",
-    theme: "收據與信封袋推理",
-    desc: "拿出超商收據與信封袋，搭配劇情提示推論秘密。"
+    icon: "🚧",
+    title: "被占用的行走空間",
+    theme: "通行空間與行人號誌",
+    desc: "找出路邊雜物與車輛占用造成的危險，破解隱藏文字。"
   },
   {
     id: 3,
     requiredLevel: 2,
     code: "FILE 03",
-    label: "1-3",
-    icon: "⚡",
-    title: "消失的下班準星",
-    theme: "圖卡與隱藏訊息",
-    desc: "拿出劇情提示與圖卡，找出綠色怪獸傳達的訊息。"
+    label: "2-1",
+    icon: "🚦",
+    title: "信封的顏色順序",
+    theme: "信封排序與號誌觀察",
+    desc: "根據信封線索，判斷從左到右的正確顏色順序。"
   },
   {
     id: 4,
     requiredLevel: 3,
     code: "FILE 04",
-    label: "2-1",
-    icon: "🚸",
-    title: "碎裂的斑馬線",
-    theme: "斑馬線與危險長廊",
-    desc: "拿出催繳通知信封與街區圖卡，收攏不合理的危險長廊。"
+    label: "2-2",
+    icon: "🚶",
+    title: "小綠人的 8 碼密碼",
+    theme: "小綠人與智慧運輸線索",
+    desc: "觀察小綠人的線索，找出正確的八碼密碼。"
   },
   {
     id: 5,
@@ -213,7 +206,7 @@ const NOTEBOOK_PAGES = [
     title: "FIELD RECORDS",
     subtitle: "城市交通筆記",
     content:
-      "這本筆記會在你完成關卡後，留下每一關的交通安全知識重點。"
+      "完成關卡後，這本筆記會留下每一關的遊玩時間、作答狀態、完成時間與學習紀錄。"
   },
   {
     type: "toc",
@@ -222,13 +215,13 @@ const NOTEBOOK_PAGES = [
       {
         id: "case-01",
         code: "01",
-        title: "搶回走路專用道！",
+        title: "找回安全的行走空間！",
         bookPage: 2
       },
       {
         id: "case-02",
         code: "02",
-        title: "斑馬線真的是保命符？",
+        title: "號誌裡藏著什麼線索？",
         bookPage: 4
       },
       {
@@ -243,8 +236,8 @@ const NOTEBOOK_PAGES = [
     type: "chapter",
     id: "case-01",
     code: "01",
-    title: "搶回走路專用道！",
-    levels: [1, 2, 3]
+    title: "找回安全的行走空間！",
+    levels: [1, 2]
   },
   {
     type: "blank"
@@ -253,8 +246,8 @@ const NOTEBOOK_PAGES = [
     type: "chapter",
     id: "case-02",
     code: "02",
-    title: "斑馬線真的是保命符？",
-    levels: [4]
+    title: "號誌裡藏著什麼線索？",
+    levels: [3, 4]
   },
   {
     type: "blank"
@@ -273,24 +266,24 @@ const NOTEBOOK_PAGES = [
 
 const NOTEBOOK_LEVEL_NOTES = {
   1: {
-    title: "1-1 烈日下的差事",
+    title: "1-1 道路被擋住時怎麼辦？",
     content:
-      "你成功發現了街區裡看似存在、實際上卻被障礙物壓縮的人行空間。也學到：真正安全的人行道不只是『有鋪設』，還必須保留連續、足夠且無障礙的步行通行空間，才能讓行人、輪椅與嬰兒車安心通過。"
+      "你發現當道路沒有完整的人行道或騎樓，又被停放車輛、雜物阻擋時，行人很容易被迫靠近車流。安全通過前，應先確認前後方來車，再選擇安全方式繞越障礙物。"
   },
   2: {
-    title: "1-2 狹縫中的選擇",
+    title: "1-2 被占用的行走空間",
     content:
-      "你成功從超商收據與信封線索中，找出騎樓被停車與私人物品佔用的問題。也學到：當通行空間被壓縮，行人就可能被迫繞行甚至走入車道；騎樓雖有複雜產權，仍肩負公共通行的重要功能。"
+      "你注意到私人雜物與車輛占用通行空間，會讓行人被迫走入車道。真正安心的步行環境，需要保留連續、安全的通行空間，並搭配清楚的行人號誌與道路引導。"
   },
   3: {
-    title: "1-3 消失的下班準星",
+    title: "2-1 信封的顏色順序",
     content:
-      "你成功破解綠色怪獸留下的訊息，發現電箱、路燈與設施正在侵蝕原本屬於行人的安全空間。也學到：人行道的核心使用者是『人』，公共設施的配置不應讓行人只能在狹縫中通過。"
+      "你透過觀察信封破解出紅、黃、綠的順序，也把線索和交通號誌連結起來。仔細觀察號誌與環境，是判斷道路狀況與安全通行的重要能力。"
   },
   4: {
-    title: "2-1 碎裂的斑馬線",
+    title: "2-2 小綠人的 8 碼密碼",
     content:
-      "你成功收攏了不合理的危險長廊，發現斑馬線本身並不是絕對安全的保命符。也學到：真正的穿越安全還需要清楚視線、合理號誌、適當穿越距離，以及駕駛確實停讓。"
+      "你從小綠人的線索中解出 20190925。這組日期也連結到中華郵政於 2019 年 9 月 25 日發行的臺灣智慧運輸建設郵票，讓交通觀察延伸到智慧運輸與城市設計。"
   },
   5: {
     title: "3-1 路口的人車大塞車",
@@ -344,69 +337,181 @@ function CaseFileIcon({ type }) {
 
 function TrafficPromptIllustration({ level }) {
   const commonStyle = {
-    width: "126px",
-    height: "126px",
-    opacity: 0.95,
-    filter: "drop-shadow(0 12px 18px rgba(0,0,0,0.20))"
+    width: "clamp(76px, 12vw, 104px)",
+    height: "clamp(76px, 12vw, 104px)",
+    opacity: 0.82,
+    filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.22))"
   };
 
-  if (level === 1) {
-    return (
-      <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
-        <rect x="48" y="32" width="64" height="82" rx="18" fill="#243b35" stroke="#f0c768" strokeWidth="5" />
-        <circle cx="80" cy="56" r="14" fill="#78e08f" />
-        <path d="M80 72V98" stroke="#78e08f" strokeWidth="8" strokeLinecap="round" />
-        <path d="M62 82L80 74L98 82" stroke="#78e08f" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M78 98L62 125" stroke="#78e08f" strokeWidth="7" strokeLinecap="round" />
-        <path d="M83 98L102 124" stroke="#78e08f" strokeWidth="7" strokeLinecap="round" />
-        <rect x="40" y="120" width="82" height="12" rx="6" fill="#f0c768" opacity="0.85" />
-      </svg>
-    );
-  }
-
-  if (level === 2) {
-    return (
-      <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
-        <path d="M42 92h72c10 0 20 8 20 18v10H34v-12c0-9 6-16 8-16Z" fill="#f0c768" stroke="#d6a64b" strokeWidth="5" />
-        <path d="M58 70h45c9 0 16 7 16 16v8H47l11-24Z" fill="#89a79c" stroke="#587268" strokeWidth="5" />
-        <circle cx="55" cy="122" r="14" fill="#223d36" stroke="#f7e9bd" strokeWidth="5" />
-        <circle cx="116" cy="122" r="14" fill="#223d36" stroke="#f7e9bd" strokeWidth="5" />
-        <path d="M67 77h28" stroke="#f7e9bd" strokeWidth="6" strokeLinecap="round" />
-        <path d="M123 92h14" stroke="#f0c768" strokeWidth="7" strokeLinecap="round" />
-        <circle cx="42" cy="88" r="6" fill="#f7e9bd" />
-      </svg>
-    );
-  }
-
-  if (level === 3) {
-    return (
-      <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
-        <rect x="42" y="32" width="76" height="96" rx="14" fill="#7b928b" stroke="#f0c768" strokeWidth="5" />
-        <rect x="56" y="48" width="48" height="12" rx="6" fill="#173f36" opacity="0.6" />
-        <rect x="56" y="70" width="48" height="12" rx="6" fill="#173f36" opacity="0.45" />
-        <rect x="56" y="92" width="48" height="12" rx="6" fill="#173f36" opacity="0.35" />
-        <circle cx="80" cy="118" r="8" fill="#173f36" opacity="0.55" />
-        <path d="M120 42c12 8 15 21 7 32" fill="none" stroke="#78e08f" strokeWidth="6" strokeLinecap="round" />
-        <path d="M36 50c-10 10-11 23-2 34" fill="none" stroke="#78e08f" strokeWidth="6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 160 160" style={commonStyle} aria-hidden="true">
-      <rect x="26" y="54" width="108" height="18" rx="9" fill="#f7e9bd" />
-      <rect x="36" y="82" width="108" height="18" rx="9" fill="#f7e9bd" />
-      <rect x="18" y="110" width="108" height="18" rx="9" fill="#f7e9bd" />
-      <rect x="40" y="54" width="16" height="18" fill="#173f36" opacity="0.75" />
-      <rect x="78" y="54" width="16" height="18" fill="#173f36" opacity="0.75" />
-      <rect x="112" y="54" width="16" height="18" fill="#173f36" opacity="0.75" />
-      <rect x="60" y="82" width="16" height="18" fill="#173f36" opacity="0.75" />
-      <rect x="98" y="82" width="16" height="18" fill="#173f36" opacity="0.75" />
-      <rect x="32" y="110" width="16" height="18" fill="#173f36" opacity="0.75" />
-      <rect x="70" y="110" width="16" height="18" fill="#173f36" opacity="0.75" />
-      <circle cx="116" cy="34" r="13" fill="#78e08f" stroke="#f0c768" strokeWidth="5" />
-      <path d="M116 47v22" stroke="#78e08f" strokeWidth="6" strokeLinecap="round" />
+  const shell = (children) => (
+    <svg
+      viewBox="0 0 160 160"
+      style={commonStyle}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle
+        cx="80"
+        cy="80"
+        r="62"
+        fill="rgba(8, 45, 40, 0.62)"
+        stroke="rgba(240, 213, 138, 0.52)"
+        strokeWidth="2"
+      />
+      <circle
+        cx="80"
+        cy="80"
+        r="51"
+        fill="none"
+        stroke="rgba(159, 231, 213, 0.16)"
+        strokeWidth="1.5"
+        strokeDasharray="3 8"
+      />
+      {children}
     </svg>
+  );
+
+  // 1-1｜線索觀察：放大鏡＋折線路徑
+  if (level === 1) {
+    return shell(
+      <>
+        <path
+          d="M43 96C52 88 55 72 68 68C80 64 88 75 96 70C104 65 105 53 116 48"
+          fill="none"
+          stroke="#9fe7d5"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="46" cy="96" r="5" fill="#f0d58a" />
+        <circle cx="116" cy="48" r="5" fill="#f0d58a" />
+        <circle
+          cx="82"
+          cy="77"
+          r="24"
+          fill="rgba(255,255,255,0.03)"
+          stroke="#f0d58a"
+          strokeWidth="6"
+        />
+        <path
+          d="M99 95L119 115"
+          stroke="#f0d58a"
+          strokeWidth="7"
+          strokeLinecap="round"
+        />
+        <path
+          d="M72 77H92M82 67V87"
+          stroke="#9fe7d5"
+          strokeWidth="4"
+          strokeLinecap="round"
+          opacity="0.9"
+        />
+      </>
+    );
+  }
+
+  // 1-2｜線索解碼：信封＋鑰匙孔
+  if (level === 2) {
+    return shell(
+      <>
+        <rect
+          x="44"
+          y="51"
+          width="72"
+          height="58"
+          rx="12"
+          fill="rgba(255,255,255,0.035)"
+          stroke="#f0d58a"
+          strokeWidth="5"
+        />
+        <path
+          d="M49 58L80 82L111 58"
+          fill="none"
+          stroke="#9fe7d5"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M49 103L69 83M111 103L91 83"
+          fill="none"
+          stroke="#9fe7d5"
+          strokeWidth="4"
+          strokeLinecap="round"
+          opacity="0.82"
+        />
+        <circle cx="80" cy="88" r="9" fill="#f0d58a" />
+        <path
+          d="M80 95V105"
+          stroke="#173f36"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M102 43L111 34M112 47L124 43"
+          stroke="#f0d58a"
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+      </>
+    );
+  }
+
+  // 1-3｜拼圖推理：拼圖塊＋隱藏線索
+  if (level === 3) {
+    return shell(
+      <>
+        <path
+          d="M53 54H72C72 44 79 38 87 38C96 38 103 45 103 54H111C117 54 122 59 122 65V79H113C104 79 98 86 98 94C98 103 105 110 113 110H122V116C122 122 117 127 111 127H91V118C91 109 84 103 76 103C67 103 60 110 60 118V127H53C47 127 42 122 42 116V96H51C60 96 66 89 66 81C66 72 59 65 51 65H42V65C42 59 47 54 53 54Z"
+          fill="rgba(255,255,255,0.035)"
+          stroke="#f0d58a"
+          strokeWidth="5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M77 71L84 78L96 64"
+          fill="none"
+          stroke="#9fe7d5"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="101" cy="101" r="4" fill="#9fe7d5" />
+        <circle cx="111" cy="91" r="3" fill="#f0d58a" />
+      </>
+    );
+  }
+
+  // 2-1｜路徑判讀：節點＋秘密路線
+  return shell(
+    <>
+      <path
+        d="M43 101C56 101 57 80 71 80C85 80 86 58 103 58C112 58 116 65 117 73"
+        fill="none"
+        stroke="#9fe7d5"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeDasharray="7 8"
+      />
+      <circle cx="43" cy="101" r="8" fill="#f0d58a" />
+      <circle cx="72" cy="80" r="8" fill="#173f36" stroke="#f0d58a" strokeWidth="4" />
+      <circle cx="103" cy="58" r="8" fill="#173f36" stroke="#f0d58a" strokeWidth="4" />
+      <path
+        d="M111 92L121 102L139 80"
+        fill="none"
+        stroke="#f0d58a"
+        strokeWidth="6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M48 45H69M48 54H61"
+        stroke="#9fe7d5"
+        strokeWidth="4"
+        strokeLinecap="round"
+        opacity="0.8"
+      />
+    </>
   );
 }
 
@@ -429,17 +534,21 @@ function App() {
   const [isWrong, setIsWrong] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [wrongChapters, setWrongChapters] = useState({});
+  const [attemptCounts, setAttemptCounts] = useState({});
 
   const [showChapterTransition, setShowChapterTransition] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState("");
   const [isGameFinished, setIsGameFinished] = useState(false);
-  const [postTestIndex, setPostTestIndex] = useState(0);
-  const [postTestAnswers, setPostTestAnswers] = useState({});
   const [finalRank, setFinalRank] = useState(null);
   const [reportImageUrl, setReportImageUrl] = useState("");
 
   const [onlineCount, setOnlineCount] = useState(0);
   const [visibleLevelCount, setVisibleLevelCount] = useState(0);
+  const [isMobileLayout, setIsMobileLayout] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 768px)").matches
+      : false
+  );
 
   const [showDiaryDrawer, setShowDiaryDrawer] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
@@ -460,6 +569,18 @@ function App() {
   const [currentBookPage, setCurrentBookPage] = useState(0);
   const [selectedNotebookCase, setSelectedNotebookCase] = useState(null);
   const [expandedCaseId, setExpandedCaseId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const syncLayout = (event) => setIsMobileLayout(event.matches);
+
+    setIsMobileLayout(mediaQuery.matches);
+    mediaQuery.addEventListener?.("change", syncLayout);
+
+    return () => mediaQuery.removeEventListener?.("change", syncLayout);
+  }, []);
 
   const STORAGE_KEY = "trafficPuzzleUnlockedLevel";
   const [unlockedLevel, setUnlockedLevel] = useState(() => {
@@ -526,6 +647,7 @@ function App() {
     setUnlockedLevel(1);
     setCurrentChapter(1);
     setWrongChapters({});
+    setAttemptCounts({});
 
     setGameStartTime(null);
     setQuestionStartTime(null);
@@ -801,6 +923,47 @@ function App() {
   };
 }, [userCode, userName, onlineUserId]);
 
+  useEffect(() => {
+    const calculateFinalRank = async () => {
+      if (!isGameFinished || !userCode) return;
+
+      try {
+        const snapshot = await getDocs(collection(db, "learning_results"));
+        const completedByUser = new Map();
+
+        snapshot.docs.forEach((docItem) => {
+          const data = docItem.data();
+          if (data?.game_completed !== true) return;
+
+          const totalSeconds = Number(data.total_seconds);
+          if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return;
+
+          const code = String(data.userCode || "").trim();
+          if (!code) return;
+
+          const current = completedByUser.get(code);
+          if (!current || totalSeconds < current.total_seconds) {
+            completedByUser.set(code, {
+              userCode: code,
+              total_seconds: totalSeconds
+            });
+          }
+        });
+
+        const ranking = Array.from(completedByUser.values()).sort(
+          (a, b) => a.total_seconds - b.total_seconds
+        );
+        const index = ranking.findIndex((item) => item.userCode === userCode);
+        setFinalRank(index >= 0 ? index + 1 : null);
+      } catch (error) {
+        console.error("計算同梯次名次失敗：", error);
+        setFinalRank(null);
+      }
+    };
+
+    calculateFinalRank();
+  }, [isGameFinished, userCode]);
+
   const formatTime = (seconds) => {
     const mm = Math.floor(seconds / 60).toString().padStart(2, "0");
     const ss = (seconds % 60).toString().padStart(2, "0");
@@ -901,6 +1064,22 @@ function App() {
     return previousFile.levels.every((level) => completedLevelSet.has(level));
   };
 
+  const normalizePuzzleAnswer = (value) =>
+    String(value ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/[\s、，,。．.\/\-]/g, "");
+
+  const isPuzzleAnswerCorrect = (chapterData, value) => {
+    const accepted = Array.isArray(chapterData.acceptedAnswers)
+      ? chapterData.acceptedAnswers
+      : [chapterData.answer];
+    const normalizedInput = normalizePuzzleAnswer(value);
+    return accepted.some(
+      (answer) => normalizePuzzleAnswer(answer) === normalizedInput
+    );
+  };
+
   const handleLevelComplete = async () => {
     if (isCompletedViewer) {
       return;
@@ -908,8 +1087,14 @@ function App() {
 
     const chapterData = CHAPTERS[currentChapter];
     const trimmedAnswer = userInput.trim();
+    const currentAttemptCount = Number(attemptCounts[currentChapter] || 0) + 1;
 
-    if (trimmedAnswer === chapterData.answer) {
+    setAttemptCounts((prev) => ({
+      ...prev,
+      [currentChapter]: currentAttemptCount
+    }));
+
+    if (isPuzzleAnswerCorrect(chapterData, trimmedAnswer)) {
       const now = Date.now();
       const finalQuestionSeconds = questionStartTime
         ? Math.max(0, Math.floor((now - questionStartTime) / 1000))
@@ -957,8 +1142,10 @@ function App() {
           total_seconds: nextTotalSeconds,
 
           wrong: wasWrongBeforeCorrect,
-          first_try_correct: !wasWrongBeforeCorrect,
-          answer_status: wasWrongBeforeCorrect ? "correct_after_wrong" : "first_try",
+          wrong_attempts: Math.max(0, currentAttemptCount - 1),
+          attempt_count: currentAttemptCount,
+          first_try_correct: currentAttemptCount === 1,
+          answer_status: currentAttemptCount === 1 ? "first_try" : "correct_after_wrong",
 
           completed_at: new Date(now).toISOString(),
           completed_date: new Date(now).toLocaleDateString("zh-TW"),
@@ -994,8 +1181,10 @@ function App() {
           total_seconds: nextTotalSeconds,
 
           wrong: wasWrongBeforeCorrect,
-          first_try_correct: !wasWrongBeforeCorrect,
-          answer_status: wasWrongBeforeCorrect ? "correct_after_wrong" : "first_try",
+          wrong_attempts: Math.max(0, currentAttemptCount - 1),
+          attempt_count: currentAttemptCount,
+          first_try_correct: currentAttemptCount === 1,
+          answer_status: currentAttemptCount === 1 ? "first_try" : "correct_after_wrong",
 
           completed_at: new Date(now).toISOString(),
           completed_date: new Date(now).toLocaleDateString("zh-TW"),
@@ -1075,7 +1264,7 @@ function App() {
   const getResultStats = () => {
     const completedRecords = getCompletedRecords();
     const completedCount = completedRecords.length;
-    const completionRate = Math.round((completedCount / 5) * 100);
+    const completionRate = Math.round((completedCount / DEMO_END_LEVEL) * 100);
     const longestRecord = completedRecords.length
       ? completedRecords.reduce((max, record) =>
           Number(record.time_seconds || 0) > Number(max.time_seconds || 0) ? record : max
@@ -1116,13 +1305,18 @@ function App() {
         title: CHAPTERS[level]?.title || `第 ${level} 關`,
         time: Number(record?.time_seconds || 0),
         wrong: Boolean(record?.wrong),
+        attempts: Number(record?.attempt_count || (record?.wrong ? 2 : record ? 1 : 0)),
         completed: Boolean(record),
         concept: CHAPTERS[level]?.concept || DEMO_KNOWLEDGE_POINTS[level] || ""
       };
     });
 
     const completedCount = levelRows.filter((item) => item.completed).length;
-    const accuracyText = `${completedCount - wrongRecords.length}/${completedCount || demoLevels.length}`;
+    const totalAttempts = levelRows.reduce((sum, item) => sum + Number(item.attempts || 0), 0);
+    const answerAccuracy = totalAttempts > 0
+      ? Math.round((completedCount / totalAttempts) * 100)
+      : 0;
+    const accuracyText = `${answerAccuracy}%`;
     const maxTime = Math.max(...levelRows.map((item) => item.time || 0), 1);
 
     const canvas = document.createElement("canvas");
@@ -1198,8 +1392,8 @@ function App() {
 
     const stats = [
       ["同梯次名次", finalRank ? `第 ${finalRank} 名` : "計算中"],
-      ["總作答時間", formatTime(totalSeconds)],
-      ["首次答對", accuracyText]
+      ["總遊玩時間", formatTime(totalSeconds)],
+      ["答題正確率", accuracyText]
     ];
 
     let statX = 152;
@@ -1339,15 +1533,17 @@ function App() {
   };
 
   const nextBookPage = () => {
-    setCurrentBookPage((prev) =>
-      Math.min(prev + 2, NOTEBOOK_PAGES.length - 2)
-    );
+    const step = isMobileLayout ? 1 : 2;
+    const maxPage = isMobileLayout
+      ? NOTEBOOK_PAGES.length - 1
+      : NOTEBOOK_PAGES.length - 2;
+
+    setCurrentBookPage((prev) => Math.min(prev + step, maxPage));
   };
 
   const prevBookPage = () => {
-    setCurrentBookPage((prev) =>
-      Math.max(prev - 2, 0)
-    );
+    const step = isMobileLayout ? 1 : 2;
+    setCurrentBookPage((prev) => Math.max(prev - step, 0));
   };
 
   const isNotebookLevelCompleted = (level) =>
@@ -1581,6 +1777,15 @@ function App() {
                   .filter((level) => isNotebookLevelCompleted(level))
                   .map((level) => {
                     const note = NOTEBOOK_LEVEL_NOTES[level];
+                    const record = notebookCompletedRecords.find(
+                      (item) => getRecordLevel(item) === level
+                    );
+                    const attempts = Number(record?.attempt_count || (record?.wrong ? 2 : 1));
+                    const answerLabel = record?.first_try_correct
+                      ? "首次答對"
+                      : record?.wrong
+                      ? "修正後答對"
+                      : "已完成";
 
                     return (
                       <article
@@ -1602,7 +1807,7 @@ function App() {
                         }}>
                           <div>
                             <div style={{ margin: "0 0 4px", fontSize: "11px", letterSpacing: "0.14em", fontWeight: 800, color: "#84612c" }}>
-                              KNOWLEDGE NOTE
+                              PLAY RECORD
                             </div>
                             <h3 style={{ margin: 0, fontSize: "18px", color: "#12352f" }}>
                               {note.title}
@@ -1618,6 +1823,29 @@ function App() {
                             color: "#12352f"
                           }}>
                             已記錄
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                            gap: "8px 12px",
+                            margin: "12px 0 12px",
+                            padding: "11px 12px",
+                            borderRadius: "12px",
+                            background: "rgba(18,53,47,0.07)",
+                            color: "#36564d",
+                            fontSize: "13px",
+                            lineHeight: 1.55
+                          }}
+                        >
+                          <span><strong>本關耗時：</strong>{formatTime(Number(record?.time_seconds || 0))}</span>
+                          <span><strong>累計時間：</strong>{formatTime(Number(record?.total_seconds || 0))}</span>
+                          <span><strong>作答狀態：</strong>{answerLabel}</span>
+                          <span><strong>作答次數：</strong>{attempts} 次</span>
+                          <span style={{ gridColumn: "1 / -1" }}>
+                            <strong>完成時間：</strong>{record?.completed_date || "--"} {record?.completed_time || ""}
                           </span>
                         </div>
 
@@ -1639,7 +1867,7 @@ function App() {
                     lineHeight: 1.7
                   }}
                 >
-                  這一章的闖關筆記還沒有解鎖。完成對應小關後，這裡才會出現知識重點。
+                  這一章尚無遊玩紀錄。完成對應關卡後，這裡會顯示詳細闖關資料。
                 </div>
               )}
             </div>
@@ -1669,7 +1897,7 @@ function App() {
 
             <section className="hero-copy">
               <div className="hero-kicker">Traffic Puzzle Web App</div>
-              <h1 className="hero-title">致新進郵差的一封信</h1>
+              <h1 className="hero-title">你能找出城市裡被忽略的危險嗎？</h1>
               <div className="typewriter-text hero-letter-text">{displayedText}</div>
               {showUI && !isEnvelopeOpening && (
               <button className="glow-btn hero-start-btn" onClick={handleOpenLevelSelect}>
@@ -2347,17 +2575,17 @@ function App() {
                 <button
                   className="field-book-nav"
                   onClick={nextBookPage}
-                  disabled={currentBookPage >= NOTEBOOK_PAGES.length - 2}
+                  disabled={currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2)}
                   style={{
                     pointerEvents: "auto",
                     border: "1px solid rgba(247,231,189,0.18)",
                     borderRadius: "999px",
                     padding: "9px 16px",
-                    background: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
-                    color: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "rgba(18,53,47,0.44)" : "#f7e7bd",
+                    background: currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2) ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
+                    color: currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2) ? "rgba(18,53,47,0.44)" : "#f7e7bd",
                     fontWeight: 900,
                     letterSpacing: "0.08em",
-                    cursor: currentBookPage >= NOTEBOOK_PAGES.length - 2 ? "default" : "pointer"
+                    cursor: currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2) ? "default" : "pointer"
                   }}
                 >
                   NEXT →
@@ -2392,13 +2620,17 @@ function App() {
             title: CHAPTERS[level]?.title || `第 ${level} 關`,
             time: Number(record?.time_seconds || 0),
             wrong: Boolean(record?.wrong),
+            attempts: Number(record?.attempt_count || (record?.wrong ? 2 : record ? 1 : 0)),
             completed: Boolean(record),
             concept: CHAPTERS[level]?.concept || DEMO_KNOWLEDGE_POINTS[level] || ""
           };
         });
 
         const completedCount = levelRows.filter((item) => item.completed).length;
-        const firstTryCount = levelRows.filter((item) => item.completed && !item.wrong).length;
+        const totalAttempts = levelRows.reduce((sum, item) => sum + Number(item.attempts || 0), 0);
+        const answerAccuracy = totalAttempts > 0
+          ? Math.round((completedCount / totalAttempts) * 100)
+          : 0;
         const maxTime = Math.max(...levelRows.map((item) => item.time || 0), 1);
 
         return (
@@ -2466,13 +2698,13 @@ function App() {
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                     <div style={{ borderRadius: "20px", padding: "16px", background: "#d9a246", color: "#173f36" }}>
-                      <div style={{ fontSize: "13px", opacity: 0.82 }}>總作答時間</div>
+                      <div style={{ fontSize: "13px", opacity: 0.82 }}>總遊玩時間</div>
                       <strong style={{ fontSize: "26px" }}>{formatTime(demoTotalSeconds)}</strong>
                     </div>
 
                     <div style={{ borderRadius: "20px", padding: "16px", background: "#e8eee5", color: "#173f36" }}>
-                      <div style={{ fontSize: "13px", opacity: 0.82 }}>首次答對</div>
-                      <strong style={{ fontSize: "26px" }}>{firstTryCount}/{completedCount || demoLevels.length}</strong>
+                      <div style={{ fontSize: "13px", opacity: 0.82 }}>答題正確率</div>
+                      <strong style={{ fontSize: "26px" }}>{answerAccuracy}%</strong>
                     </div>
                   </div>
                 </div>
@@ -2521,7 +2753,7 @@ function App() {
                       >
                         <strong style={{ color: "#173f36" }}>{item.title}</strong>
                         <span>{item.completed ? formatTime(item.time) : "--"}</span>
-                        <span>{item.completed ? (item.wrong ? "曾答錯" : "首次答對") : "未完成"}</span>
+                        <span>{item.completed ? `${item.wrong ? "修正後答對" : "首次答對"} · ${item.attempts}次` : "未完成"}</span>
 
                         <div style={{ gridColumn: "1 / -1", height: "7px", borderRadius: "999px", background: "rgba(23,63,54,0.10)", overflow: "hidden" }}>
                           <div

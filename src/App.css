@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Iansui&display=swap");
+
 :root {
   font-family: 'Iansui', '芫荽', sans-serif;
 }
@@ -4108,5 +4110,46 @@ select {
     min-width: 42px !important;
     min-height: 42px !important;
     font-size: 24px !important;
+  }
+}
+
+
+/* ================================================================
+   0916 Mobile Final Fix — Iansui + Hero title + Notebook pagination
+   ================================================================ */
+
+/* 手機與桌機統一使用 Iansui；覆蓋前面 Notebook 的 serif 指定 */
+html,
+body,
+#root,
+.main-container,
+.main-container *,
+button,
+input,
+textarea,
+select {
+  font-family: "Iansui", "芫荽", sans-serif !important;
+}
+
+@media (max-width: 768px) {
+  /* 問句標題在一般手機維持單行，避免被放大成兩行 */
+  .hero-title {
+    white-space: nowrap !important;
+    font-size: clamp(17px, 5.35vw, 24px) !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+  }
+
+  /* 手機 Notebook 只顯示真正內容頁，空白頁由 JSX 過濾 */
+  .field-notebook-left-page .field-book-page {
+    font-family: "Iansui", "芫荽", sans-serif !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-title {
+    font-size: 16px !important;
   }
 }

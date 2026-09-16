@@ -264,6 +264,8 @@ const NOTEBOOK_PAGES = [
   }
 ];
 
+const MOBILE_NOTEBOOK_PAGES = NOTEBOOK_PAGES.filter((page) => page.type !== "blank");
+
 const NOTEBOOK_LEVEL_NOTES = {
   1: {
     title: "1-1 道路被擋住時怎麼辦？",
@@ -549,6 +551,9 @@ function App() {
       ? window.matchMedia("(max-width: 768px)").matches
       : false
   );
+  const notebookPagesForLayout = isMobileLayout
+    ? MOBILE_NOTEBOOK_PAGES
+    : NOTEBOOK_PAGES;
 
   const [showDiaryDrawer, setShowDiaryDrawer] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
@@ -1535,8 +1540,8 @@ function App() {
   const nextBookPage = () => {
     const step = isMobileLayout ? 1 : 2;
     const maxPage = isMobileLayout
-      ? NOTEBOOK_PAGES.length - 1
-      : NOTEBOOK_PAGES.length - 2;
+      ? notebookPagesForLayout.length - 1
+      : notebookPagesForLayout.length - 2;
 
     setCurrentBookPage((prev) => Math.min(prev + step, maxPage));
   };
@@ -1552,7 +1557,14 @@ function App() {
     );
 
   const jumpToNotebookPage = (targetPage) => {
-    setCurrentBookPage(targetPage);
+    if (!isMobileLayout) {
+      setCurrentBookPage(targetPage);
+      return;
+    }
+
+    const target = NOTEBOOK_PAGES[targetPage];
+    const mobileIndex = MOBILE_NOTEBOOK_PAGES.findIndex((page) => page === target);
+    setCurrentBookPage(mobileIndex >= 0 ? mobileIndex : 0);
   };
 
   const renderNotebookPage = (page, side = "left") => {
@@ -2525,7 +2537,7 @@ function App() {
                 boxShadow: "none"
               }}
             >
-              {renderNotebookPage(NOTEBOOK_PAGES[currentBookPage], "left")}
+              {renderNotebookPage(notebookPagesForLayout[currentBookPage], "left")}
             </section>
 
             <section
@@ -2538,7 +2550,7 @@ function App() {
                 boxShadow: "none"
               }}
             >
-              {renderNotebookPage(NOTEBOOK_PAGES[currentBookPage + 1], "right")}
+              {renderNotebookPage(isMobileLayout ? null : notebookPagesForLayout[currentBookPage + 1], "right")}
 
               <div
                 className="field-book-controls"
@@ -2575,17 +2587,17 @@ function App() {
                 <button
                   className="field-book-nav"
                   onClick={nextBookPage}
-                  disabled={currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2)}
+                  disabled={currentBookPage >= (isMobileLayout ? notebookPagesForLayout.length - 1 : notebookPagesForLayout.length - 2)}
                   style={{
                     pointerEvents: "auto",
                     border: "1px solid rgba(247,231,189,0.18)",
                     borderRadius: "999px",
                     padding: "9px 16px",
-                    background: currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2) ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
-                    color: currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2) ? "rgba(18,53,47,0.44)" : "#f7e7bd",
+                    background: currentBookPage >= (isMobileLayout ? notebookPagesForLayout.length - 1 : notebookPagesForLayout.length - 2) ? "rgba(18,53,47,0.16)" : "rgba(18,53,47,0.92)",
+                    color: currentBookPage >= (isMobileLayout ? notebookPagesForLayout.length - 1 : notebookPagesForLayout.length - 2) ? "rgba(18,53,47,0.44)" : "#f7e7bd",
                     fontWeight: 900,
                     letterSpacing: "0.08em",
-                    cursor: currentBookPage >= (isMobileLayout ? NOTEBOOK_PAGES.length - 1 : NOTEBOOK_PAGES.length - 2) ? "default" : "pointer"
+                    cursor: currentBookPage >= (isMobileLayout ? notebookPagesForLayout.length - 1 : notebookPagesForLayout.length - 2) ? "default" : "pointer"
                   }}
                 >
                   NEXT →

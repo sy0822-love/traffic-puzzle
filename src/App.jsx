@@ -13,7 +13,86 @@ import {
 // ===== Realtime DB（在線人數）=====
 import { ref, set, onValue, onDisconnect, remove } from 'firebase/database';
 import './App.css';
-import mysteryCityBg from "./assets/mystery-city-bg.png";
+
+// ===== 前導照片本機持久化（IndexedDB）=====
+// 先讓同一裝置、同一 session 在重新整理後仍可保留照片。
+// 正式跨裝置同步將在後續接 Firebase Storage。
+const PRELUDE_PHOTO_DB_NAME = "trafficPuzzleMedia";
+const PRELUDE_PHOTO_STORE = "preludePhotos";
+
+const openPreludePhotoDb = () =>
+  new Promise((resolve, reject) => {
+    if (typeof indexedDB === "undefined") {
+      reject(new Error("此瀏覽器不支援 IndexedDB"));
+      return;
+    }
+
+    const request = indexedDB.open(PRELUDE_PHOTO_DB_NAME, 1);
+
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains(PRELUDE_PHOTO_STORE)) {
+        const store = database.createObjectStore(PRELUDE_PHOTO_STORE, { keyPath: "id" });
+        store.createIndex("session_id", "session_id", { unique: false });
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("IndexedDB 開啟失敗"));
+  });
+
+const savePreludePhotoToDevice = async ({ sessionId, blockId, dataUrl, fileName }) => {
+  if (!sessionId || !blockId || !dataUrl) return;
+  const database = await openPreludePhotoDb();
+
+  await new Promise((resolve, reject) => {
+    const transaction = database.transaction(PRELUDE_PHOTO_STORE, "readwrite");
+    transaction.objectStore(PRELUDE_PHOTO_STORE).put({
+      id: `${sessionId}:${blockId}`,
+      session_id: sessionId,
+      block_id: blockId,
+      data_url: dataUrl,
+      file_name: fileName || "",
+      updated_at: Date.now()
+    });
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error || new Error("照片保存失敗"));
+  });
+
+  database.close();
+};
+
+const loadPreludePhotosFromDevice = async (sessionId) => {
+  if (!sessionId) return [];
+  const database = await openPreludePhotoDb();
+
+  const result = await new Promise((resolve, reject) => {
+    const transaction = database.transaction(PRELUDE_PHOTO_STORE, "readonly");
+    const store = transaction.objectStore(PRELUDE_PHOTO_STORE);
+    const index = store.index("session_id");
+    const request = index.getAll(sessionId);
+
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error || new Error("照片讀取失敗"));
+  });
+
+  database.close();
+  return result;
+};
+
+const deletePreludePhotoFromDevice = async (sessionId, blockId) => {
+  if (!sessionId || !blockId) return;
+  const database = await openPreludePhotoDb();
+
+  await new Promise((resolve, reject) => {
+    const transaction = database.transaction(PRELUDE_PHOTO_STORE, "readwrite");
+    transaction.objectStore(PRELUDE_PHOTO_STORE).delete(`${sessionId}:${blockId}`);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error || new Error("照片刪除失敗"));
+  });
+
+  database.close();
+};
 const ALLOWED_ACCESS_CODES = {
   KWA1116: {
     userName: "KWA1116 玩家",
@@ -42,8 +121,95 @@ const ALLOWED_ACCESS_CODES = {
   TRAFFIC0919: {
     userName: "TRAFFIC0919 測試玩家",
     userCode: "TRAFFIC0919"
+  },
+  X7K4M2Q9: {
+    userName: "測試玩家 01",
+    userCode: "X7K4M2Q9"
+  },
+  P3N8V5R1: {
+    userName: "測試玩家 02",
+    userCode: "P3N8V5R1"
+  },
+  T6B2Y9L4: {
+    userName: "測試玩家 03",
+    userCode: "T6B2Y9L4"
+  },
+  H9Q5C7W2: {
+    userName: "測試玩家 04",
+    userCode: "H9Q5C7W2"
+  },
+  M4Z8K1P6: {
+    userName: "測試玩家 05",
+    userCode: "M4Z8K1P6"
+  },
+  R2F7N9X3: {
+    userName: "測試玩家 06",
+    userCode: "R2F7N9X3"
+  },
+  V8D3L6Q1: {
+    userName: "測試玩家 07",
+    userCode: "V8D3L6Q1"
+  },
+  C5T9M2H7: {
+    userName: "測試玩家 08",
+    userCode: "C5T9M2H7"
+  },
+  Y1P6R4K8: {
+    userName: "測試玩家 09",
+    userCode: "Y1P6R4K8"
+  },
+  B7W2N5Z9: {
+    userName: "測試玩家 10",
+    userCode: "B7W2N5Z9"
+  },
+  Q4H8V1C6: {
+    userName: "測試玩家 11",
+    userCode: "Q4H8V1C6"
+  },
+  L9M3X7T2: {
+    userName: "測試玩家 12",
+    userCode: "L9M3X7T2"
+  },
+  K2R6P8D4: {
+    userName: "測試玩家 13",
+    userCode: "K2R6P8D4"
+  },
+  N5C1Y9W7: {
+    userName: "測試玩家 14",
+    userCode: "N5C1Y9W7"
+  },
+  F8Q4L2V6: {
+    userName: "測試玩家 15",
+    userCode: "F8Q4L2V6"
+  },
+  Z3T7H5M1: {
+    userName: "測試玩家 16",
+    userCode: "Z3T7H5M1"
+  },
+  W6P2K9R4: {
+    userName: "測試玩家 17",
+    userCode: "W6P2K9R4"
+  },
+  D1V8N3Q7: {
+    userName: "測試玩家 18",
+    userCode: "D1V8N3Q7"
+  },
+  J7M4C9X2: {
+    userName: "測試玩家 19",
+    userCode: "J7M4C9X2"
+  },
+  G2Y6T8P5: {
+    userName: "測試玩家 20",
+    userCode: "G2Y6T8P5"
   }
 };
+
+const TEST_ACCESS_CODES = new Set([
+  "X7K4M2Q9", "P3N8V5R1", "T6B2Y9L4", "H9Q5C7W2", "M4Z8K1P6",
+  "R2F7N9X3", "V8D3L6Q1", "C5T9M2H7", "Y1P6R4K8", "B7W2N5Z9",
+  "Q4H8V1C6", "L9M3X7T2", "K2R6P8D4", "N5C1Y9W7", "F8Q4L2V6",
+  "Z3T7H5M1", "W6P2K9R4", "D1V8N3Q7", "J7M4C9X2", "G2Y6T8P5"
+]);
 
 const LETTER_CONTENT = `在台灣的行人，最常遇到的 3 種危險狀況：
 
@@ -54,109 +220,95 @@ const LETTER_CONTENT = `在台灣的行人，最常遇到的 3 種危險狀況�
 3. 駕駛人缺乏停讓行人、行人優先通行的意識。`;
 
 const DEMO_MODE = true;
-const DEMO_END_LEVEL = 4;
-const TIMING_RULE_VERSION = "v1-login-new-run-first-level-start";
+const DEMO_END_LEVEL = 3;
+const TIMING_RULE_VERSION = "v2-prelude-three-level-flow";
+
+// ===== 前導任務版型 =====
+// 此階段只建立 UI / 流程 Block，不放正式題目內容。
+// 後續只要修改 PRELUDE_BLOCKS 內的文字與選項資料即可，不需要重做版型。
+const PRELUDE_BLOCKS = [
+  { id: "prelude-01", label: "OBSERVATION 01", title: "", description: "" },
+  { id: "prelude-02", label: "OBSERVATION 02", title: "", description: "" },
+  { id: "prelude-03", label: "OBSERVATION 03", title: "", description: "" }
+];
+
+// 正式內容尚未全部提供前，保留開發測試答案，避免 UI Block 做完後無法測完整流程。
+// 之後填入正式題目時，直接替換 CHAPTERS 內的 answer / acceptedAnswers 即可。
+const BLOCK_TEST_ANSWERS = {
+  1: ["test1"],
+  2: ["test2"],
+  3: ["crosswalk"]
+};
 
 const DEMO_WRONG_HINT = "別灰心～再根據劇情卡找到更細的脈絡吧？";
 
 const DEMO_KNOWLEDGE_POINTS = {
-  1: "在沒有人行道或騎樓、又遇到停放車輛或雜物阻擋時，應先確認前後方來車，再選擇安全方式繞越障礙物。",
-  2: "理解路邊私人雜物與車輛占用通行空間，會迫使行人進入車道；改善方向應回到連續、安全的人行空間與行人號誌。",
-  3: "能依觀察結果辨認號誌顏色順序，建立對紅、黃、綠交通號誌的基本辨識與觀察能力。",
-  4: "透過觀察小綠人與線索解出 8 碼密碼，連結交通安全觀察與臺灣智慧運輸相關資訊。"
+  1: "此關學習重點待正式內容確認後補入。",
+  2: "此關學習重點待正式內容確認後補入。",
+  3: "此關學習重點待正式內容確認後補入。"
 };
+
+// 三個正式關卡各自獨立成一張 Mission File。
 const CASE_FILES = [
   {
     id: "CASE-01",
     code: "FILE 01",
-    title: "找回安全的行走空間！",
-    subtitle: "從沒有完整人行空間、路邊雜物與停車占用開始，觀察行人為什麼會被迫靠近車道，找出更安全的通行方式。",
+    title: "安全的步行空間藏著一段密語",
+    subtitle: "正式內容待補。",
     icon: "walk",
     theme: "green",
-    levels: [1, 2]
+    levels: [1]
   },
-
   {
     id: "CASE-02",
     code: "FILE 02",
-    title: "號誌裡藏著什麼線索？",
-    subtitle: "觀察信封、交通號誌與小綠人的細節，依序破解顏色與密碼，找出藏在城市裡的交通線索。",
+    title: "過馬路前四步驟藏了什麼密碼",
+    subtitle: "正式內容待補。",
     icon: "crosswalk",
     theme: "red",
-    levels: [3, 4]
+    levels: [2]
   },
-
   {
     id: "CASE-03",
     code: "FILE 03",
-    title: "路口的人車大塞車",
-    subtitle: "後續關卡規劃中。",
+    title: "6個神奇的設計讓馬路變安全",
+    subtitle: "正式內容待補。",
     icon: "car",
     theme: "yellow",
-    levels: [5]
+    levels: [3]
   }
 ];
+
 const CHAPTERS = {
   1: {
-    title: "1-1：道路被擋住時怎麼辦？",
+    title: "第一關｜安全的步行空間藏著一段密語",
     content: ``,
     taskTitle: "任務問題",
-    taskContent: `在生活中遇到沒有人行道或騎樓的道路，又遇到停放的車輛或雜物時，我們該怎麼應對呢？
-
-提示：先確認前後方車輛，再想想要怎麼安全通過。`,
-    answer: "繞越",
-    acceptedAnswers: ["繞越", "先確認前後方車輛再繞越", "確認前後方車輛再繞越", "確認車輛後繞越", "安全繞越"],
+    taskContent: `此區塊內容待補。`,
+    answer: BLOCK_TEST_ANSWERS[1][0],
+    acceptedAnswers: BLOCK_TEST_ANSWERS[1],
     concept: DEMO_KNOWLEDGE_POINTS[1],
-    nextMsg: "答對了！遇到障礙物時，先確認前後方來車，再選擇安全方式繞越，不要直接走進車流中。"
+    nextMsg: "第一關完成！下一個任務已解鎖。"
   },
-
   2: {
-    title: "1-2：被占用的行走空間",
+    title: "第二關｜過馬路前四步驟藏了什麼密碼",
     content: ``,
     taskTitle: "任務問題",
-    taskContent: `路邊堆滿了居民的私人雜物和車輛，讓人只能走到車道上，非常危險。
-
-我們應該怎麼做，才能讓人安心走路呢？似乎有什麼文字悄悄出現了呢？`,
-    answer: "號誌",
-    acceptedAnswers: ["號誌", "行人號誌"],
+    taskContent: `此區塊內容待補。`,
+    answer: BLOCK_TEST_ANSWERS[2][0],
+    acceptedAnswers: BLOCK_TEST_ANSWERS[2],
     concept: DEMO_KNOWLEDGE_POINTS[2],
-    nextMsg: "答對了！下一個地點，請找一個有行人號誌的地方，繼續尋找下一條線索。"
+    nextMsg: "第二關完成！最後一個正式任務已解鎖。"
   },
-
   3: {
-    title: "2-1：信封的顏色順序",
+    title: "第三關｜6個神奇的設計讓馬路變安全",
     content: ``,
     taskTitle: "任務問題",
-    taskContent: `根據你的觀察，信封的排序從左到右到底是什麼顏色呢？
-
-請依照順序輸入三個顏色。`,
-    answer: "紅黃綠",
-    acceptedAnswers: ["紅黃綠", "紅、黃、綠", "紅 黃 綠", "紅，黃，綠"],
+    taskContent: `此區塊內容待補。`,
+    answer: "crosswalk",
+    acceptedAnswers: ["crosswalk", "CROSSWALK"],
     concept: DEMO_KNOWLEDGE_POINTS[3],
-    nextMsg: "答對了！從左到右的順序是「紅、黃、綠」；也可以把它和交通號誌從上到下的顏色順序連結起來。"
-  },
-
-  4: {
-    title: "2-2：小綠人的 8 碼密碼",
-    content: ``,
-    taskTitle: "任務問題",
-    taskContent: `觀察小綠人後，好像可以得到一串密碼……請問這串密碼是多少呢？
-
-提示：共有 8 碼。`,
-    answer: "20190925",
-    acceptedAnswers: ["20190925", "2019/09/25", "2019-09-25", "2019 09 25"],
-    concept: DEMO_KNOWLEDGE_POINTS[4],
-    nextMsg: "答對了！這組密碼是 20190925，對應中華郵政於 2019 年 9 月 25 日發行的臺灣智慧運輸建設郵票。"
-  },
-
-  5: {
-    title: "3-1：暫定關卡",
-    content: ``,
-    taskTitle: "系統提示",
-    taskContent: `此關卡內容暫定中，請依現場紙本任務提示進行操作，並在系統輸入答案完成挑戰。`,
-    answer: "5",
-    concept: "交通安全需要整體規劃，包含無障礙、路權、資訊設計與行人安全，而不是只解決單一問題。",
-    nextMsg: "你完成了所有調查，城市的盲點正在被重新看見。"
+    nextMsg: "第三關完成！"
   }
 };
 
@@ -165,146 +317,76 @@ const LEVEL_FILES = [
     id: 1,
     requiredLevel: null,
     code: "FILE 01",
-    label: "1-1",
+    label: "第一關",
     icon: "🚶",
-    title: "道路被擋住時怎麼辦？",
-    theme: "道路障礙與安全繞越",
-    desc: "觀察沒有人行道或騎樓時，遇到停放車輛與雜物該如何安全通過。"
+    title: "安全的步行空間藏著一段密語",
+    theme: "正式內容待補",
+    desc: "正式內容待補。"
   },
   {
     id: 2,
     requiredLevel: 1,
     code: "FILE 02",
-    label: "1-2",
-    icon: "🚧",
-    title: "被占用的行走空間",
-    theme: "通行空間與行人號誌",
-    desc: "找出路邊雜物與車輛占用造成的危險，破解隱藏文字。"
+    label: "第二關",
+    icon: "🚦",
+    title: "過馬路前四步驟藏了什麼密碼",
+    theme: "正式內容待補",
+    desc: "正式內容待補。"
   },
   {
     id: 3,
     requiredLevel: 2,
     code: "FILE 03",
-    label: "2-1",
-    icon: "🚦",
-    title: "信封的顏色順序",
-    theme: "信封排序與號誌觀察",
-    desc: "根據信封線索，判斷從左到右的正確顏色順序。"
-  },
-  {
-    id: 4,
-    requiredLevel: 3,
-    code: "FILE 04",
-    label: "2-2",
-    icon: "🚶",
-    title: "小綠人的 8 碼密碼",
-    theme: "小綠人與智慧運輸線索",
-    desc: "觀察小綠人的線索，找出正確的八碼密碼。"
-  },
-  {
-    id: 5,
-    requiredLevel: 4,
-    code: "FILE 05",
-    label: "3-1",
+    label: "第三關",
     icon: "🏙️",
-    title: "暫定關卡",
-    theme: "紙本任務提示",
-    desc: "依照現場紙本任務提示進行操作。"
+    title: "6個神奇的設計讓馬路變安全",
+    theme: "正式內容待補",
+    desc: "正式內容待補。"
   }
 ];
+
 const NOTEBOOK_PAGES = [
   {
     type: "cover",
     title: "FIELD RECORDS",
     subtitle: "城市交通筆記",
     content:
-      "完成關卡後，這本筆記會留下每一關的遊玩時間、作答狀態、完成時間與學習紀錄。"
+      "完成正式關卡後，這本筆記會留下每一關的遊玩時間、作答狀態、完成時間與學習紀錄。"
   },
   {
     type: "toc",
     title: "目錄",
     chapters: [
-      {
-        id: "case-01",
-        code: "01",
-        title: "找回安全的行走空間！",
-        bookPage: 2
-      },
-      {
-        id: "case-02",
-        code: "02",
-        title: "號誌裡藏著什麼線索？",
-        bookPage: 4
-      },
-      {
-        id: "case-03",
-        code: "03",
-        title: "路口的人車大塞車",
-        bookPage: 6
-      }
+      { id: "case-01", code: "01", title: "安全的步行空間藏著一段密語", bookPage: 2 },
+      { id: "case-02", code: "02", title: "過馬路前四步驟藏了什麼密碼", bookPage: 4 },
+      { id: "case-03", code: "03", title: "6個神奇的設計讓馬路變安全", bookPage: 6 }
     ]
   },
-  {
-    type: "chapter",
-    id: "case-01",
-    code: "01",
-    title: "找回安全的行走空間！",
-    levels: [1, 2]
-  },
-  {
-    type: "blank"
-  },
-  {
-    type: "chapter",
-    id: "case-02",
-    code: "02",
-    title: "號誌裡藏著什麼線索？",
-    levels: [3, 4]
-  },
-  {
-    type: "blank"
-  },
-  {
-    type: "chapter",
-    id: "case-03",
-    code: "03",
-    title: "路口的人車大塞車",
-    levels: [5]
-  },
-  {
-    type: "blank"
-  }
+  { type: "chapter", id: "case-01", code: "01", title: "安全的步行空間藏著一段密語", levels: [1] },
+  { type: "blank" },
+  { type: "chapter", id: "case-02", code: "02", title: "過馬路前四步驟藏了什麼密碼", levels: [2] },
+  { type: "blank" },
+  { type: "chapter", id: "case-03", code: "03", title: "6個神奇的設計讓馬路變安全", levels: [3] },
+  { type: "blank" }
 ];
 
 const MOBILE_NOTEBOOK_PAGES = NOTEBOOK_PAGES.filter((page) => page.type !== "blank");
 
 const NOTEBOOK_LEVEL_NOTES = {
   1: {
-    title: "1-1 道路被擋住時怎麼辦？",
-    content:
-      "你發現當道路沒有完整的人行道或騎樓，又被停放車輛、雜物阻擋時，行人很容易被迫靠近車流。安全通過前，應先確認前後方來車，再選擇安全方式繞越障礙物。"
+    title: "第一關｜安全的步行空間藏著一段密語",
+    content: "此關學習紀錄文字待正式內容確認後補入。"
   },
   2: {
-    title: "1-2 被占用的行走空間",
-    content:
-      "你注意到私人雜物與車輛占用通行空間，會讓行人被迫走入車道。真正安心的步行環境，需要保留連續、安全的通行空間，並搭配清楚的行人號誌與道路引導。"
+    title: "第二關｜過馬路前四步驟藏了什麼密碼",
+    content: "此關學習紀錄文字待正式內容確認後補入。"
   },
   3: {
-    title: "2-1 信封的顏色順序",
-    content:
-      "你透過觀察信封破解出紅、黃、綠的順序，也把線索和交通號誌連結起來。仔細觀察號誌與環境，是判斷道路狀況與安全通行的重要能力。"
-  },
-  4: {
-    title: "2-2 小綠人的 8 碼密碼",
-    content:
-      "你從小綠人的線索中解出 20190925。這組日期也連結到中華郵政於 2019 年 9 月 25 日發行的臺灣智慧運輸建設郵票，讓交通觀察延伸到智慧運輸與城市設計。"
-  },
-  5: {
-    title: "3-1 路口的人車大塞車",
-    content:
-      "你成功辨認出路口中轉彎車與直行行人的衝突來源。也學到：交通安全需要從號誌、動線、視線與路權一起規劃，而不是只處理單一設施或單一問題。"
+    title: "第三關｜6個神奇的設計讓馬路變安全",
+    content: "此關學習紀錄文字待正式內容確認後補入。"
   }
 };
+
 function CaseFileIcon({ type }) {
   if (type === "walk") {
 
@@ -532,6 +614,10 @@ function TrafficPromptIllustration({ level }) {
 function App() {
   const [hasStartedGame, setHasStartedGame] = useState(false);
   const [showLevelSelect, setShowLevelSelect] = useState(false);
+  const [showPrelude, setShowPrelude] = useState(false);
+  const [showFinalCompletion, setShowFinalCompletion] = useState(false);
+  const [preludePhotos, setPreludePhotos] = useState({});
+  const [preludePhotoNames, setPreludePhotoNames] = useState({});
   const [currentChapter, setCurrentChapter] = useState(1);
 
   const [displayedText, setDisplayedText] = useState("");
@@ -598,6 +684,44 @@ function App() {
 
     return () => mediaQuery.removeEventListener?.("change", syncLayout);
   }, []);
+
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const restorePreludePhotos = async () => {
+      if (!gameSessionId) {
+        setPreludePhotos({});
+        setPreludePhotoNames({});
+        return;
+      }
+
+      try {
+        const savedPhotos = await loadPreludePhotosFromDevice(gameSessionId);
+        if (cancelled) return;
+
+        const nextPhotos = {};
+        const nextNames = {};
+
+        savedPhotos.forEach((item) => {
+          if (!item?.block_id || !item?.data_url) return;
+          nextPhotos[item.block_id] = item.data_url;
+          nextNames[item.block_id] = item.file_name || "";
+        });
+
+        setPreludePhotos(nextPhotos);
+        setPreludePhotoNames(nextNames);
+      } catch (error) {
+        console.error("讀取前導觀察照片失敗：", error);
+      }
+    };
+
+    restorePreludePhotos();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gameSessionId]);
 
   const STORAGE_KEY = "trafficPuzzleUnlockedLevel";
   const [unlockedLevel, setUnlockedLevel] = useState(() => {
@@ -672,6 +796,10 @@ function App() {
     setTotalElapsedTime(0);
 
     setHasStartedGame(false);
+    setShowPrelude(false);
+    setShowFinalCompletion(false);
+    setPreludePhotos({});
+    setPreludePhotoNames({});
     setIsGameFinished(false);
     setShowChapterTransition(false);
     setShowExitConfirm(false);
@@ -696,8 +824,21 @@ function App() {
       return;
     }
 
-    // 重要規則：只要活動碼在白名單內，就一定允許登入。
-    // Firebase 的完成狀態只用來決定「能否進入關卡作答」，不能阻擋登入。
+    // 測試帳號：不等待 Firestore 完成狀態查詢，直接建立新 session 進入前導 Block。
+    // 這可避免測試時因 Firebase 權限、網路或查詢延遲造成「按登入沒反應」。
+    if (TEST_ACCESS_CODES.has(trimmedCode)) {
+      const newSessionId = createGameSessionId();
+      resetRunForNewLogin(newSessionId);
+      saveUserSession(matchedUser.userName, matchedUser.userCode);
+      setAuthError("");
+      setShowLoginModal(false);
+      setIsEnvelopeOpening(false);
+      setShowPrelude(true);
+      setShowLevelSelect(false);
+      return;
+    }
+
+    // 正式活動碼維持原本邏輯：Firebase 完成狀態只決定是否能再次作答，不阻擋有效碼登入。
     saveUserSession(matchedUser.userName, matchedUser.userCode);
     setAuthError("");
 
@@ -717,11 +858,15 @@ function App() {
         setQuestionStartTime(null);
         setQuestionElapsedTime(0);
         setTotalElapsedTime(0);
+        setShowPrelude(false);
+        setShowLevelSelect(true);
       } else {
         // 未完成者：每次重新登入建立全新 run，從第一關與 00:00 重新開始。
         const newSessionId = createGameSessionId();
         resetRunForNewLogin(newSessionId);
         saveUserSession(matchedUser.userName, matchedUser.userCode);
+        setShowPrelude(true);
+        setShowLevelSelect(false);
       }
     } catch (error) {
       // Firebase 查詢失敗不再阻擋登入。
@@ -731,11 +876,12 @@ function App() {
       const newSessionId = createGameSessionId();
       resetRunForNewLogin(newSessionId);
       saveUserSession(matchedUser.userName, matchedUser.userCode);
+      setShowPrelude(true);
+      setShowLevelSelect(false);
     }
 
     setAuthError("");
     setShowLoginModal(false);
-    setShowLevelSelect(true);
   };
 
   const handleLogoutUser = () => {
@@ -750,6 +896,10 @@ function App() {
     setAuthError("");
     setShowDiaryDrawer(false);
     setShowLevelSelect(false);
+    setShowPrelude(false);
+    setShowFinalCompletion(false);
+    setPreludePhotos({});
+    setPreludePhotoNames({});
     setHasStartedGame(false);
   };
 
@@ -814,7 +964,7 @@ function App() {
 
     let interval;
 
-    if (!hasStartedGame && !showLevelSelect) {
+    if (!hasStartedGame && !showLevelSelect && !showPrelude) {
       let i = 0;
       interval = setInterval(() => {
         if (i < LETTER_CONTENT.length) {
@@ -829,7 +979,7 @@ function App() {
       return () => clearInterval(interval);
     }
 
-    if (!hasStartedGame && showLevelSelect) {
+    if (!hasStartedGame && (showLevelSelect || showPrelude)) {
       setDisplayedText("");
       setShowUI(false);
       return;
@@ -852,6 +1002,7 @@ function App() {
     userCode,
     hasStartedGame,
     showLevelSelect,
+    showPrelude,
     currentChapter,
     storyPhase
   ]);
@@ -860,7 +1011,7 @@ function App() {
     if (!showLevelSelect || hasStartedGame) return;
 
     setVisibleLevelCount(0);
-    const timers = [0, 1, 2, 3, 4].map((i) =>
+    const timers = [0, 1, 2].map((i) =>
       setTimeout(() => {
         setVisibleLevelCount(i + 1);
       }, 180 + i * 180)
@@ -980,6 +1131,69 @@ function App() {
 
     calculateFinalRank();
   }, [isGameFinished, userCode]);
+
+  const handlePreludePhotoSelect = (blockId, file) => {
+    if (!file || !file.type?.startsWith("image/")) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = String(reader.result || "");
+      if (!dataUrl) return;
+
+      setPreludePhotos((prev) => ({
+        ...prev,
+        [blockId]: dataUrl
+      }));
+      setPreludePhotoNames((prev) => ({
+        ...prev,
+        [blockId]: file.name
+      }));
+
+      try {
+        await savePreludePhotoToDevice({
+          sessionId: gameSessionId,
+          blockId,
+          dataUrl,
+          fileName: file.name
+        });
+      } catch (error) {
+        console.error("保存前導觀察照片失敗：", error);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePreludePhoto = async (blockId) => {
+    setPreludePhotos((prev) => {
+      const next = { ...prev };
+      delete next[blockId];
+      return next;
+    });
+    setPreludePhotoNames((prev) => {
+      const next = { ...prev };
+      delete next[blockId];
+      return next;
+    });
+
+    try {
+      await deletePreludePhotoFromDevice(gameSessionId, blockId);
+    } catch (error) {
+      console.error("刪除前導觀察照片失敗：", error);
+    }
+  };
+
+  const handleFinishPrelude = () => {
+    // 目前是 Block 建置階段，尚未加入正式題目與勾選驗證。
+    // 後續內容確定後，再在這裡加入「完成指定條件才可進入」的檢查。
+    setShowPrelude(false);
+    setShowLevelSelect(true);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  const handleOpenResultSummary = () => {
+    setShowFinalCompletion(false);
+    setIsGameFinished(true);
+  };
 
   const formatTime = (seconds) => {
     const mm = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -1244,7 +1458,7 @@ function App() {
     if (DEMO_MODE && currentChapter >= DEMO_END_LEVEL) {
       setUnlockedLevel((prev) => Math.max(prev, DEMO_END_LEVEL + 1));
       setShowChapterTransition(false);
-      setIsGameFinished(true);
+      setShowFinalCompletion(true);
       return;
     }
 
@@ -1299,7 +1513,7 @@ function App() {
   };
 
   const handleDownloadResult = () => {
-    const demoLevels = [1, 2, 3, 4];
+    const demoLevels = [1, 2, 3];
     const completedRecords = getUniqueRecords(records).filter((record) => {
       const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
       return demoLevels.includes(level);
@@ -1505,6 +1719,8 @@ function App() {
     setIsGameFinished(false);
     setHasStartedGame(false);
     setShowLevelSelect(false);
+    setShowPrelude(false);
+    setShowFinalCompletion(false);
     setShowChapterTransition(false);
     setShowDiaryDrawer(false);
     setShowExitConfirm(false);
@@ -1546,7 +1762,7 @@ function App() {
   };
 
   const goNotebookNext = () => {
-    setNotebookPage((prev) => Math.min(5, prev + 1));
+    setNotebookPage((prev) => Math.min(3, prev + 1));
   };
 
   const nextBookPage = () => {
@@ -1906,8 +2122,8 @@ function App() {
 
 
   return (
-    <div className={`main-container unified-city-mode ${!hasStartedGame && !showLevelSelect ? "home-mode" : ""} ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""}`}>
-      {!hasStartedGame && !showLevelSelect ? (
+    <div className={`main-container unified-city-mode ${!hasStartedGame && !showLevelSelect && !showPrelude ? "home-mode" : ""} ${!hasStartedGame && showLevelSelect ? "level-select-mode" : ""} ${showPrelude ? "prelude-mode" : ""}`}>
+      {!hasStartedGame && !showLevelSelect && !showPrelude ? (
         <>
           <div className={`home-hero ${isEnvelopeOpening ? "home-hero-opening" : ""}`}>
             <button
@@ -2039,6 +2255,83 @@ function App() {
             </>
           )}
         </>
+      ) : showPrelude ? (
+        <div className="prelude-screen">
+          <section className="prelude-panel">
+            <div className="prelude-kicker">STREET OBSERVATION · PRELUDE</div>
+            <h1 className="prelude-title">前導觀察任務</h1>
+            <p className="prelude-subtitle">
+              此頁目前先建立完整操作版型。正式題目、說明與選項內容會在後續確認後再填入。
+            </p>
+
+            <div className="prelude-grid">
+              {PRELUDE_BLOCKS.map((block, index) => {
+                const photo = preludePhotos[block.id];
+                const photoName = preludePhotoNames[block.id];
+
+                return (
+                  <article className="prelude-block" key={block.id}>
+                    <div className="prelude-block-head">
+                      <span>{block.label}</span>
+                      <strong>0{index + 1}</strong>
+                    </div>
+
+                    <div className="prelude-content-placeholder">
+                      <h2>{block.title || `觀察項目 ${index + 1}`}</h2>
+                      <p>{block.description || "題目／說明內容待補"}</p>
+                    </div>
+
+                    <div className="prelude-choice-placeholder">
+                      <span>選項區</span>
+                      <small>內容待補</small>
+                    </div>
+
+                    <div className="prelude-upload-zone">
+                      <div>
+                        <strong>觀察照片</strong>
+                        <p>照片會先保存在這台裝置並綁定本次任務；正式雲端同步會在後續接上。</p>
+                      </div>
+
+                      <label className="prelude-upload-button">
+                        {photo ? "更換圖片" : "選擇圖片"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            handlePreludePhotoSelect(block.id, file);
+                            event.target.value = "";
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {photo && (
+                      <div className="prelude-photo-card">
+                        <img src={photo} alt={`觀察照片 ${index + 1}`} />
+                        <div className="prelude-photo-meta">
+                          <span>{photoName || `觀察照片 ${index + 1}`}</span>
+                          <button type="button" onClick={() => handleRemovePreludePhoto(block.id)}>
+                            移除
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="prelude-actions">
+              <button className="glow-btn prelude-continue-btn" onClick={handleFinishPrelude}>
+                進入正式關卡
+              </button>
+              <div className="prelude-dev-note">
+                Block 建置階段：目前暫不限制必須勾選或上傳照片才能繼續。
+              </div>
+            </div>
+          </section>
+        </div>
       ) : !hasStartedGame && showLevelSelect ? (
         <div className="level-select-screen mission-files-screen">
           <button className="field-notebook-trigger" onClick={openNotebook} aria-label="開啟闖關紀錄">
@@ -2480,6 +2773,22 @@ function App() {
       )}
 
 
+      {showFinalCompletion && (
+        <div className="final-completion-screen">
+          <section className="final-completion-card">
+            <div className="final-completion-kicker">MISSION COMPLETE</div>
+            <div className="final-completion-mark">✓</div>
+            <h1>CROSSWALK</h1>
+            <p className="final-completion-meaning">是「行人穿越道」的意思。</p>
+            <div className="final-completion-message">
+              恭喜完成所有關卡，請打開最後一包信封！
+            </div>
+            <button className="glow-btn final-completion-btn" onClick={handleOpenResultSummary}>
+              查看任務總結
+            </button>
+          </section>
+        </div>
+      )}
 
       {showNotebook && (
         <div
@@ -2621,7 +2930,7 @@ function App() {
       )}
 
       {isGameFinished && (() => {
-        const demoLevels = [1, 2, 3, 4];
+        const demoLevels = [1, 2, 3];
         const completedRecords = getUniqueRecords(records).filter((record) => {
           const level = Number(String(record.puzzle_id).replace("puzzle_0", ""));
           return demoLevels.includes(level);
@@ -2841,6 +3150,34 @@ function App() {
                       </div>
                     ))}
                   </div>
+                </section>
+
+                <section className="street-observation-review">
+                  <div className="street-observation-review-head">
+                    <span>STREET OBSERVATION</span>
+                    <h2>今天的街道觀察</h2>
+                    <p>照片會跟著本次任務保留在這台裝置，方便完成後回顧；正式題目與說明之後再補入。</p>
+                  </div>
+
+                  {Object.keys(preludePhotos).length > 0 ? (
+                    <div className="street-observation-gallery">
+                      {PRELUDE_BLOCKS.map((block, index) => {
+                        const photo = preludePhotos[block.id];
+                        if (!photo) return null;
+
+                        return (
+                          <figure className="street-observation-photo" key={block.id}>
+                            <img src={photo} alt={`街道觀察 ${index + 1}`} />
+                            <figcaption>{block.title || `觀察項目 ${index + 1}`}</figcaption>
+                          </figure>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="street-observation-empty">
+                      本次尚未加入觀察照片。
+                    </div>
+                  )}
                 </section>
               </div>
             </div>
